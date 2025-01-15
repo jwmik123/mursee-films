@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import gsap from "gsap";
 
 export default function Home() {
@@ -45,11 +45,40 @@ export default function Home() {
       );
   }, []);
 
+  const [scrollPosition, setScrollPosition] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const position = window.scrollY;
+      setScrollPosition(position);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  const parallaxOffset = scrollPosition * 0.3; // Adjust this value to control parallax intensity
+
   return (
     <main className="bg-[#1c1c1c]">
-      <nav className="absolute top-12 left-12 z-20">
+      <nav className="z-20 absolute w-full p-10 flex flex-row justify-between items-center">
         <div className="flex">
-          <h1 className="font-anton text-white text-2xl ">MURSEE&nbsp;FILMS</h1>
+          <h1 className="font-anton text-white text-2xl">MURSEE&nbsp;FILMS</h1>
+        </div>
+
+        <div className="menu">
+          <ul className="flex flex-row justify-between items-center space-x-10 bg-white text-black py-2 px-6 rounded-full">
+            <li>Home</li>
+            <li>Projecten</li>
+            <li>Contact</li>
+          </ul>
+        </div>
+
+        <div className="inquire">
+          <button className="font-anton text-white text-2xl">Inquire</button>
         </div>
       </nav>
 
@@ -63,7 +92,12 @@ export default function Home() {
 
       <section className="hero-section w-full p-4">
         <div className="overflow-hidden w-full relative rounded-lg min-h-[120vh] object-cover block">
-          <div className="z-10 w-full h-full absolute inset-0">
+          <div
+            className="z-10 w-full h-full absolute inset-0"
+            style={{
+              transform: `translate3d(0, -${parallaxOffset}px, 0)`,
+            }}
+          >
             <video
               autoPlay
               muted
@@ -83,8 +117,8 @@ export default function Home() {
 
       <section>
         <div className="w-full h-full bg-[#1c1c1c]">
-          <div className="flex flex-col items-end justify-center text-white">
-            <p className="max-w-2xl text-4xl font-anton">
+          <div className="flex flex-col items-end justify-center text-white py-24">
+            <p className="max-w-6xl text-[3vw] leading-tight font-anton">
               Bij Mursee Films creëren we meeslepende visuele verhalen die
               boeien en inspireren. Onze passie voor storytelling door middel
               van cinematografie drijft ons om onvergetelijke momenten te
