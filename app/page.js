@@ -33,6 +33,12 @@ export default function Home() {
         duration: 1.2,
         ease: "power4.out",
       })
+      .from(".header-title-char", {
+        y: 100,
+        duration: 1,
+        ease: "power4.out",
+        stagger: 0.05,
+      })
       .from(
         "nav",
         {
@@ -60,7 +66,13 @@ export default function Home() {
     };
   }, []);
 
-  const parallaxOffset = scrollPosition * 0.3; // Adjust this value to control parallax intensity
+  const parallaxOffset = scrollPosition * 0.3;
+
+  const headerTitle = "MURSEE FILMS".split("").map((char, i) => (
+    <span key={i} className="header-title-char inline-block">
+      {char === " " ? "\u00A0" : char}
+    </span>
+  ));
 
   return (
     <main className="bg-[#1c1c1c]">
@@ -78,11 +90,13 @@ export default function Home() {
         </div>
 
         <div className="inquire">
-          <button className="font-anton text-white text-2xl">Inquire</button>
+          <button className="font-anton text-white text-xl uppercase px-4 py-2 rounded-full border border-white">
+            Contact
+          </button>
         </div>
       </nav>
 
-      <div className="cover w-full h-full bg-[#1c1c1c] absolute top-0 left-0 z-50 flex items-center justify-center">
+      <div className="cover w-full h-full bg-[#1c1c1c] fixed top-0 left-0 z-50 flex items-center justify-center">
         <div className="h-20 w-44 overflow-hidden">
           <h2 className="cover-title text-white text-2xl font-anton opacity-0">
             MURSEE&nbsp;FILMS
@@ -108,8 +122,8 @@ export default function Home() {
             </video>
           </div>
           <div className="z-10 flex relative items-end justify-center min-h-[100vh] w-full text-white mt-[7vw] flex-row">
-            <h1 className="font-anton text-white text-[18vw] font-bold -indent-[5px]">
-              MURSEE&nbsp;FILMS
+            <h1 className="header-title z-[2000] font-anton text-white text-[16vw] md:text-[18vw] font-bold">
+              {headerTitle}
             </h1>
           </div>
         </div>
