@@ -2,6 +2,7 @@
 import Image from "next/image";
 import { useEffect, useState, useRef } from "react";
 import gsap from "gsap";
+import { MoveUpRight } from "lucide-react";
 
 export default function Home() {
   const commercialsRef = useRef(null);
@@ -89,7 +90,6 @@ export default function Home() {
         duration: 0.5,
         ease: "power4.out",
       });
-
       gsap.to(textContainer.current, {
         y: isHovered ? "0%" : "10%",
         duration: 0.5,
@@ -99,9 +99,9 @@ export default function Home() {
 
     return (
       <div
-        className="relative group overflow-hidden rounded-lg aspect-[3/4]"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        className="relative group overflow-hidden  aspect-[3/4]"
+        onPointerEnter={() => setIsHovered(true)}
+        onPointerLeave={() => setIsHovered(false)}
       >
         <Image
           src={image}
@@ -111,15 +111,13 @@ export default function Home() {
           priority
           className="object-cover transition-transform duration-500 group-hover:scale-110"
         />
+        <div className="absolute inset-0 bg-black/50 transition-opacity duration-500 group-hover:opacity-70" />
         <div
           ref={textContainer}
-          className="absolute inset-0 p-8 flex flex-col justify-end will-change-transform translate-y-[25%] group-hover:translate-y-0 transition-transform duration-500"
+          className="absolute inset-0 p-8 flex flex-col justify-end will-change-transform translate-y-[10%]"
         >
           <h3 className="font-anton text-3xl mb-4">{title}</h3>
-          <p
-            ref={textRef}
-            className="text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-          >
+          <p ref={textRef} className="text-sm opacity-0">
             {description}
           </p>
         </div>
@@ -182,15 +180,20 @@ export default function Home() {
         </div>
       </section>
 
-      <section>
+      <section className="container px-5 md:px-10">
         <div className="w-full h-full bg-[#1c1c1c]">
-          <div className="flex flex-col items-end justify-center text-white py-24">
-            <p className="md:max-w-6xl w-full md:text-[3vw] leading-tight font-anton">
-              Bij Mursee Films creëren we meeslepende visuele verhalen die
-              boeien en inspireren. Onze passie voor storytelling door middel
-              van cinematografie drijft ons om onvergetelijke momenten te
-              creëren die wereldwijd resoneren met het publiek.
+          <div className="flex flex-row justify-between text-white py-24">
+            <p className="md:max-w-xl w-full md:text-[3vw] leading-tight font-anton uppercase">
+              Wij zijn een creatieve studio gespecialiseerd in filmproductie
             </p>
+            <div className="max-w-xl flex flex-col gap-4 self-end text-lg">
+              Wij geloven dat verwondering alleen kan worden opgeroepen als je
+              het eerst zelf hebt ervaren.
+              <a className="text-white text-xl group uppercase flex flex-row gap-6 items-center cursor-pointer">
+                <span>Over ons</span>
+                <MoveUpRight className="w-8 h-8 group-hover:bg-orange-600 bg-gray-400 p-1 transition-all duration-300" />
+              </a>
+            </div>
           </div>
         </div>
       </section>
