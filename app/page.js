@@ -109,7 +109,7 @@ export default function Home() {
           fill
           className="object-cover transition-transform duration-500 group-hover:scale-110"
         />
-        <div className="absolute inset-0 bg-black/50 transition-opacity duration-500 group-hover:opacity-70" />
+        {/* <div className="absolute inset-0 bg-black/50 transition-opacity duration-500 group-hover:opacity-70" /> */}
         <div
           ref={textContainer}
           className="absolute inset-0 p-8 flex flex-col justify-end will-change-transform translate-y-[25%]"
