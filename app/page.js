@@ -1,9 +1,13 @@
 "use client";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import gsap from "gsap";
 
 export default function Home() {
+  const commercialsRef = useRef(null);
+  const companyFilmsRef = useRef(null);
+  const socialVideosRef = useRef(null);
+
   useEffect(() => {
     const tl = gsap.timeline();
 
@@ -122,7 +126,7 @@ export default function Home() {
             </video>
           </div>
           <div className="z-10 flex relative items-end justify-center min-h-[100vh] w-full text-white mt-[7vw] flex-row">
-            <h1 className="header-title z-[2000] font-anton text-white text-[16vw] md:text-[18vw] font-bold">
+            <h1 className="header-title z-[2000] font-anton text-white text-[16vw] md:text-[18vw] font-bold md:-indent-1">
               {headerTitle}
             </h1>
           </div>
@@ -138,6 +142,90 @@ export default function Home() {
               van cinematografie drijft ons om onvergetelijke momenten te
               creëren die wereldwijd resoneren met het publiek.
             </p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 p-8 bg-[#1c1c1c] text-white">
+          <div className="relative h-[400px] group overflow-hidden">
+            <div
+              className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
+              style={{
+                backgroundImage: "url('/commercials-bg.jpg')",
+              }}
+            />
+            <div className="absolute inset-0 bg-black/50" />
+            <div className="relative z-10 h-full flex flex-col justify-end p-6">
+              <h3 className="text-3xl font-anton mb-3">Commercials</h3>
+              <p ref={commercialsRef} className="text-gray-200">
+                Impactvolle commercials die uw merk laten opvallen en uw
+                boodschap krachtig overbrengen.
+              </p>
+            </div>
+          </div>
+
+          <div
+            className="relative h-[400px] group overflow-hidden"
+            onPointerEnter={() => {
+              gsap.to(companyFilmsRef.current, {
+                y: 0,
+                duration: 1,
+                ease: "power4.out",
+              });
+              gsap.to(".company-films-text", {
+                opacity: 1,
+                duration: 1,
+                ease: "power4.out",
+              });
+            }}
+            onPointerLeave={() => {
+              gsap.to(companyFilmsRef.current, {
+                y: 66,
+                duration: 1,
+                ease: "power4.out",
+              });
+              gsap.to(".company-films-text", {
+                opacity: 0,
+                duration: 1,
+                ease: "power4.out",
+              });
+            }}
+          >
+            <div
+              className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
+              style={{
+                backgroundImage: "url('/bedrijfsfilms-bg.jpg')",
+              }}
+            />
+            <div className="absolute inset-0 bg-black/50" />
+            <div
+              className="relative z-10 h-full flex flex-col justify-end p-6 translate-y-[66px]"
+              ref={companyFilmsRef}
+            >
+              <h3 className="text-3xl font-anton mb-3">Bedrijfsfilms</h3>
+              <p className="company-films-text text-gray-200 opacity-0">
+                Professionele bedrijfsfilms die uw organisatie en waarden
+                authentiek in beeld brengen.
+              </p>
+            </div>
+          </div>
+
+          <div className="relative h-[400px] group overflow-hidden">
+            <div
+              className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
+              style={{
+                backgroundImage: "url('/social-bg.jpg')",
+              }}
+            />
+            <div className="absolute inset-0 bg-black/50" />
+            <div className="relative z-10 h-full flex flex-col justify-end p-6">
+              <h3 className="text-3xl font-anton mb-3">Social Videos</h3>
+              <p ref={socialVideosRef} className="text-gray-200">
+                Engaging content die uw social media aanwezigheid versterkt en
+                conversie stimuleert.
+              </p>
+            </div>
           </div>
         </div>
       </section>
