@@ -82,20 +82,20 @@ export default function Home() {
     const [isHovered, setIsHovered] = useState(false);
     const textContainer = useRef(null);
 
-    // useEffect(() => {
-    //   gsap.to(textRef.current, {
-    //     opacity: isHovered ? 1 : 0,
-    //     y: isHovered ? 0 : 10,
-    //     duration: 0.5,
-    //     ease: "power4.out",
-    //   });
+    useEffect(() => {
+      gsap.to(textRef.current, {
+        opacity: isHovered ? 1 : 0,
+        y: isHovered ? 0 : 10,
+        duration: 0.5,
+        ease: "power4.out",
+      });
 
-    //   gsap.to(textContainer.current, {
-    //     y: isHovered ? "0%" : "10%",
-    //     duration: 0.5,
-    //     ease: "power4.out",
-    //   });
-    // }, [isHovered]);
+      gsap.to(textContainer.current, {
+        y: isHovered ? "0%" : "10%",
+        duration: 0.5,
+        ease: "power4.out",
+      });
+    }, [isHovered]);
 
     return (
       <div
@@ -107,15 +107,19 @@ export default function Home() {
           src={image}
           alt={title}
           fill
+          sizes="(max-width: 768px) 100vw, 33vw"
+          priority
           className="object-cover transition-transform duration-500 group-hover:scale-110"
         />
-        {/* <div className="absolute inset-0 bg-black/50 transition-opacity duration-500 group-hover:opacity-70" /> */}
         <div
           ref={textContainer}
-          className="absolute inset-0 p-8 flex flex-col justify-end will-change-transform translate-y-[25%]"
+          className="absolute inset-0 p-8 flex flex-col justify-end will-change-transform translate-y-[25%] group-hover:translate-y-0 transition-transform duration-500"
         >
           <h3 className="font-anton text-3xl mb-4">{title}</h3>
-          <p ref={textRef} className="text-sm opacity-0">
+          <p
+            ref={textRef}
+            className="text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+          >
             {description}
           </p>
         </div>
