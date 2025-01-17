@@ -78,6 +78,51 @@ export default function Home() {
     </span>
   ));
 
+  const ServiceCard = ({ title, description, image, textRef }) => {
+    const [isHovered, setIsHovered] = useState(false);
+    const textContainer = useRef(null);
+
+    useEffect(() => {
+      gsap.to(textRef.current, {
+        opacity: isHovered ? 1 : 0,
+        y: isHovered ? 0 : 10,
+        duration: 0.5,
+        ease: "power4.out",
+      });
+
+      gsap.to(textContainer.current, {
+        y: isHovered ? "0%" : "10%",
+        duration: 0.5,
+        ease: "power4.out",
+      });
+    }, [isHovered]);
+
+    return (
+      <div
+        className="relative group overflow-hidden rounded-lg aspect-[3/4]"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <Image
+          src={image}
+          alt={title}
+          fill
+          className="object-cover transition-transform duration-500 group-hover:scale-110"
+        />
+        <div className="absolute inset-0 bg-black/50 transition-opacity duration-500 group-hover:opacity-70" />
+        <div
+          ref={textContainer}
+          className="absolute inset-0 p-8 flex flex-col justify-end translate-y-[25%]"
+        >
+          <h3 className="font-anton text-3xl mb-4">{title}</h3>
+          <p ref={textRef} className="text-sm opacity-0">
+            {description}
+          </p>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <main className="bg-[#1c1c1c]">
       <nav className="z-20 absolute w-full p-10 flex flex-row justify-between items-center">
@@ -85,7 +130,7 @@ export default function Home() {
           <h1 className="font-anton text-white text-2xl">MURSEE&nbsp;FILMS</h1>
         </div>
 
-        <div className="menu">
+        <div className="menu hidden lg:block">
           <ul className="flex flex-row justify-between items-center space-x-10 bg-white text-black py-2 px-6 rounded-full">
             <li>Home</li>
             <li>Projecten</li>
@@ -93,7 +138,7 @@ export default function Home() {
           </ul>
         </div>
 
-        <div className="inquire">
+        <div className="inquire hidden lg:block">
           <button className="font-anton text-white text-xl uppercase px-4 py-2 rounded-full border border-white">
             Contact
           </button>
@@ -126,7 +171,7 @@ export default function Home() {
             </video>
           </div>
           <div className="z-10 flex relative items-end justify-center min-h-[100vh] w-full text-white mt-[7vw] flex-row">
-            <h1 className="header-title z-[2000] font-anton text-white text-[16vw] md:text-[18vw] font-bold md:-indent-1">
+            <h1 className="header-title z-[2000] font-anton text-white text-[16vw] md:text-[18vw] font-bold -indent-[1px] lg:-indent-[2px] md:-indent-[3px]">
               {headerTitle}
             </h1>
           </div>
@@ -136,7 +181,7 @@ export default function Home() {
       <section>
         <div className="w-full h-full bg-[#1c1c1c]">
           <div className="flex flex-col items-end justify-center text-white py-24">
-            <p className="max-w-6xl text-[3vw] leading-tight font-anton">
+            <p className="md:max-w-6xl w-full md:text-[3vw] leading-tight font-anton">
               Bij Mursee Films creëren we meeslepende visuele verhalen die
               boeien en inspireren. Onze passie voor storytelling door middel
               van cinematografie drijft ons om onvergetelijke momenten te
@@ -148,85 +193,26 @@ export default function Home() {
 
       <section>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 p-8 bg-[#1c1c1c] text-white">
-          <div className="relative h-[400px] group overflow-hidden">
-            <div
-              className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
-              style={{
-                backgroundImage: "url('/commercials-bg.jpg')",
-              }}
-            />
-            <div className="absolute inset-0 bg-black/50" />
-            <div className="relative z-10 h-full flex flex-col justify-end p-6">
-              <h3 className="text-3xl font-anton mb-3">Commercials</h3>
-              <p ref={commercialsRef} className="text-gray-200">
-                Impactvolle commercials die uw merk laten opvallen en uw
-                boodschap krachtig overbrengen.
-              </p>
-            </div>
-          </div>
+          <ServiceCard
+            title="Commercials"
+            description="Commercials die uw merk laten opvallen en uw boodschap krachtig overbrengen."
+            image="/commercial.webp"
+            textRef={commercialsRef}
+          />
 
-          <div
-            className="relative h-[400px] group overflow-hidden"
-            onPointerEnter={() => {
-              gsap.to(companyFilmsRef.current, {
-                y: 0,
-                duration: 1,
-                ease: "power4.out",
-              });
-              gsap.to(".company-films-text", {
-                opacity: 1,
-                duration: 1,
-                ease: "power4.out",
-              });
-            }}
-            onPointerLeave={() => {
-              gsap.to(companyFilmsRef.current, {
-                y: 66,
-                duration: 1,
-                ease: "power4.out",
-              });
-              gsap.to(".company-films-text", {
-                opacity: 0,
-                duration: 1,
-                ease: "power4.out",
-              });
-            }}
-          >
-            <div
-              className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
-              style={{
-                backgroundImage: "url('/bedrijfsfilms-bg.jpg')",
-              }}
-            />
-            <div className="absolute inset-0 bg-black/50" />
-            <div
-              className="relative z-10 h-full flex flex-col justify-end p-6 translate-y-[66px]"
-              ref={companyFilmsRef}
-            >
-              <h3 className="text-3xl font-anton mb-3">Bedrijfsfilms</h3>
-              <p className="company-films-text text-gray-200 opacity-0">
-                Professionele bedrijfsfilms die uw organisatie en waarden
-                authentiek in beeld brengen.
-              </p>
-            </div>
-          </div>
+          <ServiceCard
+            title="Bedrijfsfilms"
+            description="Professionele bedrijfsfilms die uw organisatie en waarden authentiek in beeld brengen."
+            image="/commercial.webp"
+            textRef={companyFilmsRef}
+          />
 
-          <div className="relative h-[400px] group overflow-hidden">
-            <div
-              className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
-              style={{
-                backgroundImage: "url('/social-bg.jpg')",
-              }}
-            />
-            <div className="absolute inset-0 bg-black/50" />
-            <div className="relative z-10 h-full flex flex-col justify-end p-6">
-              <h3 className="text-3xl font-anton mb-3">Social Videos</h3>
-              <p ref={socialVideosRef} className="text-gray-200">
-                Engaging content die uw social media aanwezigheid versterkt en
-                conversie stimuleert.
-              </p>
-            </div>
-          </div>
+          <ServiceCard
+            title="Social Videos"
+            description="Engaging content die uw social media aanwezigheid versterkt en conversie stimuleert."
+            image="/commercial.webp"
+            textRef={socialVideosRef}
+          />
         </div>
       </section>
     </main>
