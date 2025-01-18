@@ -4,6 +4,8 @@ import { useEffect, useState, useRef } from "react";
 import gsap from "gsap";
 import { MoveUpRight } from "lucide-react";
 import ServiceCard from "./components/ServiceCard";
+import Showreel from "./components/Showreel";
+
 export default function Home() {
   const commercialsRef = useRef(null);
   const companyFilmsRef = useRef(null);
@@ -89,12 +91,6 @@ export default function Home() {
         <div className="menu text-black bg-white px-2 text-lg py-1 rounded-md">
           menu
         </div>
-
-        {/* <div className="inquire hidden lg:block">
-          <button className="text-white font-bold border-2 p-2 border-white">
-            Stuur een bericht
-          </button>
-        </div> */}
       </nav>
 
       <div className="cover w-full h-full bg-[#1c1c1c] fixed top-0 left-0 z-50 flex items-center justify-center">
@@ -106,7 +102,7 @@ export default function Home() {
       </div>
 
       <section className="hero-section w-full p-4">
-        <div className="overflow-hidden w-full relative rounded-lg min-h-screen md:min-h-[120vh] object-cover block">
+        <div className="overflow-hidden w-full relative rounded-lg md:min-h-[120vh] object-cover block">
           <div
             className="z-10 w-full h-full absolute inset-0"
             style={{
@@ -123,7 +119,7 @@ export default function Home() {
             </video>
           </div>
           <div className="z-10 flex relative items-center md:items-end justify-center min-h-[100vh] w-full text-white mt-[7vw] flex-row">
-            <h1 className="md:header-title z-[2000] font-anton text-white text-[14vw] md:text-[18vw] font-bold -indent-[1px] lg:-indent-[2px] md:-indent-[3px]">
+            <h1 className="header-title z-[2000] font-anton text-white text-[14vw] md:text-[18vw] font-bold -indent-[1px] lg:-indent-[2px] md:-indent-[3px]">
               {headerTitle}
             </h1>
           </div>
@@ -141,11 +137,15 @@ export default function Home() {
               het eerst zelf hebt ervaren.
               <a className="text-white text-xl group uppercase flex flex-row gap-6 items-center cursor-pointer">
                 <span className="font-medium">Over ons</span>
-                <MoveUpRight className="w-8 h-8 group-hover:bg-orange-600 bg-gray-400 p-1 transition-all duration-300" />
+                <MoveUpRight className="w-8 h-8 group-hover:bg-orange-600 rounded-md bg-gray-400 p-1 transition-all duration-300" />
               </a>
             </div>
           </div>
         </div>
+      </section>
+
+      <section className="w-full bg-[#1c1c1c] pb-24">
+        <Showreel />
       </section>
 
       <section>
@@ -172,6 +172,8 @@ export default function Home() {
           />
         </div>
       </section>
+
+      <section className="w-full bg-[#1c1c1c] h-[300vh]"></section>
     </main>
   );
 }
