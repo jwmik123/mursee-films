@@ -3,7 +3,7 @@ import Image from "next/image";
 import { useEffect, useState, useRef } from "react";
 import gsap from "gsap";
 import { MoveUpRight } from "lucide-react";
-
+import ServiceCard from "./components/ServiceCard";
 export default function Home() {
   const commercialsRef = useRef(null);
   const companyFilmsRef = useRef(null);
@@ -79,52 +79,6 @@ export default function Home() {
     </span>
   ));
 
-  const ServiceCard = ({ title, description, image, textRef }) => {
-    const [isHovered, setIsHovered] = useState(false);
-    const textContainer = useRef(null);
-
-    useEffect(() => {
-      gsap.to(textRef.current, {
-        opacity: isHovered ? 1 : 0,
-        y: isHovered ? 0 : 10,
-        duration: 0.5,
-        ease: "power4.out",
-      });
-      gsap.to(textContainer.current, {
-        y: isHovered ? "0%" : "10%",
-        duration: 0.5,
-        ease: "power4.out",
-      });
-    }, [isHovered]);
-
-    return (
-      <div
-        className="relative group overflow-hidden  aspect-[3/4]"
-        onPointerEnter={() => setIsHovered(true)}
-        onPointerLeave={() => setIsHovered(false)}
-      >
-        <Image
-          src={image}
-          alt={title}
-          fill
-          sizes="(max-width: 768px) 100vw, 33vw"
-          priority
-          className="object-cover transition-transform duration-500 group-hover:scale-110"
-        />
-        <div className="absolute inset-0 bg-black/50 transition-opacity duration-500 group-hover:opacity-70" />
-        <div
-          ref={textContainer}
-          className="absolute inset-0 p-8 flex flex-col justify-end will-change-transform translate-y-[10%]"
-        >
-          <h3 className="font-anton text-3xl mb-4">{title}</h3>
-          <p ref={textRef} className="text-sm opacity-0">
-            {description}
-          </p>
-        </div>
-      </div>
-    );
-  };
-
   return (
     <main className="bg-[#1c1c1c]">
       <nav className="z-20 absolute w-full p-10 flex flex-row justify-between items-center">
@@ -132,19 +86,15 @@ export default function Home() {
           <h1 className="font-anton text-white text-2xl">MURSEE&nbsp;FILMS</h1>
         </div>
 
-        <div className="menu hidden lg:block">
-          <ul className="flex flex-row justify-between items-center space-x-10 bg-white text-black py-2 px-6 rounded-full">
-            <li>Home</li>
-            <li>Projecten</li>
-            <li>Contact</li>
-          </ul>
+        <div className="menu text-black bg-white px-2 text-lg py-1 rounded-md">
+          menu
         </div>
 
-        <div className="inquire hidden lg:block">
-          <button className="font-anton text-white text-xl uppercase px-4 py-2 rounded-full border border-white">
-            Contact
+        {/* <div className="inquire hidden lg:block">
+          <button className="text-white font-bold border-2 p-2 border-white">
+            Stuur een bericht
           </button>
-        </div>
+        </div> */}
       </nav>
 
       <div className="cover w-full h-full bg-[#1c1c1c] fixed top-0 left-0 z-50 flex items-center justify-center">
@@ -180,9 +130,9 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="container px-5 md:px-10">
+      <section className="px-5 md:px-10">
         <div className="w-full h-full bg-[#1c1c1c]">
-          <div className="flex flex-row justify-between text-white py-24">
+          <div className="flex flex-row w-full justify-between text-white py-24">
             <p className="md:max-w-xl w-full md:text-[3vw] leading-tight font-anton uppercase">
               Wij zijn een creatieve studio gespecialiseerd in filmproductie
             </p>
@@ -190,7 +140,7 @@ export default function Home() {
               Wij geloven dat verwondering alleen kan worden opgeroepen als je
               het eerst zelf hebt ervaren.
               <a className="text-white text-xl group uppercase flex flex-row gap-6 items-center cursor-pointer">
-                <span>Over ons</span>
+                <span className="font-medium">Over ons</span>
                 <MoveUpRight className="w-8 h-8 group-hover:bg-orange-600 bg-gray-400 p-1 transition-all duration-300" />
               </a>
             </div>
