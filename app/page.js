@@ -123,7 +123,7 @@ export default function Home() {
             </video>
           </div>
           <div className="z-10 flex relative items-center md:items-end justify-center min-h-[100vh] w-full text-white mt-[7vw] flex-row">
-            <h1 className="header-title z-[2000] font-anton text-white text-[16vw] md:text-[18vw] font-bold -indent-[1px] lg:-indent-[2px] md:-indent-[3px]">
+            <h1 className="md:header-title z-[2000] font-anton text-white text-[14vw] md:text-[18vw] font-bold -indent-[1px] lg:-indent-[2px] md:-indent-[3px]">
               {headerTitle}
             </h1>
           </div>
