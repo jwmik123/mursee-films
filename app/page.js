@@ -106,7 +106,7 @@ export default function Home() {
       </div>
 
       <section className="hero-section w-full p-4">
-        <div className="overflow-hidden w-full relative rounded-lg min-h-[120vh] object-cover block">
+        <div className="overflow-hidden w-full relative rounded-lg min-h-screen md:min-h-[120vh] object-cover block">
           <div
             className="z-10 w-full h-full absolute inset-0"
             style={{
@@ -122,7 +122,7 @@ export default function Home() {
               <source src="/header.mp4" type="video/mp4" />
             </video>
           </div>
-          <div className="z-10 flex relative items-end justify-center min-h-[100vh] w-full text-white mt-[7vw] flex-row">
+          <div className="z-10 flex relative items-center md:items-end justify-center min-h-[100vh] w-full text-white mt-[7vw] flex-row">
             <h1 className="header-title z-[2000] font-anton text-white text-[16vw] md:text-[18vw] font-bold -indent-[1px] lg:-indent-[2px] md:-indent-[3px]">
               {headerTitle}
             </h1>
@@ -132,8 +132,8 @@ export default function Home() {
 
       <section className="px-5 md:px-10">
         <div className="w-full h-full bg-[#1c1c1c]">
-          <div className="flex flex-row w-full justify-between text-white py-24">
-            <p className="md:max-w-xl w-full md:text-[3vw] leading-tight font-anton uppercase">
+          <div className="flex flex-col md:flex-row w-full justify-between gap-6 text-white pb-24">
+            <p className="md:max-w-xl w-full text-4xl md:text-[3vw] leading-tight font-anton uppercase">
               Wij zijn een creatieve studio gespecialiseerd in filmproductie
             </p>
             <div className="max-w-xl flex flex-col gap-4 self-end text-lg">
