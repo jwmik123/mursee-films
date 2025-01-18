@@ -144,11 +144,30 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="w-full bg-[#1c1c1c] pb-24">
+      <section className="w-full px-5 md:px-10 bg-[#1c1c1c] pt-16 pb-24">
         <Showreel />
       </section>
 
-      <section>
+      <section className="w-full px-5 md:px-10 bg-[#1c1c1c] pt-16 pb-24">
+        <div className="flex flex-row items-center justify-between">
+          <h1 className="text-white text-[8vw] font-anton uppercase leading-none">
+            Projecten
+          </h1>
+
+          <p className="font-medium self-end text-white text-xl">
+            Van evenementen tot commercials
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 bg-[#1c1c1c] text-white">
+          <div className="w-full aspect-square bg-white rounded-lg">lol</div>
+          <div className="w-full aspect-square bg-white rounded-lg">lol</div>
+          <div className="w-full aspect-square bg-white rounded-lg">lol</div>
+        </div>
+      </section>
+
+      {/* <section className="w-full px-5 md:px-10 bg-[#1c1c1c]">
+        <p className="text-white text-3xl">[Waar we goed in zijn]</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 p-8 bg-[#1c1c1c] text-white">
           <ServiceCard
             title="Commercials"
@@ -171,7 +190,7 @@ export default function Home() {
             textRef={socialVideosRef}
           />
         </div>
-      </section>
+      </section> */}
 
       <section className="w-full bg-[#1c1c1c] h-[300vh]"></section>
     </main>

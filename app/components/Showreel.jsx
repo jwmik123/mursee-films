@@ -1,11 +1,10 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef } from "react";
 import { Play, Pause, Volume2, VolumeX, Maximize2 } from "lucide-react";
 
 const MediaPlayer = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [parallaxOffset, setParallaxOffset] = useState(0);
 
   const videoRef = useRef(null);
   const previewVideoRef = useRef(null);
@@ -50,10 +49,10 @@ const MediaPlayer = () => {
   return (
     <div
       ref={containerRef}
-      className="relative w-[80vw] mx-auto bg-black rounded-lg overflow-hidden"
+      className=" relative w-full  bg-black rounded-lg overflow-hidden"
     >
       <div className="relative overflow-hidden">
-        <div className="relative h-[120%] -top-[10%] transform-gpu">
+        <div className="relative h-full">
           <video
             ref={previewVideoRef}
             autoPlay
@@ -66,7 +65,6 @@ const MediaPlayer = () => {
           </video>
         </div>
 
-        {/* Main video (no parallax when playing) */}
         <video
           ref={videoRef}
           loop
