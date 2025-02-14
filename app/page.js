@@ -1,34 +1,54 @@
 "use client";
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState, useRef } from "react";
 import gsap from "gsap";
 import { MoveUpRight } from "lucide-react";
-import ServiceCard from "./components/ServiceCard";
 import Showreel from "./components/Showreel";
+import { usePathname } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
+const projects = [
+  {
+    id: "1",
+    title: "Project One",
+    image: "/yasmeen.webp",
+  },
+  {
+    id: "2",
+    title: "Project Two",
+    image: "/mursee-header.jpg",
+  },
+
+  // ... more projects
+];
 
 export default function Home() {
-  const commercialsRef = useRef(null);
-  const companyFilmsRef = useRef(null);
-  const socialVideosRef = useRef(null);
+  const tlRef = useRef(null);
+
+  const router = useRouter();
+  const [selectedId, setSelectedId] = useState(null);
+  const [hide, setHide] = useState(false);
 
   useEffect(() => {
-    const tl = gsap.timeline();
+    tlRef.current = gsap.timeline();
 
-    tl.fromTo(
-      ".cover-title",
-      {
-        y: -100,
-        opacity: 0,
-        duration: 1,
-        ease: "power4.out",
-      },
-      {
-        y: 0,
-        opacity: 1,
-        duration: 1,
-        ease: "power4.out",
-      }
-    )
+    tlRef.current
+      .fromTo(
+        ".cover-title",
+        {
+          y: -100,
+          opacity: 0,
+          duration: 1,
+          ease: "power4.out",
+        },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 1,
+          ease: "power4.out",
+        }
+      )
       .fromTo(
         ".cover",
         { y: "0%" },
@@ -58,6 +78,37 @@ export default function Home() {
       );
   }, []);
 
+  const variants = {
+    initial: {
+      position: "relative",
+      zIndex: 1,
+      opacity: 1,
+    },
+    selected: {
+      position: "fixed",
+      width: "524px",
+      zIndex: 50,
+      transition: {
+        duration: 1.2,
+        ease: [0.6, 0.01, 0, 0.9],
+      },
+    },
+    hidden: {
+      opacity: 0,
+      transition: {
+        duration: 0.5,
+      },
+    },
+  };
+
+  const handleClick = (id) => {
+    setSelectedId(id);
+    setHide(true);
+    setTimeout(() => {
+      router.push(`/project/${id}`);
+    }, 1000);
+  };
+
   const [scrollPosition, setScrollPosition] = useState(0);
 
   useEffect(() => {
@@ -82,18 +133,20 @@ export default function Home() {
   ));
 
   return (
-    <main className="bg-[#1c1c1c]">
-      <nav className="z-20 absolute w-full p-10 flex flex-row justify-between items-center">
+    <main>
+      <nav className="z-20 absolute w-full p-10 flex flex-row justify-between items-center transition-opacity duration-500">
         <div className="flex">
           <h1 className="font-anton text-white text-2xl">MURSEE&nbsp;FILMS</h1>
         </div>
 
         <div className="menu text-black bg-white px-2 text-lg py-1 rounded-md">
-          menu
+          <Link href="/about">Over ons</Link>
         </div>
       </nav>
 
-      <div className="cover w-full h-full bg-[#1c1c1c] fixed top-0 left-0 z-50 flex items-center justify-center">
+      <div
+        className={`cover w-full h-full bg-[#1c1c1c] fixed top-0 left-0 z-50 flex items-center justify-center transition-opacity duration-500`}
+      >
         <div className="h-20 w-44 overflow-hidden">
           <h2 className="cover-title text-white text-2xl font-anton opacity-0">
             MURSEE&nbsp;FILMS
@@ -101,7 +154,9 @@ export default function Home() {
         </div>
       </div>
 
-      <section className="hero-section w-full p-4">
+      <section
+        className={`hero-section w-full p-4 transition-opacity duration-500`}
+      >
         <div className="overflow-hidden w-full relative rounded-lg md:min-h-[120vh] object-cover block">
           <div
             className="z-10 w-full h-full absolute inset-0"
@@ -126,7 +181,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="px-5 md:px-10">
+      <section className={`px-5 md:px-10 transition-opacity duration-500`}>
         <div className="w-full h-full bg-[#1c1c1c]">
           <div className="flex flex-col md:flex-row w-full justify-between gap-6 text-white pb-24">
             <p className="md:max-w-xl w-full text-4xl md:text-[3vw] leading-tight font-anton uppercase">
@@ -144,13 +199,19 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="w-full px-5 md:px-10 bg-[#1c1c1c] pt-16 pb-24">
+      <section
+        className={`w-full px-5 md:px-10 bg-[#1c1c1c] pt-16 pb-24 transition-opacity duration-500`}
+      >
         <Showreel />
       </section>
 
       <section className="w-full px-5 md:px-10 bg-[#1c1c1c] pt-16 pb-24">
-        <div className="flex flex-row items-center justify-between">
-          <h1 className="text-white text-[8vw] font-anton uppercase leading-none">
+        <div
+          className={`flex flex-row items-center justify-between transition-opacity duration-500 ${
+            hide ? "opacity-0" : "opacity-100"
+          }`}
+        >
+          <h1 className="text-white text-[4vw] font-anton uppercase leading-none">
             Projecten
           </h1>
 
@@ -158,41 +219,78 @@ export default function Home() {
             Van evenementen tot commercials
           </p>
         </div>
+        <AnimatePresence initial={false} mode="wait">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 bg-[#1c1c1c] text-white w-full relative">
+            {projects.map((project) => (
+              <motion.div
+                key={project.id}
+                layoutId={`project-${project.id}`}
+                onClick={() => handleClick(project.id)}
+                className="w-full aspect-video z-50 cursor-pointer relative"
+                variants={variants}
+                initial="initial"
+                animate={
+                  selectedId === project.id
+                    ? "selected"
+                    : selectedId
+                    ? "hidden"
+                    : "initial"
+                }
+                style={{
+                  top: selectedId === project.id ? "50%" : "auto",
+                  left: selectedId === project.id ? "50%" : "auto",
+                  transform:
+                    selectedId === project.id
+                      ? "translate(-50%, -50%)"
+                      : "none",
+                }}
+              >
+                <Image
+                  src={project.image}
+                  alt={project.title}
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </motion.div>
+            ))}
+          </div>
+        </AnimatePresence>
+      </section>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 bg-[#1c1c1c] text-white">
-          <div className="w-full aspect-square bg-white rounded-lg">lol</div>
-          <div className="w-full aspect-square bg-white rounded-lg">lol</div>
-          <div className="w-full aspect-square bg-white rounded-lg">lol</div>
+      <section className="w-full px-5 md:px-10 bg-[#1c1c1c] pt-16 pb-24">
+        <h1 className="text-white text-[4vw] font-anton uppercase leading-none mb-16">
+          Onze aanpak.
+        </h1>
+        <div className="flex flex-row gap-6 border-t border-white pt-4 pb-16">
+          <p className="text-white text-xl w-1/2">
+            A simple philosophy: <br /> quality over quantity.
+          </p>
+          <p className="text-white text-xl w-1/2">
+            We don’t do volume. We partner with only five clients a year,
+            focusing our expertise on their success. Every detail is crafted,
+            every decision strategic, and every outcome transformative. We build
+            brands that set new benchmarks.
+          </p>
+        </div>
+        <div className="flex flex-row gap-6 border-t border-white pt-4">
+          <p className="text-white text-xl w-1/2">
+            A simple philosophy: <br /> quality over quantity.
+          </p>
+          <p className="text-white text-xl w-1/2">
+            We don’t do volume. We partner with only five clients a year,
+            focusing our expertise on their success. Every detail is crafted,
+            every decision strategic, and every outcome transformative. We build
+            brands that set new benchmarks.
+          </p>
         </div>
       </section>
 
-      {/* <section className="w-full px-5 md:px-10 bg-[#1c1c1c]">
-        <p className="text-white text-3xl">[Waar we goed in zijn]</p>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 p-8 bg-[#1c1c1c] text-white">
-          <ServiceCard
-            title="Commercials"
-            description="Commercials die uw merk laten opvallen en uw boodschap krachtig overbrengen."
-            image="/commercial.webp"
-            textRef={commercialsRef}
-          />
-
-          <ServiceCard
-            title="Bedrijfsfilms"
-            description="Professionele bedrijfsfilms die uw organisatie en waarden authentiek in beeld brengen."
-            image="/commercial.webp"
-            textRef={companyFilmsRef}
-          />
-
-          <ServiceCard
-            title="Social Videos"
-            description="Engaging content die uw social media aanwezigheid versterkt en conversie stimuleert."
-            image="/commercial.webp"
-            textRef={socialVideosRef}
-          />
-        </div>
-      </section> */}
-
-      <section className="w-full bg-[#1c1c1c] h-[300vh]"></section>
+      <section
+        className={`w-full bg-[#1c1c1c] h-[300vh] transition-opacity duration-500 ${
+          hide ? "opacity-0" : "opacity-100"
+        }`}
+      ></section>
     </main>
   );
 }
