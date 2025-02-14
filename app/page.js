@@ -260,12 +260,19 @@ export default function Home() {
 
       <section className="w-full px-5 md:px-10 bg-[#1c1c1c] pt-16 pb-24">
         <h1 className="text-white text-[4vw] font-anton uppercase leading-none mb-16">
-          Onze aanpak.
+          Onze aanpak
         </h1>
         <div className="flex flex-row gap-6 border-t border-white pt-4 pb-16">
+          <p className="text-white text-xl w-1/2">Pre production</p>
           <p className="text-white text-xl w-1/2">
-            A simple philosophy: <br /> quality over quantity.
+            We don’t do volume. We partner with only five clients a year,
+            focusing our expertise on their success. Every detail is crafted,
+            every decision strategic, and every outcome transformative. We build
+            brands that set new benchmarks.
           </p>
+        </div>
+        <div className="flex flex-row gap-6 border-t border-white pt-4 pb-16">
+          <p className="text-white text-xl w-1/2">Production</p>
           <p className="text-white text-xl w-1/2">
             We don’t do volume. We partner with only five clients a year,
             focusing our expertise on their success. Every detail is crafted,
@@ -274,9 +281,7 @@ export default function Home() {
           </p>
         </div>
         <div className="flex flex-row gap-6 border-t border-white pt-4">
-          <p className="text-white text-xl w-1/2">
-            A simple philosophy: <br /> quality over quantity.
-          </p>
+          <p className="text-white text-xl w-1/2">Post production</p>
           <p className="text-white text-xl w-1/2">
             We don’t do volume. We partner with only five clients a year,
             focusing our expertise on their success. Every detail is crafted,
