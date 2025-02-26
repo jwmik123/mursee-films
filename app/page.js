@@ -94,6 +94,17 @@ export default function Home() {
         "+=0.5"
       )
       .fromTo(
+        ".ticks",
+        {
+          opacity: 1,
+        },
+        {
+          opacity: 0,
+          duration: 1,
+          ease: "power4.out",
+        }
+      )
+      .fromTo(
         ".video",
         {
           width: "50%",
@@ -283,6 +294,40 @@ export default function Home() {
             >
               <source src="/header.mp4" type="video/mp4" />
             </video>
+            <div className="w-1/2 translate-y-[100px] ticks">
+              <div className="flex flex-col">
+                {/* Tick marks row */}
+                <div className="flex items-end pt-2 px-1 pb-6 relative">
+                  {Array.from({ length: 41 }).map((_, index) => {
+                    const isMajorTick = index % 5 === 0;
+                    return (
+                      <div
+                        key={index}
+                        className="flex-1 flex justify-center relative"
+                      >
+                        <div
+                          className={`${
+                            isMajorTick ? "h-5" : "h-3"
+                          } w-px bg-white`}
+                        />
+                      </div>
+                    );
+                  })}
+
+                  {/* Numbers overlay */}
+                  <div className="absolute bottom-1 left-0 right-0 flex justify-between px-2">
+                    {Array.from({ length: 7 }).map((_, i) => (
+                      <div
+                        key={i}
+                        className="text-white font-mono text-sm flex-1 text-center"
+                      >
+                        {(i + 1).toString().padStart(2, "0")}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
           <div className="z-10 flex relative items-center md:items-end justify-center min-h-screen w-full text-white mt-[7vw] flex-row">
             <h1 className="header-title z-[2000] font-anton mix-blend-difference text-[14vw] md:text-[18vw] leading-none font-bold">
