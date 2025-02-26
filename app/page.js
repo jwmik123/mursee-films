@@ -328,7 +328,7 @@ export default function Home() {
             Van evenementen tot commercials
           </p>
         </div>
-        <div className="grid grid-cols-3 gap-8 mt-12 bg-[#1c1c1c] text-white">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12 bg-[#1c1c1c] text-white">
           {projects.map((project) => (
             <div key={project.id} className="project-card">
               <ProjectImage project={project} />
