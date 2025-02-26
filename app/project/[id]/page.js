@@ -1,40 +1,58 @@
 "use client";
-import Image from "next/image";
-import { motion } from "framer-motion";
 
-const transition = { duration: 1.4, ease: [0.6, 0.01, 0, 0.9] };
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { use } from "react";
+import ProjectImage from "../../components/ProjectImage";
 
-export default function ModelPage() {
+function getProject(id) {
+  return {
+    id: id,
+    title: `Project ${id}`,
+    imageUrl: `/project${id}.webp`,
+    description: `This is a detailed description for project ${id}.`,
+  };
+}
+
+export default function ProjectDetail({ params }) {
+  const unwrappedParams = use(params);
+  const router = useRouter();
+  const project = getProject(unwrappedParams.id);
+
+  // Clean up any overlay elements from the previous page
+  useEffect(() => {
+    // Remove any overlay that might have been created during transition
+    const existingOverlays = document.querySelectorAll(
+      'div[style*="position: fixed"][style*="z-index: 50"]'
+    );
+    existingOverlays.forEach((overlay) => {
+      if (document.body.contains(overlay)) {
+        document.body.removeChild(overlay);
+      }
+    });
+  }, []);
+
   return (
-    <motion.div
-      className="w-full"
-      initial={{ height: "100vh" }}
-      animate={{ height: "auto" }}
-      transition={{ ...transition }}
-    >
-      <motion.div className="flex justify-center items-center h-full w-full">
-        <motion.div
-          className="aspect-video"
-          initial={{
-            width: "524px",
-          }}
-          animate={{
-            width: "100%",
-            transition: { ...transition },
-          }}
-        >
-          <motion.div className="relative w-full h-full">
-            <Image
-              src="/yasmeen.webp"
-              alt="Yasmeen Tariq"
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, (max-width: 1440px) 80vw, 1440px"
-              priority
-            />
-          </motion.div>
-        </motion.div>
-      </motion.div>
-    </motion.div>
+    <div className="bg-[#1c1c1c] min-h-screen">
+      <button
+        onClick={() => router.back()}
+        className="absolute top-4 left-4 z-10 px-4 py-2 bg-white hover:bg-gray-200 rounded transition-colors"
+      >
+        Back
+      </button>
+
+      <div>
+        {/* Using overflow-visible is crucial to prevent the image from being clipped during animation */}
+        <div className="w-full h-[50vh] overflow-visible relative">
+          <ProjectImage project={project} isDetail={true} />
+        </div>
+        <div className="p-6 text-white">
+          <h1 className="text-3xl font-anton uppercase mb-4">
+            {project.title}
+          </h1>
+          <p>{project.description}</p>
+        </div>
+      </div>
+    </div>
   );
 }

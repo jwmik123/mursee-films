@@ -1,7 +1,7 @@
 import { Geist, Geist_Mono, Anton } from "next/font/google";
 import "./globals.css";
 import { LenisProvider } from "@/providers/LenisProvider";
-import { AnimatePresence } from "framer-motion";
+import { FlipProvider } from "@/app/context/FlipContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,7 +31,7 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} ${anton.variable} antialiased bg-[#1c1c1c]`}
       >
         <LenisProvider>
-          <AnimatePresence mode="wait">{children}</AnimatePresence>
+          <FlipProvider>{children}</FlipProvider>
         </LenisProvider>
       </body>
     </html>

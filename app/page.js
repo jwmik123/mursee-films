@@ -3,21 +3,26 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState, useRef } from "react";
 import gsap from "gsap";
-import { MoveUpRight } from "lucide-react";
+import { MoveUpRight, Menu } from "lucide-react";
 import Showreel from "./components/Showreel";
-import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
-import { useRouter } from "next/navigation";
+import ProjectImage from "./components/ProjectImage";
+import { usePathname, useRouter } from "next/navigation"; // Import these for navigation detection
+
 const projects = [
   {
     id: "1",
     title: "Project One",
-    image: "/yasmeen.webp",
+    imageUrl: "/project1.webp",
   },
   {
     id: "2",
     title: "Project Two",
-    image: "/mursee-header.jpg",
+    imageUrl: "/project2.webp",
+  },
+  {
+    id: "3",
+    title: "Project Three",
+    imageUrl: "/project3.webp",
   },
 
   // ... more projects
@@ -25,22 +30,49 @@ const projects = [
 
 export default function Home() {
   const tlRef = useRef(null);
-
+  const animationCompletedRef = useRef(false);
+  const pathname = usePathname();
   const router = useRouter();
-  const [selectedId, setSelectedId] = useState(null);
-  const [hide, setHide] = useState(false);
 
-  useEffect(() => {
+  // Function to run the animation sequence
+  const runAnimation = () => {
+    // Clear any previous animations
+    if (tlRef.current) {
+      tlRef.current.kill();
+    }
+
+    // Create a new timeline
     tlRef.current = gsap.timeline();
 
+    // Make sure elements are visible
+    gsap.set(".cover", {
+      y: "0%",
+      display: "flex",
+      autoAlpha: 1,
+    });
+
+    // Reset animation states
+    gsap.set(".cover-title", { y: -100, opacity: 0 });
+    gsap.set(".hero-section", { autoAlpha: 1 });
+    gsap.set(".header-title-char", { y: 100, autoAlpha: 0 });
+    gsap.set("nav", { y: -100, opacity: 0 });
+
+    // IMPORTANT: Get direct reference to the video element for more reliable animation
+    const videoElement = document.querySelector("video.video");
+
+    // Temporarily disable the parallax transform during animation
+    const videoParent = document.querySelector(".video").parentElement;
+    const originalTransform = videoParent.style.transform;
+    videoParent.style.transform = "none";
+
+    // Run the animation sequence
     tlRef.current
+
       .fromTo(
         ".cover-title",
         {
           y: -100,
           opacity: 0,
-          duration: 1,
-          ease: "power4.out",
         },
         {
           y: 0,
@@ -51,63 +83,140 @@ export default function Home() {
       )
       .fromTo(
         ".cover",
-        { y: "0%" },
-        { y: "-100%", duration: 1, ease: "power4.out" },
+        {
+          y: "0%",
+        },
+        {
+          y: "-100%",
+          duration: 1,
+          ease: "power4.out",
+        },
         "+=0.5"
       )
-      .from(".hero-section", {
-        padding: 0,
-        duration: 1.2,
-        ease: "power4.out",
-      })
-      .from(".header-title-char", {
-        y: 100,
-        duration: 1,
-        ease: "power4.out",
-        stagger: 0.05,
-      })
-      .from(
+      .fromTo(
+        ".video",
+        {
+          width: "50%",
+          height: "30%",
+          y: "-33.33%",
+        },
+        {
+          width: "100%",
+
+          height: "100%",
+          y: "0%",
+          duration: 1.5,
+          ease: "power2.out",
+        }
+      )
+      // .fromTo(
+      //   ".hero-section",
+      //   {
+      //     padding: 16,
+      //   },
+      //   {
+      //     padding: 16,
+      //     duration: 1.2,
+      //     ease: "power4.out",
+      //   }
+      // )
+      .fromTo(
+        ".header-title-char",
+        {
+          y: 100,
+          autoAlpha: 0,
+        },
+        {
+          y: -100,
+          autoAlpha: 1,
+          duration: 0.8,
+          ease: "power4.out",
+          stagger: 0.05,
+        },
+        "-=0.5"
+      )
+      .fromTo(
         "nav",
         {
           y: -100,
           opacity: 0,
+        },
+        {
+          y: 0,
+          opacity: 1,
           duration: 1,
           ease: "power4.out",
         },
         "-=0.5"
-      );
+      )
+      .call(() => {
+        animationCompletedRef.current = true;
+      });
+  };
+
+  // Also, modify your parallax effect to avoid interference:
+  useEffect(() => {
+    const handleScroll = () => {
+      // Only apply parallax if animation is complete
+      if (animationCompletedRef.current) {
+        const position = window.scrollY;
+        setScrollPosition(position);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
-  const variants = {
-    initial: {
-      position: "relative",
-      zIndex: 1,
-      opacity: 1,
-    },
-    selected: {
-      position: "fixed",
-      width: "524px",
-      zIndex: 50,
-      transition: {
-        duration: 1.2,
-        ease: [0.6, 0.01, 0, 0.9],
-      },
-    },
-    hidden: {
-      opacity: 0,
-      transition: {
-        duration: 0.5,
-      },
-    },
-  };
+  // Run animation on initial mount
+  useEffect(() => {
+    runAnimation();
 
-  const handleClick = (id) => {
-    setSelectedId(id);
-    setHide(true);
-    setTimeout(() => {
-      router.push(`/project/${id}`);
-    }, 1000);
-  };
+    // Reset the animation flag when component unmounts
+    return () => {
+      animationCompletedRef.current = false;
+    };
+  }, []);
+
+  // Listen for popstate events (browser back/forward)
+  useEffect(() => {
+    const handlePopState = () => {
+      if (window.location.pathname === "/") {
+        // Reset animation state
+        animationCompletedRef.current = false;
+
+        // Small timeout to ensure DOM is ready
+        setTimeout(() => {
+          runAnimation();
+        }, 50);
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, []);
+
+  // Add visibility check
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible" && pathname === "/") {
+        if (!animationCompletedRef.current) {
+          runAnimation();
+        }
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [pathname]);
 
   const [scrollPosition, setScrollPosition] = useState(0);
 
@@ -127,7 +236,7 @@ export default function Home() {
   const parallaxOffset = scrollPosition * 0.3;
 
   const headerTitle = "MURSEE FILMS".split("").map((char, i) => (
-    <span key={i} className="header-title-char inline-block">
+    <span key={i} className="header-title-char inline-block md:mr-2">
       {char === " " ? "\u00A0" : char}
     </span>
   ));
@@ -139,8 +248,10 @@ export default function Home() {
           <h1 className="font-anton text-white text-2xl">MURSEE&nbsp;FILMS</h1>
         </div>
 
-        <div className="menu text-black bg-white px-2 text-lg py-1 rounded-md">
-          <Link href="/about">Over ons</Link>
+        <div className="menu text-white px-2 text-lg py-1 rounded-md">
+          <Link href="/about">
+            <Menu className="w-8 h-8" />
+          </Link>
         </div>
       </nav>
 
@@ -159,7 +270,7 @@ export default function Home() {
       >
         <div className="overflow-hidden w-full relative rounded-lg md:min-h-[120vh] object-cover block">
           <div
-            className="z-10 w-full h-full absolute inset-0"
+            className="z-10 w-full h-full absolute inset-0 flex justify-center items-center"
             style={{
               transform: `translate3d(0, -${parallaxOffset}px, 0)`,
             }}
@@ -168,13 +279,13 @@ export default function Home() {
               autoPlay
               muted
               loop
-              className="object-cover -z-10 absolute w-full h-full bg-cover opacity-80"
+              className="object-cover video -z-10 absolute bg-cover opacity-80"
             >
               <source src="/header.mp4" type="video/mp4" />
             </video>
           </div>
           <div className="z-10 flex relative items-center md:items-end justify-center min-h-screen w-full text-white mt-[7vw] flex-row">
-            <h1 className="header-title z-[2000] font-anton text-white text-[14vw] md:text-[18vw] font-bold">
+            <h1 className="header-title z-[2000] font-anton mix-blend-difference text-[14vw] md:text-[18vw] leading-none font-bold">
               {headerTitle}
             </h1>
           </div>
@@ -205,11 +316,9 @@ export default function Home() {
         <Showreel />
       </section>
 
-      <section className="w-full px-5 md:px-10 bg-[#1c1c1c] pt-16 pb-24">
+      <section className=" w-full px-5 md:px-10 bg-[#1c1c1c] pt-16 pb-24">
         <div
-          className={`flex flex-row items-center justify-between transition-opacity duration-500 ${
-            hide ? "opacity-0" : "opacity-100"
-          }`}
+          className={`flex flex-row items-center justify-between transition-opacity duration-500`}
         >
           <h1 className="text-white text-[4vw] font-anton uppercase leading-none">
             Projecten
@@ -219,43 +328,13 @@ export default function Home() {
             Van evenementen tot commercials
           </p>
         </div>
-        <AnimatePresence initial={false} mode="wait">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 bg-[#1c1c1c] text-white w-full relative">
-            {projects.map((project) => (
-              <motion.div
-                key={project.id}
-                layoutId={`project-${project.id}`}
-                onClick={() => handleClick(project.id)}
-                className="w-full aspect-video z-50 cursor-pointer relative"
-                variants={variants}
-                initial="initial"
-                animate={
-                  selectedId === project.id
-                    ? "selected"
-                    : selectedId
-                    ? "hidden"
-                    : "initial"
-                }
-                style={{
-                  top: selectedId === project.id ? "50%" : "auto",
-                  left: selectedId === project.id ? "50%" : "auto",
-                  transform:
-                    selectedId === project.id
-                      ? "translate(-50%, -50%)"
-                      : "none",
-                }}
-              >
-                <Image
-                  src={project.image}
-                  alt={project.title}
-                  fill
-                  className="object-cover"
-                  priority
-                />
-              </motion.div>
-            ))}
-          </div>
-        </AnimatePresence>
+        <div className="grid grid-cols-3 gap-8 mt-12 bg-[#1c1c1c] text-white">
+          {projects.map((project) => (
+            <div key={project.id} className="project-card">
+              <ProjectImage project={project} />
+            </div>
+          ))}
+        </div>
       </section>
 
       <section className="w-full px-5 md:px-10 bg-[#1c1c1c] pt-16 pb-24">
@@ -292,9 +371,7 @@ export default function Home() {
       </section>
 
       <section
-        className={`w-full bg-[#1c1c1c] h-[300vh] transition-opacity duration-500 ${
-          hide ? "opacity-0" : "opacity-100"
-        }`}
+        className={`w-full bg-[#1c1c1c] h-[300vh] transition-opacity duration-500`}
       ></section>
     </main>
   );
