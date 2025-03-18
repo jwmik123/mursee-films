@@ -5,7 +5,7 @@ import HamburgerMenu from "./HamburgerMenu";
 
 const Navigation = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [activeImageIndex, setActiveImageIndex] = useState(null);
   const navRef = useRef(null);
   const topHalfRef = useRef(null);
   const bottomHalfRef = useRef(null);
@@ -15,7 +15,7 @@ const Navigation = () => {
 
   // Menu items with corresponding image paths
   const menuItems = [
-    { label: "Home", href: "/", image: "/project2.webp" },
+    { label: "Home", href: "/", image: "/homepage.webp" },
     { label: "About", href: "/about", image: "/project2.jpg" },
     { label: "Services", href: "/services", image: "/project2.webp" },
     { label: "Contact", href: "/contact", image: "/project2.webp" },
