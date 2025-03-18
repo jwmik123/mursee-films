@@ -2,7 +2,7 @@ import { Geist, Geist_Mono, Anton } from "next/font/google";
 import "./globals.css";
 import { LenisProvider } from "@/providers/LenisProvider";
 import { FlipProvider } from "@/app/context/FlipContext";
-
+import Navigation from "./components/Navigation";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -31,7 +31,10 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} ${anton.variable} antialiased bg-[#1c1c1c]`}
       >
         <LenisProvider>
-          <FlipProvider>{children}</FlipProvider>
+          <FlipProvider>
+            <Navigation />
+            {children}
+          </FlipProvider>
         </LenisProvider>
       </body>
     </html>

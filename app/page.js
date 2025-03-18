@@ -32,16 +32,12 @@ export default function Home() {
   const tlRef = useRef(null);
   const animationCompletedRef = useRef(false);
   const pathname = usePathname();
-  const router = useRouter();
 
-  // Function to run the animation sequence
   const runAnimation = () => {
-    // Clear any previous animations
     if (tlRef.current) {
       tlRef.current.kill();
     }
 
-    // Create a new timeline
     tlRef.current = gsap.timeline();
 
     // Make sure elements are visible
@@ -57,15 +53,10 @@ export default function Home() {
     gsap.set(".header-title-char", { y: 100, autoAlpha: 0 });
     gsap.set("nav", { y: -100, opacity: 0 });
 
-    // IMPORTANT: Get direct reference to the video element for more reliable animation
-    const videoElement = document.querySelector("video.video");
-
-    // Temporarily disable the parallax transform during animation
     const videoParent = document.querySelector(".video").parentElement;
-    const originalTransform = videoParent.style.transform;
+
     videoParent.style.transform = "none";
 
-    // Run the animation sequence
     tlRef.current
 
       .fromTo(
@@ -257,12 +248,6 @@ export default function Home() {
       <nav className="z-20 absolute w-full p-10 flex flex-row justify-between items-center transition-opacity duration-500">
         <div className="flex">
           <h1 className="font-anton text-white text-2xl">MURSEE&nbsp;FILMS</h1>
-        </div>
-
-        <div className="menu text-white px-2 text-lg py-1 rounded-md">
-          <Link href="/about">
-            <Menu className="w-8 h-8" />
-          </Link>
         </div>
       </nav>
 
