@@ -32,7 +32,7 @@ const HamburgerMenu = ({ onToggle }) => {
           y: 0, // Move to the exact center (from 8px to 0)
           opacity: 0,
           duration: 0.3,
-          ease: "cubic-bezier(0.2, 0, 0.9, 1)",
+          ease: "power3.in",
         },
         0
       );
