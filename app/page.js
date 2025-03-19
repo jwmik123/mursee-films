@@ -1,12 +1,11 @@
 "use client";
-import Image from "next/image";
-import Link from "next/link";
+
 import { useEffect, useState, useRef } from "react";
 import gsap from "gsap";
-import { MoveUpRight, Menu } from "lucide-react";
+import { MoveUpRight } from "lucide-react";
 import Showreel from "./components/Showreel";
-import ProjectImage from "./components/ProjectImage";
-import { usePathname, useRouter } from "next/navigation"; // Import these for navigation detection
+import ProjectsSection from "./components/ProjectsSection";
+import { usePathname } from "next/navigation";
 
 const projects = [
   {
@@ -347,24 +346,7 @@ export default function Home() {
       </section>
 
       <section className=" w-full px-5 md:px-10 bg-[#1c1c1c] pt-16 pb-24">
-        <div
-          className={`flex flex-row items-center justify-between transition-opacity duration-500`}
-        >
-          <h1 className="text-white text-[4vw] font-anton uppercase leading-none">
-            Projecten
-          </h1>
-
-          <p className="font-medium self-end text-white text-xl">
-            Van evenementen tot commercials
-          </p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12 bg-[#1c1c1c] text-white">
-          {projects.map((project) => (
-            <div key={project.id} className="project-card">
-              <ProjectImage project={project} />
-            </div>
-          ))}
-        </div>
+        <ProjectsSection projects={projects} />
       </section>
 
       <section className="w-full px-5 md:px-10 bg-[#1c1c1c] pt-16 pb-24">
