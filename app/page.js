@@ -23,6 +23,11 @@ const projects = [
     title: "Project Three",
     imageUrl: "/project3.webp",
   },
+  {
+    id: "4",
+    title: "Project Four",
+    imageUrl: "/project3.webp",
+  },
 
   // ... more projects
 ];
@@ -251,7 +256,7 @@ export default function Home() {
       </nav>
 
       <div
-        className={`cover w-full h-full bg-[#1c1c1c] fixed top-0 left-0 z-50 flex items-center justify-center transition-opacity duration-500`}
+        className={`cover w-full h-full bg-tertiary fixed top-0 left-0 z-50 flex items-center justify-center transition-opacity duration-500`}
       >
         <div className="h-20 w-44 overflow-hidden">
           <h2 className="cover-title text-white text-2xl font-anton opacity-0">
@@ -314,7 +319,7 @@ export default function Home() {
             </div>
           </div>
           <div className="z-10 flex relative items-center md:items-end justify-center min-h-screen w-full text-white mt-[7vw] flex-row">
-            <h1 className="header-title z-[2000] font-anton mix-blend-difference text-[14vw] md:text-[18vw] leading-none font-bold">
+            <h1 className="header-title z-[2000] font-anton mix-blend-difference text-[14vw] lg:text-[17vw] leading-none font-bold">
               {headerTitle}
             </h1>
           </div>

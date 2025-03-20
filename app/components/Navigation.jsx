@@ -276,14 +276,14 @@ const Navigation = () => {
           {/* Top half of the menu */}
           <div
             ref={topHalfRef}
-            className="absolute top-0 left-0 w-full h-1/2 bg-foreground"
+            className="absolute top-0 left-0 w-full h-1/2 bg-tertiary"
             style={{ transform: "translateY(-100%)" }}
           ></div>
 
           {/* Bottom half of the menu */}
           <div
             ref={bottomHalfRef}
-            className="absolute bottom-0 left-0 w-full h-1/2 bg-foreground"
+            className="absolute bottom-0 left-0 w-full h-1/2 bg-tertiary"
             style={{ transform: "translateY(100%)" }}
           ></div>
 
@@ -312,7 +312,7 @@ const Navigation = () => {
                     <a
                       ref={addToMenuItemsRef}
                       href={item.href}
-                      className="text-[10vw] leading-[10vw] md:text-[7vw] md:leading-[7vw] uppercase text-white no-underline transition-colors block font-anton opacity-0"
+                      className="text-[10vw] leading-[10vw] md:text-[7vw] md:leading-[7vw] uppercase text-primary no-underline transition-colors block font-anton opacity-0"
                       onMouseEnter={(e) => handleMenuItemHover(e, index)}
                       onMouseLeave={(e) => handleMenuItemLeave(e, index)}
                     >
@@ -324,7 +324,7 @@ const Navigation = () => {
                             className="inline-block overflow-hidden"
                           >
                             <span
-                              className="original-letter inline-block"
+                              className="original-letter text-white  inline-block"
                               style={{ transform: "translateY(0%)" }}
                             >
                               {letter}

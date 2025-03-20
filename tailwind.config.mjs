@@ -10,6 +10,9 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        primary: "#1c1c1c",
+        secondary: "#FF6200",
+        tertiary: "#EB001B",
       },
       fontFamily: {
         anton: ["var(--font-anton)"],
