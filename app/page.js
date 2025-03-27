@@ -11,22 +11,22 @@ const projects = [
   {
     id: "1",
     title: "Project One",
-    imageUrl: "/project1.webp",
+    imageUrl: "/images/groeten.jpg",
   },
   {
     id: "2",
     title: "Project Two",
-    imageUrl: "/project2.webp",
+    imageUrl: "/images/province.jpg",
   },
   {
     id: "3",
     title: "Project Three",
-    imageUrl: "/project3.webp",
+    imageUrl: "/images/race.jpg",
   },
   {
     id: "4",
     title: "Project Four",
-    imageUrl: "/project3.webp",
+    imageUrl: "/images/triple.jpg",
   },
 
   // ... more projects

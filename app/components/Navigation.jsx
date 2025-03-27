@@ -276,14 +276,14 @@ const Navigation = () => {
           {/* Top half of the menu */}
           <div
             ref={topHalfRef}
-            className="absolute top-0 left-0 w-full h-1/2 bg-tertiary"
+            className="absolute top-0 left-0 w-full h-1/2 bg-primary"
             style={{ transform: "translateY(-100%)" }}
           ></div>
 
           {/* Bottom half of the menu */}
           <div
             ref={bottomHalfRef}
-            className="absolute bottom-0 left-0 w-full h-1/2 bg-tertiary"
+            className="absolute bottom-0 left-0 w-full h-1/2 bg-primary"
             style={{ transform: "translateY(100%)" }}
           ></div>
 
@@ -305,14 +305,14 @@ const Navigation = () => {
 
           {/* Menu content - centered in the screen */}
           <div className="absolute inset-0 flex items-center px-24">
-            <ul className="list-none p-0 m-0">
+            <ul className="list-none p-0 m-0 w-1/2">
               {menuItems.map((item, index) => (
                 <li key={index} className="my-8">
                   <div className="overflow-hidden relative">
                     <a
                       ref={addToMenuItemsRef}
                       href={item.href}
-                      className="text-[10vw] leading-[10vw] md:text-[7vw] md:leading-[7vw] uppercase text-primary no-underline transition-colors block font-anton opacity-0"
+                      className="text-[10vw] leading-[10vw] md:text-[7vw] md:leading-[7vw] uppercase text-white no-underline transition-colors block font-anton opacity-0"
                       onMouseEnter={(e) => handleMenuItemHover(e, index)}
                       onMouseLeave={(e) => handleMenuItemLeave(e, index)}
                     >
@@ -324,7 +324,7 @@ const Navigation = () => {
                             className="inline-block overflow-hidden"
                           >
                             <span
-                              className="original-letter text-white  inline-block"
+                              className="original-letter  inline-block"
                               style={{ transform: "translateY(0%)" }}
                             >
                               {letter}

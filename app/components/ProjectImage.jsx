@@ -1,177 +1,301 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import * as THREE from "three";
 import { gsap } from "gsap";
-import { Flip } from "gsap/dist/Flip";
-import { useFlip } from "../context/FlipContext";
 
-gsap.registerPlugin(Flip);
+export default function ProjectImage({ project }) {
+  const [isHovering, setIsHovering] = useState(false);
+  const canvasRef = useRef(null);
+  const containerRef = useRef(null);
+  const rendererRef = useRef(null);
+  const sceneRef = useRef(null);
+  const cameraRef = useRef(null);
+  const materialRef = useRef(null);
+  const animationRef = useRef(null);
+  const startTimeRef = useRef(Date.now());
 
-export default function ProjectImage({ project, isDetail = false }) {
-  const { flipState, setFlipState } = useFlip();
-  const imageRef = useRef(null);
-  const router = useRouter();
-  const [isAnimating, setIsAnimating] = useState(false);
-
-  // Handle the initial state when coming from another page
+  // Initialize Three.js scene
   useEffect(() => {
-    if (
-      isDetail &&
-      flipState.activeProjectId === project.id &&
-      flipState.elementRect
-    ) {
-      const image = imageRef.current;
+    // Only run this once on component mount
+    const container = containerRef.current;
+    const canvas = canvasRef.current;
 
-      // Position the image in the center of the screen initially
-      gsap.set(image, {
-        position: "fixed",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        width: flipState.elementRect.width,
-        height: flipState.elementRect.height,
-        zIndex: 100,
-        margin: 0,
-      });
+    if (!container || !canvas) return;
 
-      // Animate to the final position
-      gsap.to(image, {
-        position: "relative",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "50vh",
-        objectFit: "cover",
-        transform: "none",
-        duration: 0.8,
-        ease: "power2.inOut",
-        onComplete: () => {
-          // Only reset position properties, keep dimensions and object-fit
-          gsap.set(image, {
-            position: "relative",
-            top: "auto",
-            left: "auto",
-            zIndex: "auto",
-            margin: "0",
-          });
-        },
-      });
-    }
-  }, [isDetail, project.id, flipState]);
+    // Set up scene
+    const scene = new THREE.Scene();
+    sceneRef.current = scene;
 
-  // Handle click on the project image in the listing page
-  const handleProjectClick = () => {
-    if (isAnimating || isDetail) return;
+    // Set up camera (orthographic for 2D effect)
+    const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
+    camera.position.z = 1;
+    cameraRef.current = camera;
 
-    setIsAnimating(true);
-    const image = imageRef.current;
-
-    // Get the exact dimensions and position
-    const rect = image.getBoundingClientRect();
-
-    // Update context with the current project and element dimensions
-    setFlipState({
-      activeProjectId: project.id,
-      elementRect: {
-        width: rect.width,
-        height: rect.height,
-      },
+    // Set up renderer
+    const renderer = new THREE.WebGLRenderer({
+      canvas: canvas,
+      alpha: true,
     });
+    renderer.setClearColor(0x000000, 0);
+    rendererRef.current = renderer;
 
-    // Create an overlay for the background
-    const overlay = document.createElement("div");
-    overlay.style.position = "fixed";
-    overlay.style.top = "0";
-    overlay.style.left = "0";
-    overlay.style.width = "100vw";
-    overlay.style.height = "100vh";
-    overlay.style.backgroundColor = "#1c1c1c";
-    overlay.style.opacity = "0";
-    overlay.style.zIndex = "50";
-    document.body.appendChild(overlay);
+    // Create a plane geometry that fills the view
+    const geometry = new THREE.PlaneGeometry(2, 2);
 
-    // Fade in the overlay
-    gsap.to(overlay, {
-      opacity: 1,
-      duration: 0.4,
-      ease: "power2.inOut",
-    });
+    // Create a cleanup function
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
 
-    // Fix the image in its current position
-    gsap.set(image, {
-      position: "fixed",
-      top: rect.top,
-      left: rect.left,
-      width: rect.width,
-      height: rect.height,
-      zIndex: 100,
-      margin: 0,
-    });
+      // Clean up Three.js resources
+      if (geometry) geometry.dispose();
+      if (rendererRef.current) rendererRef.current.dispose();
 
-    // Fade out other elements, but NOT the project image or its container
-    const imageSection = image.closest("section");
-    const projectCard = image.closest(".project-card");
+      // Clean up material and texture if they exist
+      if (materialRef.current) {
+        if (materialRef.current.map) materialRef.current.map.dispose();
+        materialRef.current.dispose();
+      }
+    };
+  }, []);
 
-    // Select all sections except the one containing our project
-    const otherSections = Array.from(
-      document.querySelectorAll("main > section")
-    ).filter((section) => section !== imageSection);
+  // Load texture and set up material when image URL changes
+  useEffect(() => {
+    if (!sceneRef.current || !rendererRef.current) return;
 
-    // Select all project cards except the one containing our image
-    const otherCards = Array.from(
-      document.querySelectorAll(".project-card")
-    ).filter((card) => card !== projectCard);
+    const scene = sceneRef.current;
 
-    // Select navigation
-    const nav = document.querySelector("nav");
-
-    // Fade out all elements except our project
-    gsap.to([...otherSections, ...otherCards, nav], {
-      opacity: 0,
-      duration: 0.4,
-      ease: "power2.inOut",
-    });
-
-    // Also fade out siblings within the same project card if needed
-    if (projectCard) {
-      const siblings = Array.from(projectCard.children).filter(
-        (child) => !child.contains(image) && child !== image
-      );
-
-      gsap.to(siblings, {
-        opacity: 0,
-        duration: 0.4,
-        ease: "power2.inOut",
-      });
+    // Clear any existing meshes from the scene
+    while (scene.children.length > 0) {
+      const child = scene.children[0];
+      if (child.geometry) child.geometry.dispose();
+      if (child.material) {
+        if (child.material.map) child.material.map.dispose();
+        child.material.dispose();
+      }
+      scene.remove(child);
     }
 
-    // Now animate to the center of the screen
-    gsap.to(image, {
-      top: "50%",
-      left: "50%",
-      transform: "translate(-50%, -50%)",
-      duration: 0.8,
-      ease: "power3.inOut",
-      onComplete: () => {
-        // Don't remove the overlay here, let the next page handle it
-        router.push(`/project/${project.id}`);
+    // Create new texture loader
+    const textureLoader = new THREE.TextureLoader();
+
+    // Load image as texture
+    textureLoader.load(
+      project.imageUrl,
+      (texture) => {
+        texture.minFilter = THREE.LinearFilter;
+        texture.magFilter = THREE.LinearFilter;
+
+        // Create shader material with RGB shift effect
+        const material = new THREE.ShaderMaterial({
+          uniforms: {
+            uTexture: { value: texture },
+            uMouse: { value: new THREE.Vector2(0.5, 0.5) },
+            uHover: { value: 0.0 },
+            uTime: { value: 0.0 },
+            uIntensity: { value: 0.02 },
+            uRadius: { value: 0.3 },
+          },
+          vertexShader: `
+            varying vec2 vUv;
+            
+            void main() {
+              vUv = uv;
+              gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+          `,
+          fragmentShader: `
+            uniform sampler2D uTexture;
+            uniform vec2 uMouse;
+            uniform float uHover;
+            uniform float uTime;
+            uniform float uIntensity;
+            uniform float uRadius;
+            varying vec2 vUv;
+            
+            void main() {
+              vec2 direction = vUv - uMouse;
+              float dist = length(direction);
+              
+              float timeFactor = sin(uTime * 0.5) * 0.1;
+              float radiusInfluence = 1.0 - smoothstep(0.0, uRadius, dist);
+              vec2 rgbShift = normalize(direction) * uIntensity * uHover * radiusInfluence * (1.0 + timeFactor);
+              
+              float r = texture2D(uTexture, vUv - rgbShift).r;
+              float g = texture2D(uTexture, vUv).g;
+              float b = texture2D(uTexture, vUv + rgbShift).b;
+              float a = texture2D(uTexture, vUv).a;
+              
+              gl_FragColor = vec4(r, g, b, a);
+            }
+          `,
+        });
+
+        materialRef.current = material;
+
+        // Create mesh and add to scene
+        const geometry = new THREE.PlaneGeometry(2, 2);
+        const mesh = new THREE.Mesh(geometry, material);
+        scene.add(mesh);
+
+        // Start animation loop if not already running
+        if (!animationRef.current) {
+          startAnimationLoop();
+        }
+
+        // Update size
+        updateSize();
       },
-    });
+      undefined, // onProgress callback is not needed
+      (error) => {
+        console.error("Error loading texture:", error);
+      }
+    );
+  }, [project.imageUrl]);
+
+  // Handle resize
+  useEffect(() => {
+    window.addEventListener("resize", updateSize);
+    return () => window.removeEventListener("resize", updateSize);
+  }, []);
+
+  // Animation loop
+  const startAnimationLoop = () => {
+    const animate = () => {
+      animationRef.current = requestAnimationFrame(animate);
+
+      if (materialRef.current) {
+        materialRef.current.uniforms.uTime.value =
+          (Date.now() - startTimeRef.current) / 1000;
+      }
+
+      if (rendererRef.current && cameraRef.current && sceneRef.current) {
+        rendererRef.current.render(sceneRef.current, cameraRef.current);
+      }
+    };
+
+    animate();
+  };
+
+  // Update renderer size
+  const updateSize = () => {
+    if (!containerRef.current || !rendererRef.current) return;
+
+    const { width, height } = containerRef.current.getBoundingClientRect();
+    rendererRef.current.setSize(width, height);
+    rendererRef.current.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  };
+
+  // Mouse handlers
+  const handleMouseMove = (e) => {
+    if (!materialRef.current || !canvasRef.current) return;
+
+    const rect = canvasRef.current.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = 1.0 - (e.clientY - rect.top) / rect.height;
+
+    materialRef.current.uniforms.uMouse.value.set(x, y);
+  };
+
+  const handleMouseEnter = () => {
+    setIsHovering(true);
+
+    if (materialRef.current) {
+      gsap.to(materialRef.current.uniforms.uHover, {
+        value: 1.0,
+        duration: 0.7,
+        ease: "power2.out",
+      });
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovering(false);
+
+    if (materialRef.current) {
+      gsap.to(materialRef.current.uniforms.uHover, {
+        value: 0.0,
+        duration: 0.7,
+        ease: "power2.inOut",
+      });
+    }
   };
 
   return (
-    <img
-      id={`project-image-${project.id}`}
-      ref={imageRef}
-      src={project.imageUrl}
-      alt={project.title}
-      className={`project-image ${isDetail ? "detail-view" : ""}`}
+    <div
+      ref={containerRef}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      className="aspect-video"
       style={{
-        cursor: isDetail ? "default" : "pointer",
-        objectFit: isDetail ? "cover" : "cover",
+        position: "relative",
+        cursor: "pointer",
+        width: "100%",
+        height: "100%",
+        overflow: "hidden",
       }}
-      onClick={handleProjectClick}
-    />
+    >
+      {/* Base image */}
+      <img
+        src={project.imageUrl}
+        alt={project.title}
+        className="aspect-video"
+        style={{
+          display: "block",
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          objectPosition: "center",
+        }}
+      />
+
+      {/* Canvas overlay for RGB effect */}
+      <canvas
+        ref={canvasRef}
+        className="aspect-video"
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          opacity: isHovering ? 1 : 0,
+          transition: "opacity 0.3s ease",
+          pointerEvents: "none",
+        }}
+      />
+
+      {/* Project title with stagger animation */}
+      <div
+        className="absolute bottom-0 left-0 p-4"
+        style={{
+          opacity: isHovering ? 1 : 0,
+          transition: "opacity 0.3s ease",
+        }}
+      >
+        <div className="overflow-hidden">
+          <h3 className="text-white text-3xl font-medium">
+            {project.title.split("").map((char, index) => (
+              <span
+                key={index}
+                className="inline-block"
+                style={{
+                  transform: isHovering ? "translateY(0)" : "translateY(100%)",
+                  opacity: isHovering ? 1 : 0,
+                  transition: `transform 0.5s ease ${
+                    index * 0.03
+                  }s, opacity 0.5s ease ${index * 0.03}s`,
+                }}
+              >
+                {char === " " ? "\u00A0" : char}
+              </span>
+            ))}
+          </h3>
+        </div>
+      </div>
+    </div>
   );
 }
