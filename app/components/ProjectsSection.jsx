@@ -1,22 +1,87 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useRef } from "react";
 import ProjectImage from "./ProjectImage";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { SplitText } from "gsap/SplitText";
 
 import "swiper/css";
 import "swiper/css/navigation";
 
 const ProjectsSection = ({ projects }) => {
+  const titleRef = useRef(null);
+  const splitTextRef = useRef(null);
+
+  useEffect(() => {
+    // Register GSAP plugins
+    gsap.registerPlugin(ScrollTrigger, SplitText);
+
+    // Use SplitText to split the title text into words
+    if (titleRef.current && !splitTextRef.current) {
+      // Add CSS style for title-text-word class
+      const style = document.createElement("style");
+      style.textContent = `
+        .title-text-word {
+          display: inline-block;
+          margin-right: 0.3em;
+        }
+      `;
+      document.head.appendChild(style);
+
+      splitTextRef.current = new SplitText(titleRef.current, {
+        type: "words",
+        wordsClass: "title-text-word",
+      });
+
+      // Set initial styles
+      gsap.set(splitTextRef.current.words, {
+        y: 50,
+        opacity: 0,
+        filter: "blur(8px)",
+      });
+
+      // Create staggered animation on scroll
+      gsap.to(splitTextRef.current.words, {
+        y: 0,
+        opacity: 1,
+        filter: "blur(0px)",
+        stagger: 0.03,
+        duration: 0.8,
+        ease: "power4.out",
+        scrollTrigger: {
+          trigger: titleRef.current,
+          start: "top 90%",
+          end: "top -10%",
+          scrub: 0.8,
+          markers: false,
+        },
+      });
+    }
+
+    return () => {
+      // Clean up any split text instances
+      if (splitTextRef.current) {
+        splitTextRef.current.revert();
+      }
+    };
+  }, []);
+
   return (
     <>
       <div
         className={`flex flex-row items-center justify-between transition-opacity duration-500`}
       >
         <div>
-          <h2 className="text-white text-7xl font-franklin uppercase">
+          <h2
+            ref={titleRef}
+            className="text-white text-7xl font-franklin uppercase"
+          >
             Laatste werk
           </h2>
-          <p className="font-tinos self-end text-white text-2xl mt-2">
+          <p className="font-tinos self-end text-white text-xl mt-2">
             Van evenementen tot commercials
           </p>
         </div>
