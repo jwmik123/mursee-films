@@ -33,7 +33,7 @@ export default function ProjectDetail({ params }) {
   }, []);
 
   return (
-    <div className="bg-[#1c1c1c] min-h-screen">
+    <div className="bg-black min-h-screen">
       <button
         onClick={() => router.back()}
         className="absolute top-4 left-4 z-10 px-4 py-2 bg-white hover:bg-gray-200 rounded transition-colors"

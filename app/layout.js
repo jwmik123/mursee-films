@@ -1,20 +1,18 @@
-import { Geist, Geist_Mono, Anton } from "next/font/google";
+// app/layout.js
+import { Tinos } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { LenisProvider } from "@/providers/LenisProvider";
 import { FlipProvider } from "@/app/context/FlipContext";
 import Navigation from "./components/Navigation";
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+
+const franklin = localFont({
+  src: "../public/fonts/franklin.woff2",
+  variable: "--font-franklin",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-const anton = Anton({
-  variable: "--font-anton",
+const tinos = Tinos({
+  variable: "--font-tinos",
   subsets: ["latin"],
   weight: "400",
 });
@@ -28,7 +26,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${anton.variable} antialiased bg-[#1c1c1c]`}
+        className={`${franklin.variable} ${tinos.variable}  antialiased bg-black`}
       >
         <LenisProvider>
           <FlipProvider>

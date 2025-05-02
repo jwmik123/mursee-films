@@ -15,7 +15,8 @@ export default {
         tertiary: "#EB001B",
       },
       fontFamily: {
-        anton: ["var(--font-anton)"],
+        tinos: ["var(--font-tinos)"],
+        franklin: ["var(--font-franklin)"],
       },
     },
   },

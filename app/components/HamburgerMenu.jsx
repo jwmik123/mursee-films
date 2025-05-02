@@ -70,11 +70,11 @@ const HamburgerMenu = ({ onToggle }) => {
       <div className="relative w-10 h-10 flex flex-col justify-center items-center">
         <div
           ref={topLineRef}
-          className="absolute w-full h-0.5 bg-white rounded-sm -translate-y-2"
+          className="absolute w-full h-0.5 bg-white rounded-sm -translate-y-1"
         ></div>
         <div
           ref={bottomLineRef}
-          className="absolute w-full h-0.5 bg-white rounded-sm translate-y-2"
+          className="absolute w-full h-0.5 bg-white rounded-sm translate-y-1"
         ></div>
       </div>
     </button>

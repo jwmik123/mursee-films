@@ -1,3 +1,4 @@
+// app/components/Navigation.jsx
 "use client";
 import React, { useState, useRef, useEffect } from "react";
 import { gsap } from "gsap";
@@ -15,10 +16,10 @@ const Navigation = () => {
 
   // Menu items with corresponding image paths
   const menuItems = [
-    { label: "Home", href: "/", image: "/homepage.webp" },
-    { label: "About", href: "/about", image: "/project2.jpg" },
-    { label: "Services", href: "/services", image: "/project2.webp" },
-    { label: "Contact", href: "/contact", image: "/project2.webp" },
+    { label: "Home", href: "/", image: "/images/mursee-home.webp" },
+    { label: "About", href: "/about", image: "/images/province.jpg" },
+    { label: "Services", href: "/services", image: "/images/race.jpg" },
+    { label: "Contact", href: "/contact", image: "/images/triple.jpg" },
   ];
 
   // Reset refs when number of items change
@@ -85,24 +86,6 @@ const Navigation = () => {
                 ease: "power2.out",
               }
             );
-
-            // Show the first image by default
-            if (imageRefs.current.length > 0) {
-              //   gsap.fromTo(
-              //     imageRefs.current[0],
-              //     {
-              //       opacity: 0,
-              //       scale: 0.9,
-              //     },
-              //     {
-              //       opacity: 1,
-              //       scale: 1,
-              //       duration: 0.6,
-              //       ease: "power2.out",
-              //     }
-              //   );
-              //   setActiveImageIndex(0);
-            }
           },
         }
       );
@@ -267,23 +250,25 @@ const Navigation = () => {
   return (
     <header className="fixed top-0 left-0 w-full z-50">
       <nav className="flex items-center justify-end px-10 py-8 mx-auto">
-        <HamburgerMenu onToggle={handleMenuToggle} />
+        <HamburgerMenu onToggle={handleMenuToggle} className="hamburger-menu" />
         <div
           ref={navRef}
-          className="fixed inset-0 w-full h-screen z-40 pointer-events-none"
+          className={`fixed inset-0 w-full h-screen z-40 pointer-events-none nav-menu-container ${
+            menuOpen ? "active" : ""
+          }`}
           style={menuOpen ? { pointerEvents: "auto" } : {}}
         >
           {/* Top half of the menu */}
           <div
             ref={topHalfRef}
-            className="absolute top-0 left-0 w-full h-1/2 bg-primary"
+            className="absolute top-0 left-0 w-full h-1/2 bg-black"
             style={{ transform: "translateY(-100%)" }}
           ></div>
 
           {/* Bottom half of the menu */}
           <div
             ref={bottomHalfRef}
-            className="absolute bottom-0 left-0 w-full h-1/2 bg-primary"
+            className="absolute bottom-0 left-0 w-full h-1/2 bg-black"
             style={{ transform: "translateY(100%)" }}
           ></div>
 
@@ -307,12 +292,12 @@ const Navigation = () => {
           <div className="absolute inset-0 flex items-center px-24">
             <ul className="list-none p-0 m-0 w-1/2">
               {menuItems.map((item, index) => (
-                <li key={index} className="my-8">
+                <li key={index} className="">
                   <div className="overflow-hidden relative">
                     <a
                       ref={addToMenuItemsRef}
                       href={item.href}
-                      className="text-[10vw] leading-[10vw] md:text-[7vw] md:leading-[7vw] uppercase text-white no-underline transition-colors block font-anton opacity-0"
+                      className="text-5xl leading-tight uppercase text-white no-underline transition-colors block font-franklin opacity-0"
                       onMouseEnter={(e) => handleMenuItemHover(e, index)}
                       onMouseLeave={(e) => handleMenuItemLeave(e, index)}
                     >
@@ -324,7 +309,7 @@ const Navigation = () => {
                             className="inline-block overflow-hidden"
                           >
                             <span
-                              className="original-letter  inline-block"
+                              className="original-letter inline-block"
                               style={{ transform: "translateY(0%)" }}
                             >
                               {letter}

@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useRef } from "react";
 import gsap from "gsap";
-import { MoveUpRight } from "lucide-react";
 import Showreel from "./components/Showreel";
 import ProjectsSection from "./components/ProjectsSection";
 import { usePathname } from "next/navigation";
@@ -35,6 +34,7 @@ const projects = [
 export default function Home() {
   const tlRef = useRef(null);
   const animationCompletedRef = useRef(false);
+  const [scrollPosition, setScrollPosition] = useState(0);
   const pathname = usePathname();
 
   const runAnimation = () => {
@@ -160,7 +160,6 @@ export default function Home() {
       });
   };
 
-  // Also, modify your parallax effect to avoid interference:
   useEffect(() => {
     const handleScroll = () => {
       // Only apply parallax if animation is complete
@@ -177,7 +176,6 @@ export default function Home() {
     };
   }, []);
 
-  // Run animation on initial mount
   useEffect(() => {
     runAnimation();
 
@@ -187,7 +185,6 @@ export default function Home() {
     };
   }, []);
 
-  // Listen for popstate events (browser back/forward)
   useEffect(() => {
     const handlePopState = () => {
       if (window.location.pathname === "/") {
@@ -208,7 +205,6 @@ export default function Home() {
     };
   }, []);
 
-  // Add visibility check
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible" && pathname === "/") {
@@ -223,8 +219,6 @@ export default function Home() {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [pathname]);
-
-  const [scrollPosition, setScrollPosition] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -251,19 +245,9 @@ export default function Home() {
     <main>
       <nav className="z-20 absolute w-full p-10 flex flex-row justify-between items-center transition-opacity duration-500">
         <div className="flex">
-          <h1 className="font-anton text-white text-2xl">MURSEE&nbsp;FILMS</h1>
+          <h1 className="font-franklin text-white text-4xl">MF</h1>
         </div>
       </nav>
-
-      <div
-        className={`cover w-full h-full bg-tertiary fixed top-0 left-0 z-50 flex items-center justify-center transition-opacity duration-500`}
-      >
-        <div className="h-20 w-44 overflow-hidden">
-          <h2 className="cover-title text-white text-2xl font-anton opacity-0">
-            MURSEE&nbsp;FILMS
-          </h2>
-        </div>
-      </div>
 
       <section
         className={`hero-section w-full p-4 transition-opacity duration-500`}
@@ -318,8 +302,8 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <div className="z-10 flex relative items-center md:items-end justify-center min-h-screen w-full text-white mt-[7vw] flex-row">
-            <h1 className="header-title z-[2000] font-anton mix-blend-difference text-[14vw] lg:text-[17vw] leading-none font-bold">
+          <div className="z-10 flex relative items-center md:items-end justify-center min-h-screen w-full text-white mt-[13vw] flex-row">
+            <h1 className="header-title z-[2000] font-franklin mix-blend-difference text-[14vw] lg:text-[17vw] tracking-tighter">
               {headerTitle}
             </h1>
           </div>
@@ -327,38 +311,33 @@ export default function Home() {
       </section>
 
       <section className={`px-5 md:px-10 transition-opacity duration-500`}>
-        <div className="w-full h-full bg-[#1c1c1c]">
+        <div className="w-full h-full bg-black">
           <div className="flex flex-col md:flex-row w-full justify-between gap-6 text-white pb-24">
-            <p className="md:max-w-xl w-full text-4xl md:text-[3vw] leading-tight font-anton uppercase">
-              Wij zijn een creatieve studio gespecialiseerd in filmproductie
+            <p className="md:max-w-4xl w-full text-6xl leading-tighter tracking-tight font-franklin uppercase">
+              Wij zijn een creatieve studio met een zwak voor film. Of het nu
+              gaat om een knallende commercial, een pakkend verhaal of iets
+              compleet buiten de lijntjes – wij maken het.
             </p>
-            <div className="max-w-xl flex flex-col gap-4 self-end text-lg">
-              Wij geloven dat verwondering alleen kan worden opgeroepen als je
-              het eerst zelf hebt ervaren.
-              <a className="text-white text-xl group uppercase flex flex-row gap-6 items-center cursor-pointer">
-                <span className="font-medium">Over ons</span>
-                <MoveUpRight className="w-8 h-8 group-hover:bg-orange-600 rounded-md bg-gray-400 p-1 transition-all duration-300" />
-              </a>
+            <div className="max-w-lg flex flex-col gap-4 self-end text-lg">
+              <Showreel />
             </div>
           </div>
         </div>
       </section>
 
       <section
-        className={`w-full px-5 md:px-10 bg-[#1c1c1c] pt-16 pb-24 transition-opacity duration-500`}
-      >
-        <Showreel />
-      </section>
+        className={`w-full px-5 md:px-10 bg-black pt-16 pb-24 transition-opacity duration-500`}
+      ></section>
 
-      <section className=" w-full px-5 md:px-10 bg-[#1c1c1c] pt-16 pb-24">
+      <section className=" w-full px-5 md:px-10 bg-black pt-16 pb-24">
         <ProjectsSection projects={projects} />
       </section>
 
-      <section className="w-full px-5 md:px-10 bg-[#1c1c1c] pt-16 pb-24">
-        <h1 className="text-white text-[4vw] font-anton uppercase leading-none mb-16">
+      <section className="w-full px-5 md:px-10 bg-black pt-16 pb-24">
+        <h2 className="text-white text-7xl font-franklin uppercase">
           Onze aanpak
-        </h1>
-        <div className="flex flex-row gap-6 border-t border-white pt-4 pb-16">
+        </h2>
+        <div className="flex flex-row gap-6 border-t border-white pt-4 pb-16 mt-16">
           <p className="text-white text-xl w-1/2">Pre production</p>
           <p className="text-white text-xl w-1/2">
             We don’t do volume. We partner with only five clients a year,
@@ -388,7 +367,7 @@ export default function Home() {
       </section>
 
       <section
-        className={`w-full bg-[#1c1c1c] h-[300vh] transition-opacity duration-500`}
+        className={`w-full bg-black h-[300vh] transition-opacity duration-500`}
       ></section>
     </main>
   );
