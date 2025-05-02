@@ -96,17 +96,17 @@ const MediaPlayer = () => {
               d="M16 29.3334C23.3638 29.3334 29.3333 23.3638 29.3333 16C29.3333 8.63622 23.3638 2.66669 16 2.66669C8.6362 2.66669 2.66667 8.63622 2.66667 16C2.66667 23.3638 8.6362 29.3334 16 29.3334Z"
               fill="black"
               stroke="black"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
             <path
               d="M14 12.6667L19 16L14 19.3334V12.6667Z"
               fill="white"
               stroke="white"
-              stroke-width="1"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="1"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
           </svg>
         </div>

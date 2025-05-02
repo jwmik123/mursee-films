@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Showreel from "./components/Showreel";
 import ProjectsSection from "./components/ProjectsSection";
 import { usePathname } from "next/navigation";
@@ -33,6 +34,8 @@ const projects = [
 
 export default function Home() {
   const tlRef = useRef(null);
+  const aboutTextRef = useRef(null);
+  const aboutTextCharsRef = useRef([]);
   const animationCompletedRef = useRef(false);
   const [scrollPosition, setScrollPosition] = useState(0);
   const pathname = usePathname();
@@ -233,6 +236,49 @@ export default function Home() {
     };
   }, []);
 
+  useEffect(() => {
+    // Register ScrollTrigger plugin
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Split the about text into words instead of characters
+    if (aboutTextRef.current) {
+      const aboutContent = aboutTextRef.current.textContent;
+      aboutTextRef.current.textContent = "";
+
+      // Split by words, keeping spaces with the next word
+      const words = aboutContent.split(" ");
+
+      aboutTextCharsRef.current = words.map((word, index) => {
+        const span = document.createElement("span");
+        span.textContent = word;
+        span.className = "about-text-word inline-block";
+        span.style.transform = "translateY(50px)";
+        span.style.opacity = "0.3"; // Start slightly visible
+        span.style.filter = "blur(8px)"; // Add blur effect
+        span.style.marginRight = "0.3em"; // Space between words
+        aboutTextRef.current.appendChild(span);
+        return span;
+      });
+
+      // Create staggered animation on scroll
+      gsap.to(".about-text-word", {
+        y: 0,
+        opacity: 1,
+        filter: "blur(0px)", // Remove blur on scroll
+        stagger: 0.03, // Slightly slower stagger for words
+        duration: 0.8,
+        ease: "power4.out",
+        scrollTrigger: {
+          trigger: aboutTextRef.current,
+          start: "top 90%", // Start earlier
+          end: "top -10%", // End much later (after the text has passed the top of viewport)
+          scrub: 0.8, // Smoother scrubbing with more delay
+          markers: false, // Set to true for debugging
+        },
+      });
+    }
+  }, []);
+
   const parallaxOffset = scrollPosition * 0.3;
 
   const headerTitle = "MURSEE FILMS".split("").map((char, i) => (
@@ -313,7 +359,10 @@ export default function Home() {
       <section className={`px-5 md:px-10 transition-opacity duration-500`}>
         <div className="w-full h-full bg-black">
           <div className="flex flex-col md:flex-row w-full justify-between gap-6 text-white pb-24">
-            <p className="md:max-w-4xl w-full text-6xl leading-tighter tracking-tight font-franklin uppercase">
+            <p
+              ref={aboutTextRef}
+              className="md:max-w-4xl w-full text-6xl leading-tighter tracking-tight font-franklin uppercase"
+            >
               Wij zijn een creatieve studio met een zwak voor film. Of het nu
               gaat om een knallende commercial, een pakkend verhaal of iets
               compleet buiten de lijntjes – wij maken het.
@@ -334,13 +383,13 @@ export default function Home() {
       </section>
 
       <section className="w-full px-5 md:px-10 bg-black pt-16 pb-24">
-        <h2 className="text-white text-7xl font-franklin uppercase">
+        <h1 className="text-white text-7xl font-franklin uppercase">
           Onze aanpak
-        </h2>
+        </h1>
         <div className="flex flex-row gap-6 border-t border-white pt-4 pb-16 mt-16">
           <p className="text-white text-xl w-1/2">Pre production</p>
           <p className="text-white text-xl w-1/2">
-            We don’t do volume. We partner with only five clients a year,
+            We don't do volume. We partner with only five clients a year,
             focusing our expertise on their success. Every detail is crafted,
             every decision strategic, and every outcome transformative. We build
             brands that set new benchmarks.
@@ -349,7 +398,7 @@ export default function Home() {
         <div className="flex flex-row gap-6 border-t border-white pt-4 pb-16">
           <p className="text-white text-xl w-1/2">Production</p>
           <p className="text-white text-xl w-1/2">
-            We don’t do volume. We partner with only five clients a year,
+            We don't do volume. We partner with only five clients a year,
             focusing our expertise on their success. Every detail is crafted,
             every decision strategic, and every outcome transformative. We build
             brands that set new benchmarks.
@@ -358,7 +407,7 @@ export default function Home() {
         <div className="flex flex-row gap-6 border-t border-white pt-4">
           <p className="text-white text-xl w-1/2">Post production</p>
           <p className="text-white text-xl w-1/2">
-            We don’t do volume. We partner with only five clients a year,
+            We don't do volume. We partner with only five clients a year,
             focusing our expertise on their success. Every detail is crafted,
             every decision strategic, and every outcome transformative. We build
             brands that set new benchmarks.
