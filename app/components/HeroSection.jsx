@@ -268,7 +268,7 @@ const HeroSection = () => {
             </div>
           </div>
         </div>
-        <div className="z-10 flex relative items-center md:items-end justify-center min-h-screen w-full text-white mt-[13vw] flex-row">
+        <div className="z-10 flex relative items-center md:items-end justify-center min-h-screen w-full text-white mt-[13vw] flex-row ">
           <h1
             ref={headerTitleRef}
             className="header-title z-[2000] font-franklin mix-blend-difference text-[14vw] lg:text-[17vw] lg:ml-2 -tracking-[0.1em] whitespace-nowrap w-full max-w-full text-center"

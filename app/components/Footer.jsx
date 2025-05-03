@@ -143,7 +143,7 @@ const Footer = () => {
           </nav>
         </div>
       </div>
-      <div className="mt-32">
+      <div className="mt-16 md:mt-32">
         <div className="px-6 md:px-10 h-44 w-full relative">
           <svg
             width="100%"
@@ -157,7 +157,7 @@ const Footer = () => {
                 <text
                   x="0"
                   y="150"
-                  className="font-franklin tracking-tight text-[12vw] font-bold"
+                  className="font-franklin tracking-tighter text-[15vw] md:text-[12vw] font-bold"
                 >
                   MURSEE FILMS
                 </text>
