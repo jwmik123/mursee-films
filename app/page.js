@@ -45,9 +45,9 @@ export default function Home() {
 
       <ApproachSection />
 
-      <section
+      {/* <section
         className={`w-full bg-black h-[300vh] transition-opacity duration-500`}
-      ></section>
+      ></section> */}
     </main>
   );
 }

@@ -5,6 +5,7 @@ import "./globals.css";
 import { LenisProvider } from "@/providers/LenisProvider";
 import { FlipProvider } from "@/app/context/FlipContext";
 import Navigation from "./components/Navigation";
+import Footer from "./components/Footer";
 
 const franklin = localFont({
   src: "../public/fonts/franklin.woff2",
@@ -32,6 +33,7 @@ export default function RootLayout({ children }) {
           <FlipProvider>
             <Navigation />
             {children}
+            <Footer />
           </FlipProvider>
         </LenisProvider>
       </body>

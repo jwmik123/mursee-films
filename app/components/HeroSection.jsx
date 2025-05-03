@@ -138,10 +138,12 @@ const HeroSection = () => {
         {
           y: 100,
           autoAlpha: 0,
+          opacity: 0,
         },
         {
           y: -100,
           autoAlpha: 1,
+          opacity: 1,
           duration: 0.8,
           ease: "power4.out",
           stagger: 0.05,

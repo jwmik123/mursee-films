@@ -113,6 +113,7 @@ const Navigation = () => {
       // Animate the top half back up off-screen
       gsap.to(topHalfRef.current, {
         y: "-100%",
+        opacity: 1,
         duration: 0.5,
         ease: "power3.in",
       });
@@ -120,6 +121,7 @@ const Navigation = () => {
       // Animate the bottom half back down off-screen
       gsap.to(bottomHalfRef.current, {
         y: "100%",
+        opacity: 1,
         duration: 0.5,
         ease: "power3.in",
       });
@@ -261,14 +263,14 @@ const Navigation = () => {
           {/* Top half of the menu */}
           <div
             ref={topHalfRef}
-            className="absolute top-0 left-0 w-full h-1/2 bg-black"
+            className="absolute top-0 left-0 w-full h-1/2 bg-black opacity-0"
             style={{ transform: "translateY(-100%)" }}
           ></div>
 
           {/* Bottom half of the menu */}
           <div
             ref={bottomHalfRef}
-            className="absolute bottom-0 left-0 w-full h-1/2 bg-black"
+            className="absolute bottom-0 left-0 w-full h-1/2 bg-black opacity-0"
             style={{ transform: "translateY(100%)" }}
           ></div>
 

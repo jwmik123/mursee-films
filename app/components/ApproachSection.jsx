@@ -8,6 +8,9 @@ import { SplitText } from "gsap/SplitText";
 const ApproachSection = () => {
   const titleRef = useRef(null);
   const splitTextRef = useRef(null);
+  const section1Ref = useRef(null);
+  const section2Ref = useRef(null);
+  const section3Ref = useRef(null);
 
   useEffect(() => {
     // Register GSAP plugins
@@ -21,6 +24,20 @@ const ApproachSection = () => {
         .title-text-word {
           display: inline-block;
           margin-right: 0.1em;
+        }
+        .border-section {
+          position: relative;
+          --border-width: 0%;
+        }
+        .border-section::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          height: 1px;
+          width: var(--border-width);
+          background-color: white;
+          transform-origin: left;
         }
       `;
       document.head.appendChild(style);
@@ -53,6 +70,28 @@ const ApproachSection = () => {
           markers: false,
         },
       });
+
+      // Animate borders
+      [section1Ref, section2Ref, section3Ref].forEach((ref) => {
+        if (ref.current) {
+          gsap.fromTo(
+            ref.current,
+            { "--border-width": "0%" },
+            {
+              "--border-width": "100%",
+              duration: 3,
+              ease: "power2.out",
+              scrollTrigger: {
+                trigger: ref.current,
+                start: "top 75%",
+                end: "top 65%",
+                scrub: 3,
+                markers: false,
+              },
+            }
+          );
+        }
+      });
     }
 
     return () => {
@@ -71,7 +110,10 @@ const ApproachSection = () => {
       >
         Onze aanpak
       </h2>
-      <div className="flex flex-row gap-6 border-t border-white pt-4 pb-16 mt-16">
+      <div
+        ref={section1Ref}
+        className="border-section flex flex-row gap-6 pt-4 pb-16 mt-16"
+      >
         <p className="text-white text-xl w-1/2">Pre production</p>
         <p className="text-white text-xl w-1/2">
           We don't do volume. We partner with only five clients a year, focusing
@@ -80,7 +122,10 @@ const ApproachSection = () => {
           that set new benchmarks.
         </p>
       </div>
-      <div className="flex flex-row gap-6 border-t border-white pt-4 pb-16">
+      <div
+        ref={section2Ref}
+        className="border-section flex flex-row gap-6 pt-4 pb-16"
+      >
         <p className="text-white text-xl w-1/2">Production</p>
         <p className="text-white text-xl w-1/2">
           We don't do volume. We partner with only five clients a year, focusing
@@ -89,7 +134,10 @@ const ApproachSection = () => {
           that set new benchmarks.
         </p>
       </div>
-      <div className="flex flex-row gap-6 border-t border-white pt-4">
+      <div
+        ref={section3Ref}
+        className="border-section flex flex-row gap-6 pt-4"
+      >
         <p className="text-white text-xl w-1/2">Post production</p>
         <p className="text-white text-xl w-1/2">
           We don't do volume. We partner with only five clients a year, focusing
