@@ -65,12 +65,14 @@ const AboutSection = () => {
   }, []);
 
   return (
-    <section className={`px-5 md:px-10 transition-opacity duration-500`}>
-      <div className="w-full h-full bg-black">
+    <section
+      className={`px-5 md:px-10 md:min-h-[50vh] flex items-center transition-opacity duration-500`}
+    >
+      <div className="w-full bg-black">
         <div className="flex flex-col md:flex-row w-full justify-between gap-6 text-white pb-24">
           <p
             ref={aboutTextRef}
-            className="md:max-w-4xl w-full text-6xl leading-tighter tracking-tighter font-tinos"
+            className="w-full lg:w-1/2 text-6xl leading-tighter tracking-tighter font-tinos"
           >
             Wij zijn een creatieve studio met een zwak voor film. Of het nu gaat
             om een knallende commercial, een pakkend verhaal of iets compleet

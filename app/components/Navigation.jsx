@@ -7,6 +7,7 @@ import HamburgerMenu from "./HamburgerMenu";
 const Navigation = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(null);
+  const [navReady, setNavReady] = useState(false);
   const navRef = useRef(null);
   const topHalfRef = useRef(null);
   const bottomHalfRef = useRef(null);
@@ -39,6 +40,16 @@ const Navigation = () => {
       imageRefs.current.push(el);
     }
   };
+
+  // On initial load, hide the navigation until it's ready to be animated
+  useEffect(() => {
+    // A short delay to ensure we don't cause a flicker
+    const timer = setTimeout(() => {
+      setNavReady(true);
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     if (menuOpen) {
@@ -250,7 +261,11 @@ const Navigation = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 w-full z-50">
+    <header
+      className={`fixed top-0 left-0 w-full z-50 ${
+        !navReady ? "hidden-initially" : ""
+      }`}
+    >
       <nav className="flex items-center justify-end px-10 py-8 mx-auto">
         <HamburgerMenu onToggle={handleMenuToggle} className="hamburger-menu" />
         <div

@@ -11,6 +11,7 @@ const HeroSection = () => {
   const animationCompletedRef = useRef(false);
   const tlRef = useRef(null);
   const [scrollPosition, setScrollPosition] = useState(0);
+  const [animationStarted, setAnimationStarted] = useState(false);
 
   // Register GSAP plugins once
   useEffect(() => {
@@ -29,6 +30,9 @@ const HeroSection = () => {
     if (tlRef.current) {
       tlRef.current.kill();
     }
+
+    // Set animation started state to true to allow showing elements
+    setAnimationStarted(true);
 
     tlRef.current = gsap.timeline();
 
@@ -186,11 +190,15 @@ const HeroSection = () => {
   }, []);
 
   useEffect(() => {
-    runAnimation();
+    // Wait for a tiny delay to ensure DOM is ready
+    const timer = setTimeout(() => {
+      runAnimation();
+    }, 100);
 
     // Reset the animation flag when component unmounts
     return () => {
       animationCompletedRef.current = false;
+      clearTimeout(timer);
     };
   }, []);
 
@@ -220,7 +228,9 @@ const HeroSection = () => {
     >
       <div className="overflow-hidden w-full relative rounded-lg md:min-h-[120vh] object-cover block">
         <div
-          className="z-10 w-full h-full absolute inset-0 flex justify-center items-center"
+          className={`z-10 w-full h-full absolute inset-0 flex justify-center items-center ${
+            !animationStarted ? "hidden-initially" : ""
+          }`}
           style={{
             transform: `translate3d(0, -${parallaxOffset}px, 0)`,
           }}
@@ -229,11 +239,17 @@ const HeroSection = () => {
             autoPlay
             muted
             loop
-            className="object-cover video -z-10 absolute bg-cover opacity-80"
+            className={`object-cover video -z-10 absolute bg-cover opacity-80 ${
+              !animationStarted ? "hidden-initially" : ""
+            }`}
           >
             <source src="/header.mp4" type="video/mp4" />
           </video>
-          <div className="w-1/2 translate-y-[100px] ticks">
+          <div
+            className={`w-1/2 translate-y-[100px] ticks ${
+              !animationStarted ? "hidden-initially" : ""
+            }`}
+          >
             <div className="flex flex-col">
               {/* Tick marks row */}
               <div className="flex items-end pt-2 px-1 pb-6 relative">
@@ -271,7 +287,9 @@ const HeroSection = () => {
         <div className="z-10 flex relative items-center md:items-end justify-center min-h-screen w-full text-white mt-[13vw] flex-row ">
           <h1
             ref={headerTitleRef}
-            className="header-title z-[2000] font-franklin mix-blend-difference text-[14vw] lg:text-[17vw] lg:ml-2 -tracking-[0.1em] whitespace-nowrap w-full max-w-full text-center"
+            className={`header-title z-[2000] font-franklin mix-blend-difference text-[14vw] lg:text-[17vw] lg:ml-2 -tracking-[0.1em] whitespace-nowrap w-full max-w-full text-center ${
+              !animationStarted ? "hidden-initially" : ""
+            }`}
           >
             MURSEE FILMS
           </h1>
