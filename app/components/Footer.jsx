@@ -1,8 +1,10 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-
+import { useMediaQuery } from "react-responsive";
 const Footer = () => {
+  const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
+
   const [time, setTime] = useState(
     new Date().toLocaleTimeString("en-NL", {
       timeZone: "Europe/Amsterdam",
@@ -31,7 +33,7 @@ const Footer = () => {
 
   return (
     <div
-      className="relative h-[1000px] md:h-[550px]"
+      className="relative h-[1000px] md:h-[550px] lg:h-[650px]"
       style={{
         clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
       }}
@@ -150,7 +152,7 @@ const Footer = () => {
           </div>
         </div>
         <div className="mt-16 md:mt-32">
-          <div className="px-6 md:px-10 h-44 w-full relative">
+          <div className="px-6 md:px-10 h-44 md:h-64 w-full relative">
             <svg
               width="100%"
               height="auto"
@@ -162,7 +164,7 @@ const Footer = () => {
                 <clipPath id="murseeLogoClip">
                   <text
                     x="0"
-                    y="150"
+                    y={isMobile ? "150" : "250"}
                     className="font-franklin tracking-tighter text-[15vw] md:text-[12vw] font-bold"
                   >
                     MURSEE FILMS
