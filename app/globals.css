@@ -106,3 +106,17 @@
 .gsap-flip-element {
   transition: none !important;
 }
+
+/* Swiper navigation button styles */
+.swiper-button-next,
+.swiper-button-prev {
+  position: static !important;
+  margin-top: 0 !important;
+  width: auto !important;
+  height: auto !important;
+}
+
+.swiper-button-next::after,
+.swiper-button-prev::after {
+  display: none !important;
+}

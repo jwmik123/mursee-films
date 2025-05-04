@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import ProjectImage from "./ProjectImage";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
@@ -10,14 +10,15 @@ import { SplitText } from "gsap/SplitText";
 import { useMediaQuery } from "react-responsive";
 
 import "swiper/css";
-import "swiper/css/navigation";
+// import "swiper/css/navigation";
+import { useGSAP } from "@gsap/react";
 
 const ProjectsSection = ({ projects }) => {
   const titleRef = useRef(null);
   const splitTextRef = useRef(null);
-  const isMobile = useMediaQuery({ maxWidth: 767 });
+  const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
 
-  useEffect(() => {
+  useGSAP(() => {
     // Register GSAP plugins
     gsap.registerPlugin(ScrollTrigger, SplitText);
 
@@ -102,7 +103,7 @@ const ProjectsSection = ({ projects }) => {
           </p>
         </div>
         {!isMobile && (
-          <div className="self-end">
+          <div>
             <AlleProjectenButton />
           </div>
         )}
@@ -111,17 +112,26 @@ const ProjectsSection = ({ projects }) => {
         {isMobile ? (
           <div className="flex flex-col space-y-6">
             {projects.map((project) => (
-              <a
-                key={project.id}
-                href={`/project/${project.id}`}
-                className="project-card block"
-              >
-                <ProjectImage project={project} />
-              </a>
+              <div key={project.id}>
+                <a
+                  href={`/project/${project.id}`}
+                  className="project-card block"
+                >
+                  <ProjectImage project={project} />
+                </a>
+                <div className="mt-2 flex items-center justify-between">
+                  <h3 className="text-white text-sm uppercase font-franklin">
+                    {project.title}
+                  </h3>
+                  <p className="text-white text-xs uppercase font-tinos tracking-tighter">
+                    {project.category}
+                  </p>
+                </div>
+              </div>
             ))}
           </div>
         ) : (
-          <div className="cursor-grab">
+          <div>
             <Swiper
               modules={[Navigation]}
               spaceBetween={16}
@@ -135,7 +145,7 @@ const ProjectsSection = ({ projects }) => {
                   slidesPerView: 2,
                 },
                 1024: {
-                  slidesPerView: 3,
+                  slidesPerView: 2,
                 },
               }}
               className="projects-swiper"
@@ -148,19 +158,45 @@ const ProjectsSection = ({ projects }) => {
                   >
                     <ProjectImage project={project} />
                   </a>
-                  <div className="mt-2 flex items-center justify-between">
-                    <h3 className="text-white text-sm uppercase font-franklin">
+                  <div className="px-2 py-1 flex items-center justify-between bg-white">
+                    <h3 className="text-black text-sm md:text-md uppercase font-franklin">
                       {project.title}
                     </h3>
-                    <p className="text-white text-xs uppercase font-tinos tracking-tighter">
+                    <p className="text-black text-xs md:text-sm uppercase font-tinos tracking-tighter">
                       {project.category}
                     </p>
                   </div>
                 </SwiperSlide>
               ))}
-              {/* <div className="swiper-button-next !text-white after:!text-white"></div>
-              <div className="swiper-button-prev !text-white after:!text-white"></div> */}
             </Swiper>
+            <div className="flex flex-row space-x-8 justify-end mt-4 cursor-pointer">
+              <div className="swiper-button-prev text-white flex items-center justify-center rotate-180">
+                <svg
+                  width="48"
+                  height="48"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  className=" fill-white"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M21.883 12l-7.527 6.235.644.765 9-7.521-9-7.479-.645.764 7.529 6.236h-21.884v1h21.883z" />
+                </svg>
+              </div>
+              <div className="swiper-button-next text-white flex items-center justify-center">
+                <svg
+                  width="48"
+                  height="48"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  className=" fill-white"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M21.883 12l-7.527 6.235.644.765 9-7.521-9-7.479-.645.764 7.529 6.236h-21.884v1h21.883z" />
+                </svg>
+              </div>
+            </div>
           </div>
         )}
       </div>

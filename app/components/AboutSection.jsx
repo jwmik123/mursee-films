@@ -4,12 +4,13 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
+import { useMediaQuery } from "react-responsive";
 import Showreel from "./Showreel";
 
 const AboutSection = () => {
   const aboutTextRef = useRef(null);
   const splitTextRef = useRef(null);
-
+  const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
   useEffect(() => {
     // Register GSAP plugins
     gsap.registerPlugin(ScrollTrigger, SplitText);
@@ -48,8 +49,8 @@ const AboutSection = () => {
         ease: "power4.out",
         scrollTrigger: {
           trigger: aboutTextRef.current,
-          start: "top 90%", // Start earlier
-          end: "top -10%", // End much later (after the text has passed the top of viewport)
+          start: isMobile ? "top 100%" : "top 90%", // Start earlier
+          end: isMobile ? "top 10%" : "top -10%", // End much later (after the text has passed the top of viewport)
           scrub: 0.8, // Smoother scrubbing with more delay
           markers: false, // Set to true for debugging
         },
@@ -72,7 +73,7 @@ const AboutSection = () => {
         <div className="flex flex-col md:flex-row w-full justify-between gap-6 text-white pb-24">
           <p
             ref={aboutTextRef}
-            className="w-full lg:w-1/2 text-6xl leading-tighter tracking-tighter font-tinos"
+            className="w-full lg:w-1/2 text-4xl md:text-6xl leading-tighter tracking-tighter font-tinos"
           >
             Wij zijn een creatieve studio met een zwak voor film. Of het nu gaat
             om een knallende commercial, een pakkend verhaal of iets compleet

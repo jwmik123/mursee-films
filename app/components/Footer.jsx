@@ -191,7 +191,7 @@ const Footer = () => {
             </div>
           </div>
         </div>
-        <div className="flex justify-between items-center px-6 md:px-10 py-4 text-sm text-gray-500">
+        <div className="flex flex-col md:flex-row justify-between items-center px-6 md:px-10 py-4 text-sm text-gray-500">
           <div>
             &copy; {new Date().getFullYear()} MURSEE FILMS. Alle rechten
             voorbehouden.

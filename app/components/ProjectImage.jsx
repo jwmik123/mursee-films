@@ -267,8 +267,6 @@ export default function ProjectImage({ project }) {
           pointerEvents: "none",
         }}
       />
-
-      {/* Project title with stagger animation */}
     </div>
   );
 }

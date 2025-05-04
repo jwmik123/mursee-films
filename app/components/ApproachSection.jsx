@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
+import { useMediaQuery } from "react-responsive";
 
 const ApproachSection = () => {
   const titleRef = useRef(null);
@@ -12,18 +14,20 @@ const ApproachSection = () => {
   const section2Ref = useRef(null);
   const section3Ref = useRef(null);
 
-  useEffect(() => {
+  const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
+
+  useGSAP(() => {
     // Register GSAP plugins
     gsap.registerPlugin(ScrollTrigger, SplitText);
 
-    // Use SplitText to split the title text into words
+    // Use SplitText to split the title text into characters
     if (titleRef.current && !splitTextRef.current) {
-      // Add CSS style for title-text-word class
+      // Add CSS style for title-text-char class
       const style = document.createElement("style");
       style.textContent = `
-        .title-text-word {
+        .title-text-char {
           display: inline-block;
-          margin-right: 0.1em;
+          margin-right: 0.02em;
         }
         .border-section {
           position: relative;
@@ -43,30 +47,30 @@ const ApproachSection = () => {
       document.head.appendChild(style);
 
       splitTextRef.current = new SplitText(titleRef.current, {
-        type: "words",
-        wordsClass: "title-text-word",
+        type: "chars",
+        charsClass: "title-text-char",
       });
 
       // Set initial styles
-      gsap.set(splitTextRef.current.words, {
+      gsap.set(splitTextRef.current.chars, {
         y: 50,
         opacity: 0,
         filter: "blur(8px)",
       });
 
       // Create staggered animation on scroll
-      gsap.to(splitTextRef.current.words, {
+      gsap.to(splitTextRef.current.chars, {
         y: 0,
         opacity: 1,
         filter: "blur(0px)",
-        stagger: 0.03,
+        stagger: 0.02,
         duration: 0.8,
         ease: "power4.out",
         scrollTrigger: {
           trigger: titleRef.current,
-          start: "top 90%",
-          end: "top -10%",
-          scrub: 0.8,
+          start: isMobile ? "top 90%" : "top 90%",
+          end: isMobile ? "top 10%" : "top -10%",
+          scrub: isMobile ? 1 : 0.8,
           markers: false,
         },
       });
@@ -100,7 +104,7 @@ const ApproachSection = () => {
         splitTextRef.current.revert();
       }
     };
-  }, []);
+  }, [isMobile]);
 
   return (
     <section className="w-full px-5 md:px-10 bg-black pt-16 pb-24 font-tinos">
