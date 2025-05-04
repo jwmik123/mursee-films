@@ -116,18 +116,18 @@ const StickyCards = () => {
       ref={container}
       className={`sticky-cards px-5 md:px-10 py-16 bg-black relative h-screen overflow-hidden flex items-center justify-center`}
     >
-      <div className="cards-container relative w-full md:w-2/3 aspect-video overflow-hidden">
+      <div className="cards-container relative w-full md:w-2/3 aspect-square md:aspect-video overflow-hidden">
         {cardData.map((card) => (
           <div
-            className="card absolute w-full aspect-video  overflow-hidden"
+            className="card absolute w-full aspect-square md:aspect-video overflow-hidden"
             key={card.id}
           >
             <div className="flex flex-col md:flex-row h-full">
-              <div className="w-full md:w-1/2 p-5 bg-white md:p-10 flex flex-col justify-center space-y-6">
-                <h3 className="text-black text-5xl font-franklin font-bold uppercase leading-none">
+              <div className="w-full h-1/2 md:h-auto md:w-1/2 p-5 bg-white md:p-10 flex flex-col justify-center space-y-2 md:space-y-6">
+                <h3 className="text-black text-2xl md:text-5xl font-franklin font-bold uppercase leading-none">
                   {card.tag}
                 </h3>
-                <p className="text-black/80 tracking-tight text-2xl font-tinos leading-none">
+                <p className="text-black/80 tracking-tight text-xl md:text-2xl font-tinos leading-none">
                   {card.description}
                 </p>
               </div>
