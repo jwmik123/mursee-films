@@ -14,24 +14,24 @@ const StickyCards = () => {
       tag: "Commercials",
       description:
         "Korte reclamevideo's die een product of dienst helder in beeld brengen, geschikt voor online en tv-campagnes.",
-      src: "/images/province.jpg",
-      alt: "groeten",
+      src: "/images/commercials.webp",
+      alt: "commercials",
     },
     {
       id: 2,
       tag: "Bedrijfsfilms",
       description:
         "Een duidelijke video over wie jullie zijn, wat jullie doen en waar jullie voor staan – handig voor klanten, nieuwe medewerkers of investeerders.",
-      src: "/images/groeten.jpg",
-      alt: "province",
+      src: "/images/bedrijfsfilms.webp",
+      alt: "bedrijfsfilms",
     },
     {
       id: 3,
       tag: "Social Video's",
       description:
         "Bewegend beeld voor op social media, afgestemd op snelle communicatie met je doelgroep, bijvoorbeeld bij een actie of aankondiging.",
-      src: "/images/race.jpg",
-      alt: "race",
+      src: "/images/socials.webp",
+      alt: "socials",
     },
   ];
 
@@ -123,7 +123,7 @@ const StickyCards = () => {
             key={card.id}
           >
             <div className="flex flex-col md:flex-row h-full">
-              <div className="w-full h-1/2 md:h-auto md:w-1/2 p-5 bg-white md:p-10 flex flex-col justify-center space-y-2 md:space-y-6">
+              <div className="w-full h-1/2 md:h-auto md:w-2/3 p-5 bg-white md:p-10 flex flex-col justify-center space-y-2 md:space-y-6">
                 <h3 className="text-black text-2xl md:text-5xl font-franklin font-bold uppercase leading-none">
                   {card.tag}
                 </h3>
