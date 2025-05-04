@@ -269,33 +269,6 @@ export default function ProjectImage({ project }) {
       />
 
       {/* Project title with stagger animation */}
-      <div
-        className="absolute bottom-0 left-0 px-4 py-2"
-        style={{
-          opacity: isHovering ? 1 : 0,
-          transition: "opacity 0.3s ease",
-        }}
-      >
-        <div className="overflow-hidden">
-          <h3 className="text-white text-xl font-medium">
-            {project.title.split("").map((char, index) => (
-              <span
-                key={index}
-                className="inline-block"
-                style={{
-                  transform: isHovering ? "translateY(0)" : "translateY(100%)",
-                  opacity: isHovering ? 1 : 0,
-                  transition: `transform 0.2s ease ${
-                    index * 0.03
-                  }s, opacity 0.2s ease ${index * 0.03}s`,
-                }}
-              >
-                {char === " " ? "\u00A0" : char}
-              </span>
-            ))}
-          </h3>
-        </div>
-      </div>
     </div>
   );
 }

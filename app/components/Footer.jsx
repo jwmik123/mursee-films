@@ -33,12 +33,16 @@ const Footer = () => {
 
   return (
     <div
-      className="relative h-[1000px] md:h-[550px] lg:h-[650px]"
+      className="relative  md:h-[550px] lg:h-[650px]"
       style={{
         clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
       }}
     >
-      <footer className="w-full bg-white text-black pt-8 font-tinos fixed bottom-0">
+      <footer
+        className={`w-full bg-white text-black pt-8 font-tinos ${
+          !isMobile ? "fixed bottom-0" : "relative"
+        }`}
+      >
         <div className="w-full px-5 md:px-10 grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* CONTACT Section */}
           <div className="flex flex-col">
@@ -61,7 +65,7 @@ const Footer = () => {
             <address className="text-sm not-italic leading-relaxed uppercase">
               <p>John M. Keynesplein 12-46,</p>
               <p>1066 EP Amsterdam, Nederland</p>
-              <p className="text-gray-500">{time}</p>
+              <p className="text-gray-500">{time} (GMT +1)</p>
             </address>
           </div>
 
@@ -182,7 +186,7 @@ const Footer = () => {
                 }}
                 className="absolute inset-0 w-full h-full object-cover"
               >
-                <source src="/header.mp4" type="video/mp4" />
+                <source src="/header.webm" type="video/webm" />
               </video>
             </div>
           </div>

@@ -7,23 +7,27 @@ import ApproachSection from "./components/ApproachSection";
 const projects = [
   {
     id: "1",
-    title: "Project One",
+    title: "Het Park",
     imageUrl: "/images/groeten.jpg",
+    category: "Bedrijfsfilm",
   },
   {
     id: "2",
-    title: "Project Two",
+    title: "Provincie Noord-Holland",
     imageUrl: "/images/province.jpg",
+    category: "Bedrijsfilm",
   },
   {
     id: "3",
-    title: "Project Three",
+    title: "Porsche 911 GT3",
     imageUrl: "/images/race.jpg",
+    category: "Commercial",
   },
   {
     id: "4",
-    title: "Project Four",
+    title: "Triple Solar",
     imageUrl: "/images/triple.jpg",
+    category: "Commercial",
   },
   // ... more projects
 ];

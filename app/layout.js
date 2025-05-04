@@ -4,7 +4,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { LenisProvider } from "@/providers/LenisProvider";
 import { FlipProvider } from "@/app/context/FlipContext";
-import Navigation from "./components/Navigation";
+import SimpleNavigation from "./components/SimpleNavigation";
 import Footer from "./components/Footer";
 
 const franklin = localFont({
@@ -31,7 +31,7 @@ export default function RootLayout({ children }) {
       >
         <LenisProvider>
           <FlipProvider>
-            <Navigation />
+            <SimpleNavigation />
             {children}
             <Footer />
           </FlipProvider>

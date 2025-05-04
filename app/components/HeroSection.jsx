@@ -243,7 +243,7 @@ const HeroSection = () => {
               !animationStarted ? "hidden-initially" : ""
             }`}
           >
-            <source src="/header.mp4" type="video/mp4" />
+            <source src="/header.webm" type="video/webm" />
           </video>
           <div
             className={`w-1/2 translate-y-[100px] ticks ${

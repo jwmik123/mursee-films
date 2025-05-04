@@ -106,7 +106,7 @@ const ApproachSection = () => {
     <section className="w-full px-5 md:px-10 bg-black pt-16 pb-24 font-tinos">
       <h2
         ref={titleRef}
-        className="text-white text-7xl font-franklin uppercase"
+        className="text-white text-6xl md:text-7xl font-franklin uppercase"
       >
         Onze aanpak
       </h2>

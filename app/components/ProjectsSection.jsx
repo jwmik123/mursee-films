@@ -75,7 +75,7 @@ const ProjectsSection = ({ projects }) => {
   const AlleProjectenButton = () => (
     <a
       href="/projects"
-      className="text-white relative group px-3 py-2 inline-block"
+      className="text-white relative group px-3 py-2 inline-block w-full md:w-auto text-center"
     >
       <span className="font-tinos text-lg relative z-10">Alle projecten</span>
       <span className="absolute w-2 h-2 border-t border-l border-white top-0 left-0 group-hover:-top-1 group-hover:-left-1 transition-all duration-300"></span>
@@ -93,7 +93,7 @@ const ProjectsSection = ({ projects }) => {
         <div>
           <h2
             ref={titleRef}
-            className="text-white text-[6vw] md:text-7xl leading-none font-franklin uppercase"
+            className="text-white text-6xl md:text-7xl font-franklin uppercase"
           >
             Laatste werk
           </h2>
@@ -148,6 +148,14 @@ const ProjectsSection = ({ projects }) => {
                   >
                     <ProjectImage project={project} />
                   </a>
+                  <div className="mt-2 flex items-center justify-between">
+                    <h3 className="text-white text-sm uppercase font-franklin">
+                      {project.title}
+                    </h3>
+                    <p className="text-white text-xs uppercase font-tinos tracking-tighter">
+                      {project.category}
+                    </p>
+                  </div>
                 </SwiperSlide>
               ))}
               {/* <div className="swiper-button-next !text-white after:!text-white"></div>
