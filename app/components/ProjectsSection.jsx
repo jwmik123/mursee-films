@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import ProjectImage from "./ProjectImage";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
@@ -13,10 +13,47 @@ import "swiper/css";
 // import "swiper/css/navigation";
 import { useGSAP } from "@gsap/react";
 
-const ProjectsSection = ({ projects }) => {
+const ProjectsSection = () => {
+  const [films, setFilms] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const titleRef = useRef(null);
   const splitTextRef = useRef(null);
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
+
+  useEffect(() => {
+    const fetchFilms = async () => {
+      try {
+        const response = await fetch("/api/films");
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+
+        // Debug the response
+        console.log("Films response:", data);
+
+        // Ensure data is an array
+        if (!Array.isArray(data)) {
+          console.error("Received non-array data:", data);
+          setFilms([]);
+          setError("Invalid data format received");
+          return;
+        }
+
+        setFilms(data);
+        setError(null);
+      } catch (error) {
+        console.error("Error fetching films:", error);
+        setError(error.message);
+        setFilms([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFilms();
+  }, []);
 
   useGSAP(() => {
     // Register GSAP plugins
@@ -86,6 +123,18 @@ const ProjectsSection = ({ projects }) => {
     </a>
   );
 
+  if (loading) {
+    return <div className="text-white">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="text-white">Error: {error}</div>;
+  }
+
+  if (!films || films.length === 0) {
+    return <div className="text-white">No films found</div>;
+  }
+
   return (
     <>
       <div
@@ -111,20 +160,24 @@ const ProjectsSection = ({ projects }) => {
       <div className="mt-12 bg-black text-white">
         {isMobile ? (
           <div className="flex flex-col space-y-6">
-            {projects.map((project) => (
-              <div key={project.id}>
-                <a
-                  href={`/project/${project.id}`}
-                  className="project-card block"
-                >
-                  <ProjectImage project={project} />
+            {films.map((film) => (
+              <div key={film._id}>
+                <a href={`/project/${film._id}`} className="project-card block">
+                  <ProjectImage
+                    project={{
+                      id: film._id,
+                      title: film.title,
+                      imageUrl: film.imageUrl,
+                      videoUrl: film.videoUrl,
+                    }}
+                  />
                 </a>
                 <div className="mt-2 flex items-center justify-between">
                   <h3 className="text-white text-sm uppercase font-franklin">
-                    {project.title}
+                    {film.title}
                   </h3>
                   <p className="text-white text-xs uppercase font-tinos tracking-tighter">
-                    {project.category}
+                    {film.category}
                   </p>
                 </div>
               </div>
@@ -150,20 +203,27 @@ const ProjectsSection = ({ projects }) => {
               }}
               className="projects-swiper"
             >
-              {projects.map((project) => (
-                <SwiperSlide key={project.id}>
+              {films.map((film) => (
+                <SwiperSlide key={film._id}>
                   <a
-                    href={`/project/${project.id}`}
+                    href={`/project/${film._id}`}
                     className="project-card block"
                   >
-                    <ProjectImage project={project} />
+                    <ProjectImage
+                      project={{
+                        id: film._id,
+                        title: film.title,
+                        imageUrl: film.imageUrl,
+                        videoUrl: film.videoUrl,
+                      }}
+                    />
                   </a>
                   <div className="px-2 py-1 flex items-center justify-between bg-white">
                     <h3 className="text-black text-sm md:text-md uppercase font-franklin">
-                      {project.title}
+                      {film.title}
                     </h3>
                     <p className="text-black text-xs md:text-sm uppercase font-tinos tracking-tighter">
-                      {project.category}
+                      {film.category}
                     </p>
                   </div>
                 </SwiperSlide>
