@@ -4,6 +4,8 @@ import AboutSection from "./components/AboutSection";
 import ProjectsSection from "./components/ProjectsSection";
 import ApproachSection from "./components/ApproachSection";
 import StickyCards from "./components/StickyCards";
+import ImageGrid from "./components/ImageGrid";
+
 const projects = [
   {
     id: "1",
@@ -32,6 +34,16 @@ const projects = [
   // ... more projects
 ];
 
+const images = [
+  "/images/logos/hetpark.png",
+  "/images/logos/enza.png",
+  "/images/logos/nh.webp",
+  "/images/logos/schouten.png",
+  "/images/logos/staan.png",
+  "/images/logos/tracking.png",
+  "/images/logos/vattenfal.png",
+];
+
 export default function Home() {
   return (
     <main>
@@ -47,6 +59,7 @@ export default function Home() {
         <ProjectsSection projects={projects} />
       </section>
       <StickyCards />
+      <ImageGrid images={images} />
       <ApproachSection />
 
       {/* <section
