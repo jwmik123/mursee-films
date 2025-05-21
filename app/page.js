@@ -5,46 +5,33 @@ import ProjectsSection from "./components/ProjectsSection";
 import ApproachSection from "./components/ApproachSection";
 import StickyCards from "./components/StickyCards";
 import ImageGrid from "./components/ImageGrid";
+import { fetchData } from "@/lib/sanity";
 
-const projects = [
-  {
-    id: "1",
-    title: "Het Park",
-    imageUrl: "/images/groeten.jpg",
-    category: "Bedrijfsfilm",
-  },
-  {
-    id: "2",
-    title: "Provincie Noord-Holland",
-    imageUrl: "/images/province.jpg",
-    category: "Bedrijsfilm",
-  },
-  {
-    id: "3",
-    title: "Porsche 911 GT3",
-    imageUrl: "/images/race.jpg",
-    category: "Commercial",
-  },
-  {
-    id: "4",
-    title: "Triple Solar",
-    imageUrl: "/images/triple.jpg",
-    category: "Commercial",
-  },
-  // ... more projects
-];
+// Define the type for our film data
+const filmQuery = `*[_type == "film"] {
+  _id,
+  title,
+  category,
+  description,
+  year,
+  client,
+  "imageUrl": image.asset->url,
+  "videoUrl": videoFile.asset->url
+}`;
 
-const images = [
-  "/images/logos/hetpark.png",
-  "/images/logos/enza.png",
-  "/images/logos/nh.webp",
-  "/images/logos/schouten.png",
-  "/images/logos/staan.png",
-  "/images/logos/tracking.png",
-  "/images/logos/vattenfal.png",
-];
+export default async function Home() {
+  const films = await fetchData(filmQuery);
 
-export default function Home() {
+  const images = [
+    "/images/logos/hetpark.png",
+    "/images/logos/enza.png",
+    "/images/logos/nh.webp",
+    "/images/logos/schouten.png",
+    "/images/logos/staan.png",
+    "/images/logos/tracking.png",
+    "/images/logos/vattenfal.png",
+  ];
+
   return (
     <main>
       <MainNavigation />
@@ -55,8 +42,8 @@ export default function Home() {
         className={`w-full px-5 md:px-10 bg-black pt-16 pb-24 transition-opacity duration-500`}
       ></section> */}
 
-      <section className="w-full px-5 md:px-10 bg-black pt-16 pb-24">
-        <ProjectsSection projects={projects} />
+      <section className="projects w-full px-5 md:px-10 bg-black py-32">
+        <ProjectsSection projects={films} />
       </section>
       <StickyCards />
       <ImageGrid images={images} />

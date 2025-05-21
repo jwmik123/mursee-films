@@ -65,7 +65,7 @@ const ImageGrid = ({ images }) => {
     };
   }, []);
   return (
-    <div className="px-5 md:px-10 py-24 bg-black flex items-center justify-center">
+    <div className="px-5 md:px-10 py-24 bg-black flex items-center justify-center mt-[60vh]">
       <div className="w-full">
         <h2
           ref={titleRef}
@@ -84,7 +84,10 @@ const ImageGrid = ({ images }) => {
                   <Image
                     src={images[index]}
                     alt={`Grid image ${index + 1}`}
-                    className="object-contain w-full h-auto brightness-0 invert"
+                    className="object-contain w-full h-auto"
+                    style={{
+                      filter: "grayscale(1) invert(1)",
+                    }}
                     width={150}
                     height={90}
                   />

@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useMediaQuery } from "react-responsive";
+import { Flip } from "gsap/Flip";
 import Image from "next/image";
 
 const StickyCards = () => {
@@ -39,7 +39,7 @@ const StickyCards = () => {
 
   useGSAP(
     () => {
-      gsap.registerPlugin(ScrollTrigger);
+      gsap.registerPlugin(ScrollTrigger, Flip);
 
       const cards = document.querySelectorAll(".card");
       const images = document.querySelectorAll(".card img");
@@ -57,34 +57,46 @@ const StickyCards = () => {
         scrollTrigger: {
           trigger: container.current,
           start: "top top",
-          end: `+=${window.innerHeight * totalCards}`,
+          end: `+=${window.innerHeight * (totalCards + 2)}`,
           pin: true,
-          scrub: true,
+          scrub: 1,
         },
       });
+
+      // Set initial states
+      gsap.set(".cards-container", { y: "100vh" });
+      gsap.set(".background-text div", {
+        overflow: "hidden",
+      });
+      gsap.set(".background-text span", {
+        y: "0%",
+        rotate: 0,
+        display: "block",
+      });
+
+      // Initial animation to move container from bottom to higher position
+      scrollTimeline.to(
+        ".cards-container",
+        {
+          y: "5vh",
+          duration: 2,
+          ease: "none",
+        },
+        -0.5
+      );
 
       for (let i = 0; i < totalCards - 1; i++) {
         const currentCard = cards[i];
         const currentImage = images[i];
         const nextCard = cards[i + 1];
-        const position = i;
+        const position = (i + 1) * 2; // Increased spacing between transitions
 
         scrollTimeline.to(
           currentCard,
           {
             scale: 0.8,
             rotation: 3,
-            duration: 1,
-            ease: "none",
-          },
-          position
-        );
-
-        scrollTimeline.to(
-          currentImage,
-          {
-            scale: 1.5,
-            duration: 1,
+            duration: 2,
             ease: "none",
           },
           position
@@ -95,12 +107,39 @@ const StickyCards = () => {
           {
             y: "0%",
             scale: 1,
-            duration: 1,
+            duration: 2,
             ease: "none",
           },
           position
         );
       }
+
+      // Add spread animation at the end of the timeline
+      scrollTimeline.to(
+        ".cards-container",
+        {
+          y: "80vh",
+          duration: 2,
+          ease: "none",
+        },
+        totalCards * 2
+      );
+
+      cards.forEach((card, index) => {
+        const spread = (index - (totalCards - 1) / 2) * 65;
+        scrollTimeline.to(
+          card,
+          {
+            x: `${spread}%`,
+            scale: 0.6,
+            rotation: 0,
+            duration: 2,
+            ease: "none",
+          },
+          totalCards * 2
+        );
+      });
+
       return () => {
         scrollTimeline.kill();
         ScrollTrigger.getAll().forEach((trigger) => {
@@ -112,43 +151,51 @@ const StickyCards = () => {
   );
 
   return (
-    <section
-      ref={container}
-      className={`sticky-cards px-5 md:px-10 py-16 bg-black relative h-screen overflow-hidden flex items-center justify-center`}
-    >
-      <div className="cards-container relative w-full md:w-2/3 aspect-square md:aspect-video overflow-hidden">
-        {cardData.map((card) => (
-          <div
-            className="card absolute w-full aspect-square md:aspect-video overflow-hidden"
-            key={card.id}
-          >
-            <div className="flex flex-col md:flex-row h-full">
-              <div className="w-full h-1/2 md:h-auto md:w-2/3 p-5 bg-white md:p-10 flex flex-col justify-center space-y-2 md:space-y-6">
-                <h3 className="text-black text-2xl md:text-5xl font-franklin font-bold uppercase leading-none">
-                  {card.tag}
-                </h3>
-                <p className="text-black/80 tracking-tight text-xl md:text-2xl font-tinos leading-none">
-                  {card.description}
-                </p>
-              </div>
-              <div className="w-full md:w-1/2 h-full overflow-hidden">
-                <Image
-                  src={card.src}
-                  alt={card.alt}
-                  className="w-full h-full object-cover"
-                  width={500}
-                  height={500}
-                />
+    <>
+      <section
+        ref={container}
+        className={`sticky-cards px-5 md:px-10 py-16 bg-black relative h-screen overflow-visible flex items-center justify-center`}
+      >
+        <div className="cards-container relative w-1/2 aspect-square">
+          {cardData.map((card) => (
+            <div
+              className="card absolute w-full aspect-square overflow-hidden border-2 border-white/20"
+              key={card.id}
+            >
+              <div className="flex flex-col md:flex-row h-full">
+                <div className="w-full h-1/2 md:h-auto p-5 bg-[#1A1A1A] md:p-10 flex flex-col justify-end space-y-2 md:space-y-6">
+                  <Image
+                    src={card.src}
+                    alt={card.alt}
+                    width={1000}
+                    height={1000}
+                    className="w-full h-full object-cover rounded-lg"
+                  />
+                  <h3 className="text-white text-2xl md:text-7xl font-franklin font-bold uppercase leading-none">
+                    {card.tag}
+                  </h3>
+                  <p className="text-white text-2xl">{card.description}</p>
+                  {/* <p className="text-white tracking-tight text-xl md:text-7xl font-franklin leading-none absolute left-10 top-4">
+                    {card.id}
+                  </p> */}
+                </div>
               </div>
             </div>
+          ))}
+        </div>
+        <div className="background-text -z-10 absolute top-10 bottom-10 left-10 right-10 flex flex-col justify-between text-white uppercase font-franklin font-bold text-[13vw]">
+          <div className="overflow-hidden">
+            <span className="self-start">Wat Mursee</span>
           </div>
-        ))}
-      </div>
-      {/* <span className="hidden md:block absolute w-10 h-10 border-t-2 border-l-2 border-white top-48 left-48 group-hover:-top-1 group-hover:-left-1 transition-all duration-300"></span>
-      <span className="hidden md:block absolute w-10 h-10 border-t-2 border-r-2 border-white top-48 right-48 group-hover:-top-1 group-hover:-right-1 transition-all duration-300"></span>
-      <span className="hidden md:block absolute w-10 h-10 border-b-2 border-l-2 border-white bottom-48 left-48 group-hover:-bottom-1 group-hover:-left-1 transition-all duration-300"></span>
-      <span className="hidden md:block absolute w-10 h-10 border-b-2 border-r-2 border-white bottom-48 right-48 group-hover:-bottom-1 group-hover:-right-1 transition-all duration-300"></span> */}
-    </section>
+          <div className="overflow-hidden flex justify-end">
+            <span>jouw bedrijf</span>
+          </div>
+          <div className="overflow-hidden">
+            <span className="self-start">kan Bieden(3)</span>
+          </div>
+        </div>
+      </section>
+    </>
   );
 };
 

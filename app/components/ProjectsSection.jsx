@@ -112,12 +112,23 @@ const ProjectsSection = ({ projects }) => {
         {isMobile ? (
           <div className="flex flex-col space-y-6">
             {projects.map((project) => (
-              <div key={project.id}>
+              <div key={project._id}>
                 <a
-                  href={`/project/${project.id}`}
+                  href={`/project/${project._id}`}
                   className="project-card block"
                 >
-                  <ProjectImage project={project} />
+                  {project.videoUrl ? (
+                    <video
+                      src={project.videoUrl}
+                      className="aspect-video w-full object-cover"
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                    />
+                  ) : (
+                    <ProjectImage project={project} />
+                  )}
                 </a>
                 <div className="mt-2 flex items-center justify-between">
                   <h3 className="text-white text-sm uppercase font-franklin">
@@ -145,24 +156,35 @@ const ProjectsSection = ({ projects }) => {
                   slidesPerView: 2,
                 },
                 1024: {
-                  slidesPerView: 2,
+                  slidesPerView: 3,
                 },
               }}
               className="projects-swiper"
             >
               {projects.map((project) => (
-                <SwiperSlide key={project.id}>
+                <SwiperSlide key={project._id}>
                   <a
-                    href={`/project/${project.id}`}
+                    href={`/project/${project._id}`}
                     className="project-card block"
                   >
+                    {/* {project.videoUrl ? (
+                      <video
+                        src={project.videoUrl}
+                        className="aspect-video w-full object-cover"
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                      />
+                    ) : ( */}
                     <ProjectImage project={project} />
+                    {/* )} */}
                   </a>
-                  <div className="px-2 py-1 flex items-center justify-between bg-white">
-                    <h3 className="text-black text-sm md:text-md uppercase font-franklin">
+                  <div className="px-2 py-1 flex items-center justify-between ">
+                    <h3 className="text-white text-sm md:text-md uppercase font-franklin">
                       {project.title}
                     </h3>
-                    <p className="text-black text-xs md:text-sm uppercase font-tinos tracking-tighter">
+                    <p className="text-white text-xs md:text-sm uppercase font-tinos tracking-tighter">
                       {project.category}
                     </p>
                   </div>
