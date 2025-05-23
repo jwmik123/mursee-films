@@ -26,6 +26,19 @@ const HeroSection = () => {
     };
   }, []);
 
+  // Helper function to safely animate elements if they exist
+  const safeAnimate = (selector, fromVars, toVars, position = null) => {
+    const elements = document.querySelectorAll(selector);
+    if (elements.length > 0) {
+      if (position) {
+        return tlRef.current.fromTo(elements, fromVars, toVars, position);
+      } else {
+        return tlRef.current.fromTo(elements, fromVars, toVars);
+      }
+    }
+    return tlRef.current;
+  };
+
   const runAnimation = () => {
     if (tlRef.current) {
       tlRef.current.kill();
@@ -35,13 +48,6 @@ const HeroSection = () => {
     setAnimationStarted(true);
 
     tlRef.current = gsap.timeline();
-
-    // Make sure elements are visible
-    gsap.set(".cover", {
-      y: "0%",
-      display: "flex",
-      autoAlpha: 1,
-    });
 
     // Register SplitText for header if needed
     if (headerTitleRef.current && !headerSplitRef.current) {
@@ -66,75 +72,68 @@ const HeroSection = () => {
       });
     }
 
-    // Reset animation states
-    gsap.set(".cover-title", { y: -100, opacity: 0 });
+    // Reset animation states for elements that exist
     gsap.set(".hero-section", { autoAlpha: 1 });
 
     // Set initial state for header characters if we have the split text
     if (headerSplitRef.current) {
       gsap.set(headerSplitRef.current.chars, { y: 100, autoAlpha: 0 });
-    } else {
-      gsap.set(".header-title-char", { y: 100, autoAlpha: 0 });
     }
 
-    gsap.set("nav", { y: -100, opacity: 0 });
+    // Only animate nav if it exists
+    const navElements = document.querySelectorAll("nav");
+    if (navElements.length > 0) {
+      gsap.set("nav", { y: -100, opacity: 0 });
+    }
 
-    const videoParent = document.querySelector(".video").parentElement;
+    // Only manipulate video parent if video exists
+    const videoElement = document.querySelector(".video");
+    if (videoElement) {
+      const videoParent = videoElement.parentElement;
+      if (videoParent) {
+        videoParent.style.transform = "none";
+      }
+    }
 
-    videoParent.style.transform = "none";
-
+    // Start the animation timeline
     tlRef.current
-      .fromTo(
-        ".cover-title",
-        {
-          y: -100,
-          opacity: 0,
-        },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 1,
-          ease: "power4.out",
+      // Animate video if it exists
+      .call(() => {
+        const video = document.querySelector(".video");
+        if (video) {
+          gsap.fromTo(
+            video,
+            {
+              width: "50%",
+              height: "30%",
+              y: "-33.33%",
+            },
+            {
+              width: "100%",
+              height: "100%",
+              y: "0%",
+              duration: 1.5,
+              ease: "power2.out",
+            }
+          );
         }
-      )
-      .fromTo(
-        ".cover",
-        {
-          y: "0%",
-        },
-        {
-          y: "-100%",
-          duration: 1,
-          ease: "power4.out",
-        },
-        "+=0.5"
-      )
-      .fromTo(
-        ".ticks",
-        {
-          opacity: 1,
-        },
-        {
-          opacity: 0,
-          duration: 1,
-          ease: "power4.out",
+      })
+      // Animate ticks if they exist
+      .call(() => {
+        const ticks = document.querySelector(".ticks");
+        if (ticks) {
+          gsap.fromTo(
+            ticks,
+            { opacity: 1 },
+            {
+              opacity: 0,
+              duration: 1,
+              ease: "power4.out",
+            }
+          );
         }
-      )
-      .fromTo(
-        ".video",
-        {
-          width: "50%",
-          height: "30%",
-          y: "-33.33%",
-        },
-        {
-          width: "100%",
-          height: "100%",
-          y: "0%",
-          duration: 1.5,
-          ease: "power2.out",
-        }
-      )
+      })
+      // Animate header characters
       .fromTo(
         headerSplitRef.current
           ? headerSplitRef.current.chars
@@ -153,8 +152,12 @@ const HeroSection = () => {
           stagger: 0.05,
         },
         "-=0.5"
-      )
-      .fromTo(
+      );
+
+    // Animate nav if it exists
+    const nav = document.querySelector("nav");
+    if (nav) {
+      tlRef.current.fromTo(
         "nav",
         {
           y: -100,
@@ -167,10 +170,13 @@ const HeroSection = () => {
           ease: "power4.out",
         },
         "-=0.5"
-      )
-      .call(() => {
-        animationCompletedRef.current = true;
-      });
+      );
+    }
+
+    // Mark animation as complete
+    tlRef.current.call(() => {
+      animationCompletedRef.current = true;
+    });
   };
 
   useEffect(() => {

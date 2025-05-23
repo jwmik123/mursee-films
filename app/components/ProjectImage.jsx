@@ -8,6 +8,7 @@ export default function ProjectImage({ project }) {
   const [isHovering, setIsHovering] = useState(false);
   const [webglSupported, setWebglSupported] = useState(true);
   const [contextLost, setContextLost] = useState(false);
+  const [imageLoadError, setImageLoadError] = useState(false);
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
   const rendererRef = useRef(null);
@@ -18,6 +19,13 @@ export default function ProjectImage({ project }) {
   const startTimeRef = useRef(Date.now());
   const textureRef = useRef(null);
 
+  // Debug function
+  const debug = useCallback((message, data = null) => {
+    if (process.env.NODE_ENV === "development") {
+      console.log(`[ProjectImage] ${message}`, data || "");
+    }
+  }, []);
+
   // Check WebGL support
   const checkWebGLSupport = useCallback(() => {
     try {
@@ -26,34 +34,49 @@ export default function ProjectImage({ project }) {
         canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
       return !!gl;
     } catch (e) {
+      debug("WebGL check failed", e);
       return false;
     }
-  }, []);
+  }, [debug]);
 
   // Handle WebGL context lost/restored
-  const handleContextLost = useCallback((event) => {
-    event.preventDefault();
-    setContextLost(true);
-    if (animationRef.current) {
-      cancelAnimationFrame(animationRef.current);
-      animationRef.current = null;
-    }
-  }, []);
+  const handleContextLost = useCallback(
+    (event) => {
+      event.preventDefault();
+      debug("WebGL context lost");
+      setContextLost(true);
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+        animationRef.current = null;
+      }
+    },
+    [debug]
+  );
 
   const handleContextRestored = useCallback(() => {
+    debug("WebGL context restored");
     setContextLost(false);
     // Re-initialize the Three.js scene
     initializeScene();
-  }, []);
+  }, [debug]);
 
   // Initialize Three.js scene
   const initializeScene = useCallback(() => {
     const container = containerRef.current;
     const canvas = canvasRef.current;
 
-    if (!container || !canvas || !webglSupported || contextLost) return;
+    if (!container || !canvas || !webglSupported || contextLost) {
+      debug("Scene initialization skipped", {
+        container: !!container,
+        canvas: !!canvas,
+        webglSupported,
+        contextLost,
+      });
+      return;
+    }
 
     try {
+      debug("Initializing Three.js scene");
       // Set up scene
       const scene = new THREE.Scene();
       sceneRef.current = scene;
@@ -85,16 +108,34 @@ export default function ProjectImage({ project }) {
         false
       );
 
+      debug("Three.js scene initialized successfully");
       loadTexture();
     } catch (error) {
       console.warn("WebGL initialization failed:", error);
+      debug("WebGL initialization failed", error);
       setWebglSupported(false);
     }
-  }, [webglSupported, contextLost, handleContextLost, handleContextRestored]);
+  }, [
+    webglSupported,
+    contextLost,
+    handleContextLost,
+    handleContextRestored,
+    debug,
+  ]);
 
   // Load texture and set up material
   const loadTexture = useCallback(() => {
-    if (!sceneRef.current || !rendererRef.current || !project.imageUrl) return;
+    if (!sceneRef.current || !rendererRef.current) {
+      debug("Texture loading skipped - missing scene or renderer");
+      return;
+    }
+
+    if (!project?.imageUrl) {
+      debug("Texture loading skipped - no imageUrl", { project });
+      return;
+    }
+
+    debug("Loading texture", { imageUrl: project.imageUrl });
 
     const scene = sceneRef.current;
 
@@ -119,6 +160,7 @@ export default function ProjectImage({ project }) {
     textureLoader.load(
       project.imageUrl,
       (texture) => {
+        debug("Texture loaded successfully");
         try {
           texture.minFilter = THREE.LinearFilter;
           texture.magFilter = THREE.LinearFilter;
@@ -194,18 +236,34 @@ export default function ProjectImage({ project }) {
 
           // Update size
           updateSize();
+
+          // Reset error state
+          setImageLoadError(false);
+          debug("Material and mesh created successfully");
         } catch (shaderError) {
           console.warn("Shader compilation failed:", shaderError);
+          debug("Shader compilation failed", shaderError);
           setWebglSupported(false);
         }
       },
       undefined, // onProgress callback is not needed
       (error) => {
-        console.warn("Error loading texture:", error);
+        console.warn("Error loading texture:", {
+          url: project.imageUrl,
+          error: error,
+          errorType: typeof error,
+          errorMessage: error?.message || "Unknown error",
+        });
+        debug("Texture loading failed", {
+          url: project.imageUrl,
+          error,
+          errorConstructor: error?.constructor?.name,
+        });
+        setImageLoadError(true);
         // Don't disable WebGL for texture loading errors, just log them
       }
     );
-  }, [project.imageUrl]);
+  }, [project?.imageUrl, debug]);
 
   // Handle resize
   useEffect(() => {
@@ -216,10 +274,17 @@ export default function ProjectImage({ project }) {
 
   // Animation loop with error handling
   const startAnimationLoop = useCallback(() => {
-    if (animationRef.current) return; // Prevent multiple loops
+    if (animationRef.current) {
+      debug("Animation loop already running");
+      return; // Prevent multiple loops
+    }
 
+    debug("Starting animation loop");
     const animate = () => {
-      if (contextLost || !webglSupported) return;
+      if (contextLost || !webglSupported) {
+        debug("Animation stopped - context lost or WebGL not supported");
+        return;
+      }
 
       animationRef.current = requestAnimationFrame(animate);
 
@@ -234,6 +299,7 @@ export default function ProjectImage({ project }) {
         }
       } catch (renderError) {
         console.warn("Render error:", renderError);
+        debug("Render error", renderError);
         // Stop the animation loop on render errors
         if (animationRef.current) {
           cancelAnimationFrame(animationRef.current);
@@ -243,7 +309,7 @@ export default function ProjectImage({ project }) {
     };
 
     animate();
-  }, [contextLost, webglSupported]);
+  }, [contextLost, webglSupported, debug]);
 
   // Update renderer size
   const updateSize = useCallback(() => {
@@ -254,34 +320,44 @@ export default function ProjectImage({ project }) {
       if (width > 0 && height > 0) {
         rendererRef.current.setSize(width, height);
         rendererRef.current.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        debug("Renderer size updated", { width, height });
       }
     } catch (error) {
       console.warn("Resize error:", error);
+      debug("Resize error", error);
     }
-  }, [contextLost]);
+  }, [contextLost, debug]);
 
   // Initialize WebGL support check and scene
   useEffect(() => {
+    debug("Checking WebGL support");
     const supported = checkWebGLSupport();
     setWebglSupported(supported);
+    debug("WebGL support", { supported });
 
     if (supported) {
       // Small delay to ensure DOM is ready
       const timer = setTimeout(initializeScene, 100);
       return () => clearTimeout(timer);
     }
-  }, [checkWebGLSupport, initializeScene]);
+  }, [checkWebGLSupport, initializeScene, debug]);
 
   // Load texture when image URL changes
   useEffect(() => {
+    debug("Effect: imageUrl changed", {
+      imageUrl: project?.imageUrl,
+      webglSupported,
+      contextLost,
+    });
     if (webglSupported && !contextLost) {
       loadTexture();
     }
-  }, [project.imageUrl, webglSupported, contextLost, loadTexture]);
+  }, [project?.imageUrl, webglSupported, contextLost, loadTexture, debug]);
 
   // Cleanup function
   useEffect(() => {
     return () => {
+      debug("Cleaning up ProjectImage component");
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
@@ -308,7 +384,7 @@ export default function ProjectImage({ project }) {
         rendererRef.current.dispose();
       }
     };
-  }, [handleContextLost, handleContextRestored]);
+  }, [handleContextLost, handleContextRestored, debug]);
 
   // Mouse handlers with safety checks
   const handleMouseMove = useCallback(
@@ -380,8 +456,8 @@ export default function ProjectImage({ project }) {
     >
       {/* Base image */}
       <img
-        src={project.imageUrl}
-        alt={project.title}
+        src={project?.imageUrl}
+        alt={project?.title || "Project image"}
         className="aspect-video"
         style={{
           display: "block",
@@ -390,10 +466,17 @@ export default function ProjectImage({ project }) {
           objectFit: "cover",
           objectPosition: "center",
         }}
+        onError={() => {
+          debug("Base image failed to load", { url: project?.imageUrl });
+          setImageLoadError(true);
+        }}
+        onLoad={() => {
+          debug("Base image loaded successfully", { url: project?.imageUrl });
+        }}
       />
 
       {/* Canvas overlay for RGB effect - only show if WebGL is supported */}
-      {webglSupported && !contextLost && (
+      {webglSupported && !contextLost && !imageLoadError && (
         <canvas
           ref={canvasRef}
           className="aspect-video"
@@ -411,20 +494,36 @@ export default function ProjectImage({ project }) {
       )}
 
       {/* Debug info for development */}
-      {process.env.NODE_ENV === "development" && !webglSupported && (
+      {process.env.NODE_ENV === "development" && (
         <div
           style={{
             position: "absolute",
-            top: "10px",
+            bottom: "10px",
             left: "10px",
-            background: "rgba(255,0,0,0.8)",
+            background: "rgba(0,0,0,0.8)",
             color: "white",
             padding: "5px",
-            fontSize: "12px",
+            fontSize: "10px",
             zIndex: 1000,
+            maxWidth: "200px",
+            wordBreak: "break-all",
           }}
         >
-          WebGL not supported
+          {!webglSupported && (
+            <div style={{ color: "red" }}>❌ WebGL not supported</div>
+          )}
+          {contextLost && (
+            <div style={{ color: "orange" }}>⚠️ WebGL context lost</div>
+          )}
+          {imageLoadError && (
+            <div style={{ color: "yellow" }}>⚠️ Image load error</div>
+          )}
+          {webglSupported && !contextLost && !imageLoadError && (
+            <div style={{ color: "green" }}>✅ RGB effect ready</div>
+          )}
+          <div style={{ fontSize: "8px", marginTop: "2px" }}>
+            URL: {project?.imageUrl?.substring(0, 30)}...
+          </div>
         </div>
       )}
     </div>
