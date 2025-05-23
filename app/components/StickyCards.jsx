@@ -164,13 +164,13 @@ const StickyCards = () => {
             >
               <div className="flex flex-col md:flex-row h-full">
                 <div className="w-full h-1/2 md:h-auto p-5 bg-[#1A1A1A] md:p-10 flex flex-col justify-end space-y-2 md:space-y-6">
-                  <Image
+                  {/* <Image
                     src={card.src}
                     alt={card.alt}
                     width={1000}
                     height={1000}
                     className="w-full h-full object-cover rounded-lg"
-                  />
+                  /> */}
                   <h3 className="text-white text-2xl md:text-7xl font-franklin font-bold uppercase leading-none">
                     {card.tag}
                   </h3>
