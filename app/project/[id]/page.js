@@ -6,20 +6,10 @@ import { use } from "react";
 import ProjectImage from "../../components/ProjectImage";
 
 function getProject(id) {
-  // Use placeholder images that actually exist
-  const placeholderImages = [
-    "/images/mursee-home.webp",
-    "/images/province.jpg",
-    "/images/race.jpg",
-    "/images/triple.jpg",
-  ];
-
-  const imageIndex = (parseInt(id) - 1) % placeholderImages.length;
-
   return {
     id: id,
     title: `Project ${id}`,
-    imageUrl: placeholderImages[imageIndex],
+    imageUrl: `/project${id}.webp`,
     description: `This is a detailed description for project ${id}.`,
   };
 }
