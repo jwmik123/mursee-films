@@ -34,24 +34,24 @@ const AboutSection = () => {
 
       // Set initial styles
       gsap.set(splitTextRef.current.words, {
-        y: 50,
+        x: 5,
         opacity: 0,
-        filter: "blur(8px)",
+        filter: "blur(5px)",
       });
 
       // Create staggered animation on scroll
       gsap.to(splitTextRef.current.words, {
-        y: 0,
+        x: 0,
         opacity: 1,
         filter: "blur(0px)", // Remove blur on scroll
         stagger: 0.03, // Slightly slower stagger for words
-        duration: 0.8,
+        duration: 0.5,
         ease: "power4.out",
         scrollTrigger: {
           trigger: aboutTextRef.current,
           start: isMobile ? "top 100%" : "top 90%", // Start earlier
           end: isMobile ? "top 10%" : "top -10%", // End much later (after the text has passed the top of viewport)
-          scrub: 0.8, // Smoother scrubbing with more delay
+          scrub: 0.5, // Smoother scrubbing with more delay
           markers: false, // Set to true for debugging
         },
       });
@@ -73,7 +73,7 @@ const AboutSection = () => {
         <div className="flex flex-col md:flex-row w-full justify-between gap-6 text-white pb-24">
           <p
             ref={aboutTextRef}
-            className="w-full lg:w-1/2 text-4xl md:text-6xl leading-tighter tracking-tighter font-tinos"
+            className="w-full lg:w-1/2 text-4xl md:text-6xl leading-tighter tracking-tight font-franklin"
           >
             Wij zijn een creatieve studio met een zwak voor film. Of het nu gaat
             om een knallende commercial, een pakkend verhaal of iets compleet

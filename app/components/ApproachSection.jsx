@@ -53,14 +53,14 @@ const ApproachSection = () => {
 
       // Set initial styles
       gsap.set(splitTextRef.current.chars, {
-        y: 50,
+        x: 5,
         opacity: 0,
         filter: "blur(8px)",
       });
 
       // Create staggered animation on scroll
       gsap.to(splitTextRef.current.chars, {
-        y: 0,
+        x: 0,
         opacity: 1,
         filter: "blur(0px)",
         stagger: 0.02,

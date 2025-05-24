@@ -6,6 +6,7 @@ import ApproachSection from "./components/ApproachSection";
 import StickyCards from "./components/StickyCards";
 import ImageGrid from "./components/ImageGrid";
 import { fetchData } from "@/lib/sanity";
+import MobileCards from "./components/MobileCards";
 
 // Define the type for our film data
 const filmQuery = `*[_type == "film"] {
@@ -45,7 +46,12 @@ export default async function Home() {
       <section className="projects w-full px-5 md:px-10 bg-black py-32">
         <ProjectsSection projects={films} />
       </section>
-      <StickyCards />
+      <div className="hidden md:block">
+        <StickyCards />
+      </div>
+      <div className="block md:hidden">
+        <MobileCards />
+      </div>
       <ImageGrid images={images} />
       <ApproachSection />
 

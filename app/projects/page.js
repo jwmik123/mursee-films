@@ -1,58 +1,318 @@
-import { fetchData } from "@/lib/sanity";
-import Image from "next/image";
+"use client";
 
-// Define the type for our film data
+import { useState, useEffect } from "react";
+import { fetchData } from "@/lib/sanity";
+
+// Define the query for film data including duration
 const filmQuery = `*[_type == "film"] {
+  _id,
   title,
   category,
   description,
   year,
   client,
+  duration,
   "imageUrl": image.asset->url,
   "videoUrl": videoFile.asset->url
 }`;
 
-export default async function ProjectsPage() {
-  const films = await fetchData(filmQuery);
+export default function ProjectsPage() {
+  const [films, setFilms] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [activeView, setActiveView] = useState("LIST"); // GRID or LIST
+  const [activeFilter, setActiveFilter] = useState("ALL");
+  const [hoveredProject, setHoveredProject] = useState(null);
+  const [currentBgImage, setCurrentBgImage] = useState(null);
+  const [previousBgImage, setPreviousBgImage] = useState(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  useEffect(() => {
+    const loadFilms = async () => {
+      try {
+        const filmsData = await fetchData(filmQuery);
+        setFilms(filmsData);
+      } catch (error) {
+        console.error("Error fetching films:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadFilms();
+  }, []);
+
+  // Handle smooth background image transitions
+  useEffect(() => {
+    if (hoveredProject && hoveredProject.imageUrl) {
+      // Only transition if the image is different
+      if (currentBgImage !== hoveredProject.imageUrl) {
+        setIsTransitioning(true);
+        // Move current to previous
+        if (currentBgImage) {
+          setPreviousBgImage(currentBgImage);
+        }
+        // Set new current image
+        setCurrentBgImage(hoveredProject.imageUrl);
+
+        // Clear transition state after animation completes
+        setTimeout(() => {
+          setIsTransitioning(false);
+          setPreviousBgImage(null);
+        }, 500); // Match transition duration
+      }
+    } else {
+      // When not hovering, fade out current image
+      if (currentBgImage) {
+        setIsTransitioning(true);
+        setPreviousBgImage(currentBgImage);
+        setCurrentBgImage(null);
+
+        setTimeout(() => {
+          setIsTransitioning(false);
+          setPreviousBgImage(null);
+        }, 500);
+      }
+    }
+  }, [hoveredProject]);
+
+  // Clear previous image after transition
+  useEffect(() => {
+    if (currentBgImage) {
+      const timer = setTimeout(() => {
+        setPreviousBgImage(null);
+      }, 500); // Match transition duration
+      return () => clearTimeout(timer);
+    }
+  }, [currentBgImage]);
+
+  // Calculate category counts
+  const getCategoryCounts = () => {
+    const counts = {
+      ALL: films.length,
+      COMMERCIAL: films.filter((f) =>
+        f.category?.toLowerCase().includes("commercial")
+      ).length,
+      BEDRIJFSFILM: films.filter((f) =>
+        f.category?.toLowerCase().includes("bedrijfsfilm")
+      ).length,
+      SOCIAL: films.filter(
+        (f) =>
+          f.category?.toLowerCase().includes("social-video") ||
+          f.category?.toLowerCase().includes("social")
+      ).length,
+    };
+    return counts;
+  };
+
+  // Filter films based on active filter
+  const getFilteredFilms = () => {
+    if (activeFilter === "ALL") return films;
+
+    return films.filter((film) => {
+      const category = film.category?.toLowerCase() || "";
+      switch (activeFilter) {
+        case "COMMERCIAL":
+          return category.includes("commercial");
+        case "BEDRIJFSFILM":
+          return category.includes("bedrijfsfilm");
+        case "SOCIAL":
+          return (
+            category.includes("social-video") || category.includes("social")
+          );
+        default:
+          return true;
+      }
+    });
+  };
+
+  // Format duration (assuming it comes as seconds or mm:ss format)
+  const formatDuration = (duration) => {
+    if (!duration) return "00:00";
+
+    // If it's already in mm:ss format, return as is
+    if (typeof duration === "string" && duration.includes(":")) {
+      return duration;
+    }
+
+    // If it's in seconds, convert to mm:ss
+    if (typeof duration === "number") {
+      const minutes = Math.floor(duration / 60);
+      const seconds = duration % 60;
+      return `${minutes.toString().padStart(2, "0")}:${seconds
+        .toString()
+        .padStart(2, "0")}`;
+    }
+
+    return "00:00";
+  };
+
+  const counts = getCategoryCounts();
+  const filteredFilms = getFilteredFilms();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-2xl font-light text-white">Loading...</div>
+      </div>
+    );
+  }
 
   return (
-    <div className="container mx-auto px-4 py-8 min-h-screen">
-      <h1 className="text-3xl font-bold mb-8">Our Films</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {films.map((film) => (
-          <div
-            key={film.title}
-            className="border rounded-lg overflow-hidden shadow-lg"
-          >
-            {film.imageUrl && (
-              <div className="relative h-48 w-full">
-                <Image
-                  src={film.imageUrl}
-                  alt={film.title}
-                  fill
-                  className="object-cover"
-                />
+    <div className="relative min-h-screen bg-black text-white px-5 md:px-10 py-8">
+      {/* Background Image */}
+      <div className="absolute inset-0 z-0 min-h-full overflow-hidden">
+        {/* Previous/Outgoing Image */}
+        {previousBgImage && (
+          <img
+            src={previousBgImage}
+            alt="Previous Background"
+            className={`absolute w-full min-h-full object-cover transition-opacity duration-500 ease-out ${
+              isTransitioning ? "opacity-0" : "opacity-80"
+            }`}
+            style={{ height: "100%" }}
+          />
+        )}
+
+        {/* Current/Incoming Image */}
+        {currentBgImage && (
+          <img
+            src={currentBgImage}
+            alt="Current Background"
+            className={`absolute w-full min-h-full object-cover transition-opacity duration-500 ease-out ${
+              isTransitioning ? "opacity-80" : "opacity-80"
+            }`}
+            style={{ height: "100%" }}
+          />
+        )}
+
+        {/* Dark overlay for better text readability */}
+        <div className="absolute inset-0 bg-black/20" />
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10">
+        {/* Header */}
+        <div className="mb-16 pt-16 md:pt-32">
+          <h1 className="text-6xl uppercase md:text-8xl font-bold text-white mb-2">
+            Projecten
+          </h1>
+        </div>
+
+        {/* Navigation and Filters */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 space-y-4 md:space-y-0">
+          {/* View Toggle */}
+          <div className="flex space-x-6">
+            <button
+              onClick={() => setActiveView("GRID")}
+              className={`text-lg font-medium transition-colors ${
+                activeView === "GRID"
+                  ? "text-white"
+                  : "text-gray-500 hover:text-gray-300"
+              }`}
+            >
+              GRID
+            </button>
+            <button
+              onClick={() => setActiveView("LIST")}
+              className={`text-lg font-medium transition-colors ${
+                activeView === "LIST"
+                  ? "text-white"
+                  : "text-gray-500 hover:text-gray-300"
+              }`}
+            >
+              LIST
+            </button>
+          </div>
+
+          {/* Category Filters */}
+          <div className="flex space-x-6">
+            {Object.entries(counts).map(([category, count]) => (
+              <button
+                key={category}
+                onClick={() => setActiveFilter(category)}
+                className={`text-lg transition-colors ${
+                  activeFilter === category
+                    ? "text-white"
+                    : "text-gray-500 hover:text-gray-300"
+                }`}
+              >
+                {category} <span className="text-sm">({count})</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Content */}
+        {activeView === "LIST" ? (
+          <div className="space-y-1">
+            {/* Table Header */}
+            <div className="grid grid-cols-3 gap-8 pb-4 border-b border-gray-800">
+              <div className="text-gray-400 text-sm font-medium">NAME</div>
+              <div className="text-gray-400 text-sm font-medium">CLIENT</div>
+              <div className="text-gray-400 text-sm font-medium text-right">
+                DURATION
+              </div>
+            </div>
+
+            {/* Table Rows */}
+            {filteredFilms.map((film) => (
+              <a
+                key={film._id}
+                href={`/project/${film._id}`}
+                className="relative grid grid-cols-3 gap-8 py-2 border-b border-gray-900 transition-colors group overflow-hidden"
+                onMouseEnter={() => setHoveredProject(film)}
+                onMouseLeave={() => setHoveredProject(null)}
+                style={{
+                  position: "relative",
+                }}
+              >
+                {/* White background animation from bottom to top */}
+                <div className="absolute inset-0 bg-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out z-0" />
+
+                <div className="relative z-10 text-white group-hover:text-black transition-colors duration-300">
+                  {film.title}
+                </div>
+                <div className="relative z-10 text-gray-400 group-hover:text-gray-700 transition-colors duration-300">
+                  {film.client || "—"}
+                </div>
+                <div className="relative z-10 text-gray-400 group-hover:text-gray-700 transition-colors duration-300 text-right">
+                  {formatDuration(film.duration)}
+                </div>
+              </a>
+            ))}
+
+            {filteredFilms.length === 0 && (
+              <div className="py-8 text-center text-gray-500">
+                No projects found for this category.
               </div>
             )}
-            <div className="p-4">
-              <h2 className="text-xl font-semibold mb-2">{film.title}</h2>
-              <div className="text-sm text-gray-600 space-y-1">
-                <p>
-                  <span className="font-medium">Category:</span> {film.category}
-                </p>
-                <p>
-                  <span className="font-medium">Year:</span> {film.year}
-                </p>
-                <p>
-                  <span className="font-medium">Client:</span> {film.client}
-                </p>
-              </div>
-              {film.description && (
-                <p className="mt-2 text-gray-700">{film.description}</p>
-              )}
-            </div>
           </div>
-        ))}
+        ) : (
+          // Grid view (placeholder for now)
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredFilms.map((film) => (
+              <a key={film._id} href={`/project/${film._id}`} className="group">
+                <div className="aspect-video bg-gray-800 rounded-lg mb-3 overflow-hidden">
+                  {film.imageUrl && (
+                    <img
+                      src={film.imageUrl}
+                      alt={film.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  )}
+                </div>
+                <div className="flex justify-between items-start">
+                  <h3 className="text-white group-hover:text-gray-300 transition-colors">
+                    {film.title}
+                  </h3>
+                  <span className="text-gray-400 text-sm">
+                    {formatDuration(film.duration)}
+                  </span>
+                </div>
+              </a>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

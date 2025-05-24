@@ -2,34 +2,42 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useMediaQuery } from "react-responsive";
+
 const Footer = () => {
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
 
-  const [time, setTime] = useState(
-    new Date().toLocaleTimeString("en-NL", {
-      timeZone: "Europe/Amsterdam",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
-    })
-  );
+  // Initialize time as null to prevent hydration mismatch
+  const [time, setTime] = useState(null);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // Set mounted to true after component mounts
+    setMounted(true);
+
+    // Function to get current time
+    const getCurrentTime = () => {
+      return new Date().toLocaleTimeString("en-NL", {
+        timeZone: "Europe/Amsterdam",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      });
+    };
+
+    // Set initial time
+    setTime(getCurrentTime());
+
+    // Start timer
     const timer = setInterval(() => {
-      setTime(
-        new Date().toLocaleTimeString("en-NL", {
-          timeZone: "Europe/Amsterdam",
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-          hour12: false,
-        })
-      );
+      setTime(getCurrentTime());
     }, 1000);
 
     return () => clearInterval(timer);
   }, []);
+
+  // Don't render time until component is mounted
+  const displayTime = mounted ? time : "--:--:--";
 
   return (
     <div
@@ -65,7 +73,7 @@ const Footer = () => {
             <address className="text-sm not-italic leading-relaxed uppercase">
               <p>John M. Keynesplein 12-46,</p>
               <p>1066 EP Amsterdam, Nederland</p>
-              <p className="text-gray-500">{time} (GMT +1)</p>
+              <p className="text-gray-500">{displayTime} (GMT +1)</p>
             </address>
           </div>
 

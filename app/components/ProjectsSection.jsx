@@ -41,14 +41,14 @@ const ProjectsSection = ({ projects }) => {
 
       // Set initial styles
       gsap.set(splitTextRef.current.chars, {
-        y: 50,
+        x: 5,
         opacity: 0,
         filter: "blur(8px)",
       });
 
       // Create staggered animation on scroll
       gsap.to(splitTextRef.current.chars, {
-        y: 0,
+        x: 0,
         opacity: 1,
         filter: "blur(0px)",
         stagger: 0.03,
@@ -117,18 +117,7 @@ const ProjectsSection = ({ projects }) => {
                   href={`/project/${project._id}`}
                   className="project-card block"
                 >
-                  {project.videoUrl ? (
-                    <video
-                      src={project.videoUrl}
-                      className="aspect-video w-full object-cover"
-                      autoPlay
-                      muted
-                      loop
-                      playsInline
-                    />
-                  ) : (
-                    <ProjectImage project={project} />
-                  )}
+                  <ProjectImage project={project} />
                 </a>
                 <div className="mt-2 flex items-center justify-between">
                   <h3 className="text-white text-sm uppercase font-franklin">
