@@ -67,7 +67,8 @@ const OpenAnimation = () => {
       filter: "blur(0px)",
       x: 0,
       opacity: 1,
-      duration: 1,
+      duration: 1.5,
+      delay: 0.5,
       ease: "power2.out",
       stagger: 0.2,
     })
@@ -95,11 +96,11 @@ const OpenAnimation = () => {
         marginLeft: "0px",
         marginRight: "0px",
         duration: 1.2,
-        ease: "power1.out",
+        ease: "power2.inOut",
       });
 
     // Separate timeline for big text animation with character staggering
-    const bigTextTimeline = gsap.timeline({ delay: 3 }); // Start after main animation
+    const bigTextTimeline = gsap.timeline({ delay: 4 }); // Start after main animation
 
     // Animate "mursee" characters with stagger
     if (bigMurseeSplitRef.current) {
@@ -125,7 +126,7 @@ const OpenAnimation = () => {
           ease: "power2.out",
           stagger: 0.05, // Stagger each character by 0.05 seconds
         },
-        "-=0.3" // Start 0.3 seconds before mursee animation ends
+        "-=0.5" // Start 0.3 seconds before mursee animation ends
       );
     }
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
@@ -12,6 +13,7 @@ const HeroSection = () => {
   const tlRef = useRef(null);
   const [scrollPosition, setScrollPosition] = useState(0);
   const [animationStarted, setAnimationStarted] = useState(false);
+  const pathname = usePathname();
 
   // Register GSAP plugins once
   useEffect(() => {
@@ -176,16 +178,20 @@ const HeroSection = () => {
   useEffect(() => {
     const handleScroll = () => {
       // Only apply parallax if animation is complete
-      if (animationCompletedRef.current) {
+      if (animationCompletedRef.current && typeof window !== "undefined") {
         const position = window.scrollY;
         setScrollPosition(position);
       }
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    if (typeof window !== "undefined") {
+      window.addEventListener("scroll", handleScroll, { passive: true });
+    }
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      if (typeof window !== "undefined") {
+        window.removeEventListener("scroll", handleScroll);
+      }
     };
   }, []);
 
@@ -204,10 +210,7 @@ const HeroSection = () => {
 
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (
-        document.visibilityState === "visible" &&
-        window.location.pathname === "/"
-      ) {
+      if (document.visibilityState === "visible" && pathname === "/") {
         if (!animationCompletedRef.current) {
           runAnimation();
         }
@@ -218,7 +221,7 @@ const HeroSection = () => {
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, []);
+  }, [pathname]);
 
   const parallaxOffset = scrollPosition * 0.3;
 

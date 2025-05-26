@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import gsap from "gsap";
 import ContactDialog from "./ContactDialog";
 
@@ -10,6 +11,7 @@ const SimpleNavigation = () => {
   const navRef = useRef(null);
   const mobileMenuRef = useRef(null);
   const [animationStarted, setAnimationStarted] = useState(false);
+  const pathname = usePathname();
 
   // Navigation links
   const navLinks = [
@@ -66,7 +68,7 @@ const SimpleNavigation = () => {
 
   useEffect(() => {
     // Only run animation on home page
-    if (window.location.pathname === "/") {
+    if (pathname === "/") {
       const timer = setTimeout(() => {
         runNavAnimation();
       }, 100);
@@ -81,14 +83,11 @@ const SimpleNavigation = () => {
         gsap.set(navRef.current, { y: 0, opacity: 1 });
       }
     }
-  }, []);
+  }, [pathname]);
 
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (
-        document.visibilityState === "visible" &&
-        window.location.pathname === "/"
-      ) {
+      if (document.visibilityState === "visible" && pathname === "/") {
         runNavAnimation();
       }
     };
@@ -97,7 +96,7 @@ const SimpleNavigation = () => {
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, []);
+  }, [pathname]);
 
   // Animate mobile menu
   useEffect(() => {
@@ -123,9 +122,7 @@ const SimpleNavigation = () => {
     <>
       <header
         className={`fixed top-0 left-0 w-full z-50 ${
-          !animationStarted && window.location.pathname === "/"
-            ? "hidden-initially"
-            : ""
+          !animationStarted && pathname === "/" ? "hidden-initially" : ""
         }`}
       >
         <nav

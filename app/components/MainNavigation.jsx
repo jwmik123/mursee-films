@@ -1,12 +1,14 @@
 "use client";
 
 import { useRef, useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import gsap from "gsap";
 import Link from "next/link";
 
 const MainNavigation = () => {
   const navRef = useRef(null);
   const [animationStarted, setAnimationStarted] = useState(false);
+  const pathname = usePathname();
 
   const runNavAnimation = () => {
     // Set animation started state to true to allow showing elements
@@ -45,10 +47,7 @@ const MainNavigation = () => {
 
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (
-        document.visibilityState === "visible" &&
-        window.location.pathname === "/"
-      ) {
+      if (document.visibilityState === "visible" && pathname === "/") {
         runNavAnimation();
       }
     };
@@ -57,7 +56,7 @@ const MainNavigation = () => {
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, []);
+  }, [pathname]);
 
   return (
     <header

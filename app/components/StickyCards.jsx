@@ -58,7 +58,7 @@ const StickyCards = () => {
         scrollTrigger: {
           trigger: container.current,
           start: "top top",
-          end: `+=${window.innerHeight * (totalCards + 2)}`,
+          end: `+=${(typeof window !== "undefined" ? window.innerHeight : 800) * (totalCards + 2)}`,
           pin: true,
           scrub: 1,
         },

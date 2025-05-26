@@ -157,8 +157,10 @@ export default function ProjectImage({ project }) {
 
   // Handle resize
   useEffect(() => {
-    window.addEventListener("resize", updateSize);
-    return () => window.removeEventListener("resize", updateSize);
+    if (typeof window !== "undefined") {
+      window.addEventListener("resize", updateSize);
+      return () => window.removeEventListener("resize", updateSize);
+    }
   }, []);
 
   // Animation loop
@@ -185,7 +187,9 @@ export default function ProjectImage({ project }) {
 
     const { width, height } = containerRef.current.getBoundingClientRect();
     rendererRef.current.setSize(width, height);
-    rendererRef.current.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    rendererRef.current.setPixelRatio(
+      Math.min(typeof window !== "undefined" ? window.devicePixelRatio : 1, 2)
+    );
   };
 
   // Mouse handlers
