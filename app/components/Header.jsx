@@ -4,9 +4,17 @@ import { useRef, useEffect, useState } from "react";
 import gsap from "gsap";
 import Link from "next/link";
 
-const MainNavigation = () => {
+const Header = () => {
   const navRef = useRef(null);
   const [animationStarted, setAnimationStarted] = useState(false);
+
+  // Register GSAP plugins once
+  useEffect(() => {
+    // Register ScrollTrigger plugin if needed
+    if (typeof window !== "undefined") {
+      gsap.registerPlugin();
+    }
+  }, []);
 
   const runNavAnimation = () => {
     // Set animation started state to true to allow showing elements
@@ -15,7 +23,7 @@ const MainNavigation = () => {
     // Reset animation states
     gsap.set(navRef.current, { y: -100, opacity: 0 });
 
-    // Animate navigation in after OpenAnimation completes (around 5 seconds)
+    // Animate navigation in
     gsap.fromTo(
       navRef.current,
       {
@@ -27,7 +35,7 @@ const MainNavigation = () => {
         opacity: 1,
         duration: 1,
         ease: "power4.out",
-        delay: 5, // Wait for OpenAnimation to complete
+        delay: 2.5, // Delay to match the timing from HeroSection
       }
     );
   };
@@ -67,7 +75,7 @@ const MainNavigation = () => {
     >
       <nav
         ref={navRef}
-        className="z-[9999] absolute w-full p-10 flex flex-row justify-between items-center transition-opacity duration-500"
+        className="z-20 absolute w-full p-10 flex flex-row justify-between items-center transition-opacity duration-500"
       >
         {/* Left section - Logo */}
         <div className="flex">
@@ -110,4 +118,4 @@ const MainNavigation = () => {
   );
 };
 
-export default MainNavigation;
+export default Header;

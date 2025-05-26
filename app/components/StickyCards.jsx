@@ -36,6 +36,7 @@ const StickyCards = () => {
   ];
 
   const container = useRef(null);
+  const bgtextRef = useRef(null);
 
   useGSAP(
     () => {
@@ -69,9 +70,26 @@ const StickyCards = () => {
         overflow: "hidden",
       });
       gsap.set(".background-text span", {
-        y: "0%",
-        rotate: 0,
+        y: "100%",
+        rotate: 5,
         display: "block",
+        filter: "blur(10px)",
+      });
+
+      // Background text animation when hitting middle of screen
+      gsap.to(".background-text span", {
+        y: "0",
+        filter: "blur(0px)",
+        rotate: 0,
+        duration: 1,
+        ease: "power2.out",
+        stagger: 0.2,
+        scrollTrigger: {
+          trigger: bgtextRef.current,
+          start: "top 50%",
+          end: "top 50%",
+          toggleActions: "play none none reverse",
+        },
       });
 
       // Initial animation to move container from bottom to higher position
@@ -183,7 +201,10 @@ const StickyCards = () => {
             </div>
           ))}
         </div>
-        <div className="background-text -z-10 absolute top-10 bottom-10 left-10 right-10 flex flex-col justify-between text-white uppercase font-franklin font-bold text-[13vw]">
+        <div
+          ref={bgtextRef}
+          className="background-text -z-10 absolute top-10 bottom-10 left-10 right-10 flex flex-col justify-between text-white uppercase font-franklin font-bold text-[13vw]"
+        >
           <div className="overflow-hidden">
             <span className="self-start">Wat Mursee</span>
           </div>

@@ -1,5 +1,4 @@
-import HeroSection from "./components/HeroSection";
-import MainNavigation from "./components/MainNavigation";
+// import HeroSection from "./components/HeroSection";
 import AboutSection from "./components/AboutSection";
 import ProjectsSection from "./components/ProjectsSection";
 import ApproachSection from "./components/ApproachSection";
@@ -7,6 +6,7 @@ import StickyCards from "./components/StickyCards";
 import ImageGrid from "./components/ImageGrid";
 import { fetchData } from "@/lib/sanity";
 import MobileCards from "./components/MobileCards";
+import OpenAnimation from "./components/OpenAnimation";
 
 // Define the type for our film data
 const filmQuery = `*[_type == "film"] {
@@ -35,8 +35,8 @@ export default async function Home() {
 
   return (
     <main>
-      <MainNavigation />
-      <HeroSection />
+      {/* <HeroSection /> */}
+      <OpenAnimation />
       <AboutSection />
 
       {/* <section
