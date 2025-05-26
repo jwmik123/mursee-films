@@ -94,7 +94,7 @@ const ImageGrid = ({ images }) => {
   }, []);
 
   return (
-    <div className="px-5 md:px-10 py-24 bg-black flex items-center justify-center mt-[60vh]">
+    <div className="px-5 md:px-10 py-24 bg-black flex items-center justify-center md:mt-[60vh]">
       <div className="w-full">
         <h2
           ref={titleRef}

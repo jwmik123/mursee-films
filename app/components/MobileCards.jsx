@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 
 const MobileCards = () => {
   const cardData = [
@@ -33,7 +34,7 @@ const MobileCards = () => {
   return (
     <section className="mobile-cards px-5 py-16 bg-black">
       {/* Background text */}
-      <div className="background-text relative flex flex-col justify-between text-white uppercase font-franklin font-bold text-[13vw] pointer-events-none">
+      <div className="background-text relative flex flex-col justify-between text-white uppercase font-franklin font-bold text-[13vw] pointer-events-none mb-10">
         <div className="overflow-hidden">
           <span className="self-start">Wat Mursee</span>
         </div>
