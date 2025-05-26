@@ -6,7 +6,9 @@ import ContactDialog from "./ContactDialog";
 
 const SimpleNavigation = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navRef = useRef(null);
+  const mobileMenuRef = useRef(null);
   const [animationStarted, setAnimationStarted] = useState(false);
 
   // Navigation links
@@ -23,6 +25,19 @@ const SimpleNavigation = () => {
 
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
+  };
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+  };
+
+  // Close mobile menu when clicking on a link
+  const handleMobileLinkClick = () => {
+    closeMobileMenu();
   };
 
   const runNavAnimation = () => {
@@ -84,6 +99,26 @@ const SimpleNavigation = () => {
     };
   }, []);
 
+  // Animate mobile menu
+  useEffect(() => {
+    if (mobileMenuRef.current) {
+      if (isMobileMenuOpen) {
+        gsap.fromTo(
+          mobileMenuRef.current,
+          { y: "-100%", opacity: 0 },
+          { y: "0%", opacity: 1, duration: 0.3, ease: "power2.out" }
+        );
+      } else {
+        gsap.to(mobileMenuRef.current, {
+          y: "-100%",
+          opacity: 0,
+          duration: 0.3,
+          ease: "power2.in",
+        });
+      }
+    }
+  }, [isMobileMenuOpen]);
+
   return (
     <>
       <header
@@ -97,13 +132,13 @@ const SimpleNavigation = () => {
           ref={navRef}
           className="flex items-center justify-between px-10 py-6 mx-auto"
         >
-          {/* Left section (empty for balance) */}
+          {/* Left section */}
           <div className="w-32">
             <h1 className="font-franklin text-white text-4xl">MF</h1>
           </div>
 
-          {/* Middle section - Navigation links */}
-          <div className="flex justify-center">
+          {/* Desktop Navigation - Hidden on mobile */}
+          <div className="hidden md:flex justify-center">
             <ul className="flex space-x-8">
               {navLinks.map((link, index) => (
                 <li key={index}>
@@ -118,8 +153,8 @@ const SimpleNavigation = () => {
             </ul>
           </div>
 
-          {/* Right section - CTA button */}
-          <div className=" flex justify-end">
+          {/* Desktop CTA button - Hidden on mobile */}
+          <div className="hidden md:flex justify-end">
             <button
               onClick={handleContactClick}
               className="px-4 py-2 bg-white text-black text-sm uppercase font-franklin hover:bg-gray-200 transition-colors"
@@ -127,8 +162,80 @@ const SimpleNavigation = () => {
               Start een project
             </button>
           </div>
+
+          {/* Mobile Hamburger Menu Button */}
+          <div className="md:hidden">
+            <button
+              onClick={toggleMobileMenu}
+              className="relative w-8 h-6 flex flex-col justify-center items-center focus:outline-none"
+              aria-label="Toggle mobile menu"
+            >
+              {/* Hamburger lines that animate to cross */}
+              <span
+                className={`block w-6 h-0.5 bg-white transition-all duration-300 ease-in-out ${
+                  isMobileMenuOpen
+                    ? "rotate-45 translate-y-0.5"
+                    : "-translate-y-1"
+                }`}
+              ></span>
+              <span
+                className={`block w-6 h-0.5 bg-white transition-all duration-300 ease-in-out ${
+                  isMobileMenuOpen
+                    ? "-rotate-45 -translate-y-0.5"
+                    : "translate-y-1"
+                }`}
+              ></span>
+            </button>
+          </div>
         </nav>
       </header>
+
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          onClick={closeMobileMenu}
+        ></div>
+      )}
+
+      {/* Mobile Menu */}
+      <div
+        ref={mobileMenuRef}
+        className={`fixed top-0 left-0 w-full h-1/2 bg-black z-40 md:hidden transform -translate-y-full opacity-0 m-[5px] rounded-lg border border-gray-800`}
+        style={{ height: "calc(50vh - 10px)" }}
+      >
+        <div className="flex flex-col h-full p-6 pt-20">
+          {/* Navigation Links */}
+          <div className="flex-1 flex flex-col justify-center">
+            <ul className="space-y-8 text-center">
+              {navLinks.map((link, index) => (
+                <li key={index}>
+                  <Link
+                    href={link.href}
+                    onClick={handleMobileLinkClick}
+                    className="text-2xl uppercase text-white hover:text-gray-300 transition-colors font-franklin block"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Mobile CTA Button */}
+          <div className="mt-8 text-center">
+            <button
+              onClick={(e) => {
+                handleContactClick(e);
+                closeMobileMenu();
+              }}
+              className="px-6 py-3 bg-white text-black text-sm uppercase font-franklin hover:bg-gray-200 transition-colors rounded"
+            >
+              Start een project
+            </button>
+          </div>
+        </div>
+      </div>
 
       <ContactDialog isOpen={isDialogOpen} onClose={handleCloseDialog} />
     </>

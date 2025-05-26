@@ -10,6 +10,7 @@ import { useGSAP } from "@gsap/react";
 const ImageGrid = ({ images }) => {
   const titleRef = useRef(null);
   const splitTextRef = useRef(null);
+  const gridRef = useRef(null);
 
   useGSAP(() => {
     // Register GSAP plugins
@@ -57,6 +58,33 @@ const ImageGrid = ({ images }) => {
       });
     }
 
+    // Animate grid images with staggered translateY on scroll
+    if (gridRef.current) {
+      const gridItems = gridRef.current.querySelectorAll(".grid-item");
+
+      // Set initial state for grid items
+      gsap.set(gridItems, {
+        y: 100,
+        opacity: 0,
+      });
+
+      // Create staggered animation for grid items
+      gsap.to(gridItems, {
+        y: 0,
+        opacity: 1,
+        stagger: 0.1,
+        duration: 1,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: gridRef.current,
+          start: "top 80%",
+          end: "bottom 20%",
+          scrub: 1,
+          markers: false,
+        },
+      });
+    }
+
     return () => {
       // Clean up any split text instances
       if (splitTextRef.current) {
@@ -64,6 +92,7 @@ const ImageGrid = ({ images }) => {
       }
     };
   }, []);
+
   return (
     <div className="px-5 md:px-10 py-24 bg-black flex items-center justify-center mt-[60vh]">
       <div className="w-full">
@@ -73,11 +102,14 @@ const ImageGrid = ({ images }) => {
         >
           Partners
         </h2>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 pt-12">
+        <div
+          ref={gridRef}
+          className="grid grid-cols-2 md:grid-cols-5 gap-4 pt-12"
+        >
           {Array.from({ length: 8 }).map((_, index) => (
             <div
               key={index}
-              className="aspect-video bg-white/10 overflow-hidden relative text-center flex items-center justify-center"
+              className="grid-item aspect-video bg-white/10 overflow-hidden relative text-center flex items-center justify-center"
             >
               {images && images[index] ? (
                 <div className="w-1/2 h-auto flex items-center justify-center">
