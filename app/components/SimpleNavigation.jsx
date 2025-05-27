@@ -139,7 +139,7 @@ const SimpleNavigation = () => {
       >
         <nav
           ref={navRef}
-          className="flex items-center justify-between px-10 py-6 mx-auto"
+          className="flex items-center justify-between px-10 opacity-0 py-6 mx-auto"
         >
           {/* Left section */}
           <div className="w-32">

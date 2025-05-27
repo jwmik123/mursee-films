@@ -183,13 +183,13 @@ const OpenAnimation = () => {
       <div className="absolute inset-0 flex items-center md:items-end justify-between px-8 md:pb-1 pointer-events-none">
         <span
           ref={bigMurseeRef}
-          className="text-[14vw] md:text-[17vw] font-bold text-white tracking-[-0.05em] whitespace-nowrap font-franklin uppercase"
+          className="text-[14vw] md:text-[17vw] font-bold text-white opacity-0 tracking-[-0.05em] whitespace-nowrap font-franklin uppercase"
         >
           mursee
         </span>
         <span
           ref={bigFilmsRef}
-          className="text-[14vw] md:text-[17vw] font-bold text-white tracking-[-0.05em] whitespace-nowrap font-franklin uppercase"
+          className="text-[14vw] md:text-[17vw] font-bold text-white opacity-0 tracking-[-0.05em] whitespace-nowrap font-franklin uppercase"
         >
           films
         </span>
