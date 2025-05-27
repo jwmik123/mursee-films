@@ -74,30 +74,39 @@ const OpenAnimation = () => {
     })
       // Then animate video width to 300px
       .to(videoRef.current, {
-        width: "300px",
+        width: "200px",
+        height: "100px",
         duration: 0.8,
         ease: "power2.out",
       })
       // Hide original text spans first
       .to([murseeRef.current, filmsRef.current], {
         opacity: 0,
+
         duration: 0.5,
         ease: "power2.out",
       })
-      .to([murseeRef.current, filmsRef.current], {
-        width: "0px",
-        duration: 0.1,
-        ease: "power2.inOut",
-      })
+
       // Then make video full viewport
       .to(videoRef.current, {
         width: "100%",
         height: "100vh",
         marginLeft: "0px",
+        borderRadius: "10px",
         marginRight: "0px",
         duration: 1.2,
         ease: "power2.inOut",
-      });
+      })
+      .to(
+        [murseeRef.current, filmsRef.current],
+        {
+          position: "absolute",
+
+          duration: 0.5,
+          ease: "power2.out",
+        },
+        "-=0.5"
+      );
 
     // Separate timeline for big text animation with character staggering
     const bigTextTimeline = gsap.timeline({ delay: 4 }); // Start after main animation
@@ -159,7 +168,7 @@ const OpenAnimation = () => {
           {/* Video Element */}
           <video
             ref={videoRef}
-            className="w-[0px] h-[200px] max-w-full box-border object-cover rounded-lg mx-5 mt-0 md:mt-5"
+            className="w-[0px] h-[100px] max-w-full box-border object-cover mx-5 mt-0 md:mt-5"
             muted
             loop
             playsInline
