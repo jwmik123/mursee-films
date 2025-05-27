@@ -1,10 +1,9 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { useMediaQuery } from "react-responsive";
 
 const Footer = () => {
-  const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
+  const [isMobile, setIsMobile] = useState(false);
 
   // Initialize time as null to prevent hydration mismatch
   const [time, setTime] = useState(null);
@@ -13,6 +12,17 @@ const Footer = () => {
   useEffect(() => {
     // Set mounted to true after component mounts
     setMounted(true);
+
+    // Check if mobile on client side
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    // Initial check
+    checkMobile();
+
+    // Add resize listener
+    window.addEventListener("resize", checkMobile);
 
     // Function to get current time
     const getCurrentTime = () => {
@@ -33,7 +43,10 @@ const Footer = () => {
       setTime(getCurrentTime());
     }, 1000);
 
-    return () => clearInterval(timer);
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener("resize", checkMobile);
+    };
   }, []);
 
   // Don't render time until component is mounted

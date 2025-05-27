@@ -291,7 +291,7 @@ export default function ProjectsPage() {
                   : "text-gray-500 hover:text-gray-300"
               }`}
             >
-              LIST
+              LIJST
             </button>
           </div>
 
@@ -321,10 +321,10 @@ export default function ProjectsPage() {
           >
             {/* Table Header */}
             <div className="grid grid-cols-3 gap-8 pb-4 border-b border-gray-800">
-              <div className="text-gray-400 text-sm font-medium">NAME</div>
+              <div className="text-gray-400 text-sm font-medium">NAAM</div>
               <div className="text-gray-400 text-sm font-medium">CLIENT</div>
               <div className="text-gray-400 text-sm font-medium text-right">
-                DURATION
+                DUUR
               </div>
             </div>
 

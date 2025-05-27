@@ -11,6 +11,7 @@ const SimpleNavigation = () => {
   const navRef = useRef(null);
   const mobileMenuRef = useRef(null);
   const [animationStarted, setAnimationStarted] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
 
   // Navigation links
@@ -19,6 +20,11 @@ const SimpleNavigation = () => {
     { label: "PROJECTEN", href: "/projects" },
     { label: "OVER ONS", href: "/about" },
   ];
+
+  // Set mounted state after component mounts
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleContactClick = (e) => {
     e.preventDefault();
@@ -67,6 +73,8 @@ const SimpleNavigation = () => {
   };
 
   useEffect(() => {
+    if (!mounted) return;
+
     // Only run animation on home page
     if (pathname === "/") {
       const timer = setTimeout(() => {
@@ -83,9 +91,11 @@ const SimpleNavigation = () => {
         gsap.set(navRef.current, { y: 0, opacity: 1 });
       }
     }
-  }, [pathname]);
+  }, [pathname, mounted]);
 
   useEffect(() => {
+    if (!mounted) return;
+
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible" && pathname === "/") {
         runNavAnimation();
@@ -96,7 +106,7 @@ const SimpleNavigation = () => {
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [pathname]);
+  }, [pathname, mounted]);
 
   // Animate mobile menu
   useEffect(() => {
@@ -122,7 +132,9 @@ const SimpleNavigation = () => {
     <>
       <header
         className={`fixed top-0 left-0 w-full z-50 ${
-          !animationStarted && pathname === "/" ? "hidden-initially" : ""
+          mounted && !animationStarted && pathname === "/"
+            ? "hidden-initially"
+            : ""
         }`}
       >
         <nav
@@ -131,7 +143,9 @@ const SimpleNavigation = () => {
         >
           {/* Left section */}
           <div className="w-32">
-            <h1 className="font-franklin text-white text-4xl">MF</h1>
+            <Link href="/">
+              <h1 className="font-franklin text-white text-4xl">MF</h1>
+            </Link>
           </div>
 
           {/* Desktop Navigation - Hidden on mobile */}

@@ -1,0 +1,36 @@
+/* Media Chrome Responsive Styles */
+.mediaController {
+  container: media-chrome / inline-size;
+}
+
+/* Small screens - minimal controls */
+@container (max-width: 420px) {
+  .mediaController media-seek-backward-button,
+  .mediaController media-seek-forward-button,
+  .mediaController media-volume-range {
+    display: none !important;
+  }
+}
+
+/* Medium screens - hide some controls */
+@container (min-width: 421px) and (max-width: 768px) {
+  .mediaController media-seek-backward-button,
+  .mediaController media-seek-forward-button {
+    display: none !important;
+  }
+}
+
+/* Large screens - show all controls */
+@container (min-width: 769px) {
+  .mediaController media-control-bar {
+    display: flex;
+  }
+}
+
+/* Ensure video fills container completely */
+.mediaController video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+}

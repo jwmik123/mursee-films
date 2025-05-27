@@ -6,6 +6,7 @@ import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import styles from "./media-player.module.css";
 
 // Import media-chrome React components
 import {
@@ -51,11 +52,19 @@ const filmQuery = `*[_type == "film" && slug.current == $slug][0] {
   "duration": fullVideo.asset->data.duration
 }`;
 
+// Query to fetch all films for navigation
+const allFilmsQuery = `*[_type == "film"] | order(_createdAt asc) {
+  _id,
+  title,
+  "slug": slug.current
+}`;
+
 export default function ProjectDetailPage({ params }) {
   // Unwrap params using React.use()
   const resolvedParams = use(params);
 
   const [film, setFilm] = useState(null);
+  const [allFilms, setAllFilms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -65,21 +74,27 @@ export default function ProjectDetailPage({ params }) {
   const videoElementRef = useRef(null);
 
   useEffect(() => {
-    const loadFilm = async () => {
+    const loadData = async () => {
       try {
-        const filmData = await fetchData(filmQuery, {
-          slug: resolvedParams.slug,
-        });
+        // Fetch both the current film and all films for navigation
+        const [filmData, allFilmsData] = await Promise.all([
+          fetchData(filmQuery, { slug: resolvedParams.slug }),
+          fetchData(allFilmsQuery),
+        ]);
+
         console.log("Film data:", filmData);
+        console.log("All films:", allFilmsData);
+
         setFilm(filmData);
+        setAllFilms(allFilmsData || []);
       } catch (error) {
-        console.error("Error fetching film:", error);
+        console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    loadFilm();
+    loadData();
   }, [resolvedParams.slug]);
 
   // Video event handlers
@@ -126,7 +141,7 @@ export default function ProjectDetailPage({ params }) {
       const stillItems = stillsRef.current.querySelectorAll(".still-item");
       gsap.fromTo(
         stillItems,
-        { y: 100, opacity: 0 },
+        { y: 50, opacity: 0 },
         {
           y: 0,
           opacity: 1,
@@ -160,17 +175,26 @@ export default function ProjectDetailPage({ params }) {
     );
   }
 
+  // Calculate next project for navigation
+  const currentIndex = allFilms.findIndex(
+    (p) => p.slug === resolvedParams.slug
+  );
+  const nextIndex =
+    currentIndex !== -1 ? (currentIndex + 1) % allFilms.length : 0;
+  const nextProject = allFilms[nextIndex];
+
   return (
     <div className="min-h-screen bg-black text-white">
-      {/* Fullscreen Video Player */}
-      <div className="relative w-full h-screen overflow-hidden">
+      {/* Video Player */}
+      <div className="relative w-full overflow-hidden bg-black">
         {/* Simple Media Chrome Player */}
         <MediaController
           ref={playerRef}
-          className="absolute inset-0 w-full h-full"
+          className={`w-full ${styles.mediaController}`}
+          breakpoints="sm:384 md:576 lg:768 xl:960"
           style={{
             width: "100%",
-            height: "100%",
+            aspectRatio: "16/9",
           }}
         >
           <HlsVideo
@@ -181,11 +205,12 @@ export default function ProjectDetailPage({ params }) {
             muted
             crossOrigin=""
             playsInline
-            className="w-full h-full object-cover"
+            className="w-full h-full"
             style={{
               width: "100%",
               height: "100%",
               objectFit: "cover",
+              objectPosition: "center",
             }}
             onError={(e) => {
               console.error("Video error:", e);
@@ -203,7 +228,7 @@ export default function ProjectDetailPage({ params }) {
         </MediaController>
 
         {/* Back Button Overlay */}
-        <div className="absolute top-6 left-6 z-20">
+        {/* <div className="absolute top-6 left-6 z-20">
           <button
             onClick={() => window.history.back()}
             className="text-white hover:text-gray-300 transition-colors bg-black/50 backdrop-blur-sm rounded-full p-3"
@@ -224,12 +249,12 @@ export default function ProjectDetailPage({ params }) {
               />
             </svg>
           </button>
-        </div>
+        </div> */}
       </div>
 
       {/* Project Information Section */}
       <div ref={titleRef} className="px-5 md:px-10 py-16 md:py-24">
-        <div className="max-w-4xl mx-auto">
+        <div className="container mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16">
             {/* Left Column - Title and Description */}
             <div>
@@ -244,7 +269,7 @@ export default function ProjectDetailPage({ params }) {
             </div>
 
             {/* Right Column - Project Details */}
-            <div className="space-y-8">
+            <div className="space-y-8 md:text-right">
               <div>
                 <h3 className="text-sm uppercase tracking-wider text-gray-400 mb-2 font-franklin">
                   Client
@@ -274,19 +299,12 @@ export default function ProjectDetailPage({ params }) {
 
       {/* Stills Gallery */}
       {film.stills && film.stills.length > 0 && (
-        <div
-          ref={stillsRef}
-          className="px-5 md:px-10 py-16 md:py-24 bg-gray-900"
-        >
+        <div ref={stillsRef} className="px-5 md:px-10 py-16 md:py-24">
           <div className="max-w-7xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-franklin uppercase tracking-wider mb-12 text-center">
-              Stills
-            </h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2  gap-6 md:gap-8">
               {film.stills.map((still, index) => (
                 <div key={index} className="still-item group cursor-pointer">
-                  <div className="aspect-video overflow-hidden rounded-lg bg-gray-800">
+                  <div className="aspect-video overflow-hidden bg-gray-800">
                     <Image
                       src={still.url}
                       alt={still.alt || `Still ${index + 1}`}
@@ -298,6 +316,25 @@ export default function ProjectDetailPage({ params }) {
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Next Project Section */}
+      {nextProject && (
+        <div
+          className="w-full bg-black text-white py-24 cursor-pointer hover:bg-white hover:text-black transition-colors duration-300"
+          onClick={() => {
+            window.location.href = `/projects/${nextProject.slug}`;
+          }}
+        >
+          <div className="container mx-auto px-5 md:px-10 text-right">
+            <p className="text-sm uppercase tracking-wider text-gray-400 mb-2 font-franklin">
+              Volgende Project
+            </p>
+            <h2 className="text-4xl md:text-6xl font-franklin uppercase tracking-wider">
+              {nextProject.title}
+            </h2>
           </div>
         </div>
       )}
