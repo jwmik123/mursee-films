@@ -1,19 +1,35 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { fetchData } from "@/lib/sanity";
+import MuxPlayer from "@mux/mux-player-react";
+import { gsap } from "gsap";
 
-// Define the query for film data including duration
+// Define the query for film data including duration and proper Mux video data
 const filmQuery = `*[_type == "film"] {
   _id,
   title,
+  "slug": slug.current,
   category,
   description,
   year,
   client,
-  duration,
   "imageUrl": image.asset->url,
-  "videoUrl": videoFile.asset->url
+  "previewVideo": previewVideo.asset->{
+    _id,
+    assetId,
+    playbackId,
+    status,
+    data
+  },
+  "fullVideo": fullVideo.asset->{
+    _id,
+    assetId,
+    playbackId,
+    status,
+    data
+  },
+  "duration": fullVideo.asset->data.duration
 }`;
 
 export default function ProjectsPage() {
@@ -22,14 +38,32 @@ export default function ProjectsPage() {
   const [activeView, setActiveView] = useState("LIST"); // GRID or LIST
   const [activeFilter, setActiveFilter] = useState("ALL");
   const [hoveredProject, setHoveredProject] = useState(null);
-  const [currentBgImage, setCurrentBgImage] = useState(null);
-  const [previousBgImage, setPreviousBgImage] = useState(null);
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [currentBgVideo, setCurrentBgVideo] = useState(null);
+  const [previousBgVideo, setPreviousBgVideo] = useState(null);
+
+  // Refs for GSAP animations
+  const currentVideoRef = useRef(null);
+  const previousVideoRef = useRef(null);
+  const overlayRef = useRef(null);
 
   useEffect(() => {
     const loadFilms = async () => {
       try {
         const filmsData = await fetchData(filmQuery);
+        console.log("Films data:", filmsData); // Debug log
+
+        // Debug: Check video data specifically
+        filmsData.forEach((film, index) => {
+          console.log(`Film ${index + 1} (${film.title}):`, {
+            hasPreviewVideo: !!film.previewVideo,
+            previewVideo: film.previewVideo,
+            playbackId: film.previewVideo?.playbackId,
+            status: film.previewVideo?.status,
+            duration: film.duration,
+            fullVideoData: film.fullVideo?.data,
+          });
+        });
+
         setFilms(filmsData);
       } catch (error) {
         console.error("Error fetching films:", error);
@@ -41,49 +75,75 @@ export default function ProjectsPage() {
     loadFilms();
   }, []);
 
-  // Handle smooth background image transitions
+  // Handle background video changes
   useEffect(() => {
-    if (hoveredProject && hoveredProject.imageUrl) {
-      // Only transition if the image is different
-      if (currentBgImage !== hoveredProject.imageUrl) {
-        setIsTransitioning(true);
-        // Move current to previous
-        if (currentBgImage) {
-          setPreviousBgImage(currentBgImage);
-        }
-        // Set new current image
-        setCurrentBgImage(hoveredProject.imageUrl);
+    console.log("Hover effect triggered:", {
+      hoveredProject: hoveredProject?.title,
+      hasPreviewVideo: !!hoveredProject?.previewVideo,
+      playbackId: hoveredProject?.previewVideo?.playbackId,
+      currentBgVideo,
+      previousBgVideo,
+    });
 
-        // Clear transition state after animation completes
-        setTimeout(() => {
-          setIsTransitioning(false);
-          setPreviousBgImage(null);
-        }, 500); // Match transition duration
+    if (
+      hoveredProject &&
+      hoveredProject.previewVideo &&
+      hoveredProject.previewVideo.playbackId
+    ) {
+      console.log(
+        "Setting background video:",
+        hoveredProject.previewVideo.playbackId
+      );
+      // Only change if the video is different
+      if (currentBgVideo !== hoveredProject.previewVideo.playbackId) {
+        // Clean up previous video immediately
+        setPreviousBgVideo(null);
+        // Set new current video immediately without transition
+        setCurrentBgVideo(hoveredProject.previewVideo.playbackId);
       }
     } else {
-      // When not hovering, fade out current image
-      if (currentBgImage) {
-        setIsTransitioning(true);
-        setPreviousBgImage(currentBgImage);
-        setCurrentBgImage(null);
+      console.log("Clearing background video");
+      // When not hovering, fade out current video with animation
+      if (currentBgVideo) {
+        // Animate fade out of current video before clearing it
+        if (currentVideoRef.current) {
+          gsap.to(currentVideoRef.current, {
+            opacity: 0,
+            scale: 1.05,
+            duration: 0.8,
+            ease: "power2.out",
+            onComplete: () => {
+              // Clear current video
+              setCurrentBgVideo(null);
+              setPreviousBgVideo(null);
+            },
+          });
 
-        setTimeout(() => {
-          setIsTransitioning(false);
-          setPreviousBgImage(null);
-        }, 500);
+          // Also animate overlay back to normal
+          gsap.to(overlayRef.current, {
+            opacity: 1,
+            duration: 0.6,
+            ease: "power2.out",
+          });
+        } else {
+          // Fallback if ref is not available
+          setCurrentBgVideo(null);
+          setPreviousBgVideo(null);
+        }
       }
     }
   }, [hoveredProject]);
 
-  // Clear previous image after transition
+  // Handle initial video load - immediate display
   useEffect(() => {
-    if (currentBgImage) {
-      const timer = setTimeout(() => {
-        setPreviousBgImage(null);
-      }, 500); // Match transition duration
-      return () => clearTimeout(timer);
+    if (currentVideoRef.current && currentBgVideo) {
+      // Set video to visible immediately
+      gsap.set(currentVideoRef.current, {
+        opacity: 0.6,
+        scale: 1,
+      });
     }
-  }, [currentBgImage]);
+  }, [currentBgVideo]);
 
   // Calculate category counts
   const getCategoryCounts = () => {
@@ -125,7 +185,7 @@ export default function ProjectsPage() {
     });
   };
 
-  // Format duration (assuming it comes as seconds or mm:ss format)
+  // Format duration from Mux video data (comes as seconds)
   const formatDuration = (duration) => {
     if (!duration) return "00:00";
 
@@ -134,10 +194,10 @@ export default function ProjectsPage() {
       return duration;
     }
 
-    // If it's in seconds, convert to mm:ss
+    // If it's in seconds (from Mux), convert to mm:ss
     if (typeof duration === "number") {
       const minutes = Math.floor(duration / 60);
-      const seconds = duration % 60;
+      const seconds = Math.floor(duration % 60);
       return `${minutes.toString().padStart(2, "0")}:${seconds
         .toString()
         .padStart(2, "0")}`;
@@ -159,34 +219,45 @@ export default function ProjectsPage() {
 
   return (
     <div className="relative min-h-screen bg-black text-white px-5 md:px-10 py-8">
-      {/* Background Image */}
+      {/* Background Video */}
       <div className="absolute inset-0 z-0 min-h-full overflow-hidden">
-        {/* Previous/Outgoing Image */}
-        {previousBgImage && (
-          <img
-            src={previousBgImage}
-            alt="Previous Background"
-            className={`absolute w-full min-h-full object-cover transition-opacity duration-500 ease-out ${
-              isTransitioning ? "opacity-0" : "opacity-80"
-            }`}
-            style={{ height: "100%" }}
-          />
-        )}
-
-        {/* Current/Incoming Image */}
-        {currentBgImage && (
-          <img
-            src={currentBgImage}
-            alt="Current Background"
-            className={`absolute w-full min-h-full object-cover transition-opacity duration-500 ease-out ${
-              isTransitioning ? "opacity-80" : "opacity-80"
-            }`}
-            style={{ height: "100%" }}
+        {/* Current Video */}
+        {currentBgVideo && (
+          <MuxPlayer
+            ref={currentVideoRef}
+            playbackId={currentBgVideo}
+            autoPlay
+            muted
+            thumbnailTime="0"
+            loop
+            playsInline
+            controls={false}
+            nohotkeys
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{
+              width: "100%",
+              // height: "100%",
+              objectFit: "cover",
+              opacity: 1,
+            }}
+            onError={(e) => {
+              console.error("Current video error:", e);
+              console.error(
+                "Failed to load video with playbackId:",
+                currentBgVideo
+              );
+            }}
+            onLoadStart={() =>
+              console.log("Current video load started:", currentBgVideo)
+            }
+            onCanPlay={() =>
+              console.log("Current video can play:", currentBgVideo)
+            }
           />
         )}
 
         {/* Dark overlay for better text readability */}
-        <div className="absolute inset-0 bg-black/20" />
+        {/* <div ref={overlayRef} className="absolute inset-0 bg-black/40" /> */}
       </div>
 
       {/* Content */}
@@ -244,7 +315,10 @@ export default function ProjectsPage() {
 
         {/* Content */}
         {activeView === "LIST" ? (
-          <div className="space-y-1">
+          <div
+            className="space-y-1"
+            onMouseLeave={() => setHoveredProject(null)}
+          >
             {/* Table Header */}
             <div className="grid grid-cols-3 gap-8 pb-4 border-b border-gray-800">
               <div className="text-gray-400 text-sm font-medium">NAME</div>
@@ -258,10 +332,9 @@ export default function ProjectsPage() {
             {filteredFilms.map((film) => (
               <a
                 key={film._id}
-                href={`/project/${film._id}`}
+                href={`/projects/${film.slug}`}
                 className="relative grid grid-cols-3 gap-8 py-2 border-b border-gray-900 transition-colors group overflow-hidden"
                 onMouseEnter={() => setHoveredProject(film)}
-                onMouseLeave={() => setHoveredProject(null)}
                 style={{
                   position: "relative",
                 }}
@@ -291,7 +364,11 @@ export default function ProjectsPage() {
           // Grid view (placeholder for now)
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredFilms.map((film) => (
-              <a key={film._id} href={`/project/${film._id}`} className="group">
+              <a
+                key={film._id}
+                href={`/projects/${film.slug}`}
+                className="group"
+              >
                 <div className="aspect-video bg-gray-800 rounded-lg mb-3 overflow-hidden">
                   {film.imageUrl && (
                     <img

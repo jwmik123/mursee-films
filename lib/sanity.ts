@@ -13,5 +13,35 @@ export async function fetchData<T>(
   query: string,
   params?: Record<string, any>
 ): Promise<T> {
-  return client.fetch<T>(query, params);
+  try {
+    // Check if required environment variables are present
+    if (!process.env.NEXT_PUBLIC_SANITY_PROJECT_ID) {
+      throw new Error(
+        "Missing NEXT_PUBLIC_SANITY_PROJECT_ID environment variable"
+      );
+    }
+
+    console.log("Sanity config:", {
+      projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
+      dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
+      hasToken: !!process.env.SANITY_API_TOKEN,
+    });
+
+    const result = await client.fetch<T>(query, params);
+    return result;
+  } catch (error) {
+    console.error("Sanity fetch error:", error);
+
+    // If it's a network error or HTML response, provide more context
+    if (error instanceof Error) {
+      if (error.message.includes("Unexpected token '<'")) {
+        console.error(
+          "Received HTML instead of JSON - likely a configuration or network issue"
+        );
+        console.error("Check your Sanity project ID and dataset configuration");
+      }
+    }
+
+    throw error;
+  }
 }

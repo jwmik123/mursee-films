@@ -114,7 +114,7 @@ const ProjectsSection = ({ projects }) => {
             {projects.map((project) => (
               <div key={project._id}>
                 <a
-                  href={`/project/${project._id}`}
+                  href={`/projects/${project.slug}`}
                   className="project-card block"
                 >
                   <ProjectImage project={project} />
@@ -153,7 +153,7 @@ const ProjectsSection = ({ projects }) => {
               {projects.map((project) => (
                 <SwiperSlide key={project._id}>
                   <a
-                    href={`/project/${project._id}`}
+                    href={`/projects/${project.slug}`}
                     className="project-card block"
                   >
                     {/* {project.videoUrl ? (

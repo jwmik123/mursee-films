@@ -12,6 +12,7 @@ import OpenAnimation from "./components/OpenAnimation";
 const filmQuery = `*[_type == "film"] {
   _id,
   title,
+  "slug": slug.current,
   category,
   description,
   year,
