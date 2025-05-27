@@ -19,11 +19,11 @@ const ContactDialog = ({ isOpen, onClose }) => {
   const contentRef = useRef(null);
 
   const projectTypes = [
-    "Commerciële video",
-    "Documentaire",
+    "Commercial",
+    "Social video",
     "Bedrijfsfilm",
-    "Event videografie",
     "Muziekvideo",
+    "Event",
     "Anders",
   ];
 
@@ -240,7 +240,7 @@ const ContactDialog = ({ isOpen, onClose }) => {
                     value={formData.message}
                     onChange={handleChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent font-franklin resize-none"
-                    placeholder="Vertel ons meer over jouw project..."
+                    placeholder="Vertel ons kort over jouw project…"
                   />
                 </div>
               </div>
