@@ -6,12 +6,15 @@ export const client = createClient({
   apiVersion: "2025-02-13", // Use today's date or your preferred version
   useCdn: process.env.NODE_ENV === "production",
   token: process.env.SANITY_API_TOKEN,
+  perspective: "published", // or "previewDrafts" for draft content
+  stega: false,
 });
 
 // Helper function to fetch data
 export async function fetchData<T>(
   query: string,
-  params?: Record<string, any>
+  params?: Record<string, any>,
+  options?: { cache?: RequestCache; next?: { revalidate?: number } }
 ): Promise<T> {
   try {
     // Check if required environment variables are present
@@ -27,7 +30,16 @@ export async function fetchData<T>(
       hasToken: !!process.env.SANITY_API_TOKEN,
     });
 
-    const result = await client.fetch<T>(query, params);
+    // Default cache options for server-side rendering
+    const defaultOptions = {
+      cache: "no-store" as RequestCache,
+      next: { revalidate: 0 },
+    };
+
+    const result = await client.fetch<T>(query, params, {
+      ...defaultOptions,
+      ...options,
+    });
     return result;
   } catch (error) {
     console.error("Sanity fetch error:", error);

@@ -8,6 +8,10 @@ import { fetchData } from "@/lib/sanity";
 import MobileCards from "./components/MobileCards";
 import OpenAnimation from "./components/OpenAnimation";
 
+// Force dynamic rendering and disable caching
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 // Define the type for our film data
 const filmQuery = `*[_type == "film"] {
   _id,
