@@ -2,8 +2,11 @@
 
 import { useState, useEffect, useRef } from "react";
 import { fetchData } from "@/lib/sanity";
-import MuxPlayer from "@mux/mux-player-react";
 import { gsap } from "gsap";
+
+// Import media-chrome React components
+import { MediaController } from "media-chrome/react";
+import HlsVideo from "hls-video-element/react";
 
 // Define the query for film data including duration and proper Mux video data
 const filmQuery = `*[_type == "film"] {
@@ -139,7 +142,7 @@ export default function ProjectsPage() {
     if (currentVideoRef.current && currentBgVideo) {
       // Set video to visible immediately
       gsap.set(currentVideoRef.current, {
-        opacity: 0.6,
+        opacity: 1,
         scale: 1,
       });
     }
@@ -218,42 +221,51 @@ export default function ProjectsPage() {
   }
 
   return (
-    <div className="relative min-h-screen bg-black text-white px-5 md:px-10 py-8">
+    <div className="relative min-h-screen bg-black text-white  overflow-hidden">
       {/* Background Video */}
-      <div className="absolute inset-0 z-0 min-h-full overflow-hidden">
+      <div className="absolute inset-0 z-0 h-screen w-full overflow-hidden">
         {/* Current Video */}
         {currentBgVideo && (
-          <MuxPlayer
+          <MediaController
             ref={currentVideoRef}
-            playbackId={currentBgVideo}
-            autoPlay
-            muted
-            thumbnailTime="0"
-            loop
-            playsInline
-            controls={false}
-            nohotkeys
-            className="absolute inset-0 w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full"
             style={{
-              width: "100%",
-              // height: "100%",
-              objectFit: "cover",
-              opacity: 1,
+              width: "100vw",
+              height: "100vh",
             }}
-            onError={(e) => {
-              console.error("Current video error:", e);
-              console.error(
-                "Failed to load video with playbackId:",
-                currentBgVideo
-              );
-            }}
-            onLoadStart={() =>
-              console.log("Current video load started:", currentBgVideo)
-            }
-            onCanPlay={() =>
-              console.log("Current video can play:", currentBgVideo)
-            }
-          />
+          >
+            <HlsVideo
+              slot="media"
+              src={`https://stream.mux.com/${currentBgVideo}.m3u8`}
+              autoPlay
+              muted
+              loop
+              playsInline
+              crossOrigin=""
+              className="absolute inset-0 w-auto h-full object-cover"
+              style={{
+                height: "100vh",
+                aspectRatio: "16/9",
+                objectFit: "cover",
+                objectPosition: "center",
+                minHeight: "100vh",
+                minWidth: "100%",
+              }}
+              onError={(e) => {
+                console.error("Current video error:", e);
+                console.error(
+                  "Failed to load video with playbackId:",
+                  currentBgVideo
+                );
+              }}
+              onLoadStart={() =>
+                console.log("Current video load started:", currentBgVideo)
+              }
+              onCanPlay={() =>
+                console.log("Current video can play:", currentBgVideo)
+              }
+            />
+          </MediaController>
         )}
 
         {/* Dark overlay for better text readability */}
@@ -261,7 +273,7 @@ export default function ProjectsPage() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10">
+      <div className="relative z-10 px-5 md:px-10 py-8">
         {/* Header */}
         <div className="mb-16 pt-16 md:pt-32">
           <h1 className="text-6xl uppercase md:text-8xl font-bold text-white mb-2">
@@ -315,12 +327,9 @@ export default function ProjectsPage() {
 
         {/* Content */}
         {activeView === "LIST" ? (
-          <div
-            className="space-y-1"
-            onMouseLeave={() => setHoveredProject(null)}
-          >
+          <div className="" onMouseLeave={() => setHoveredProject(null)}>
             {/* Table Header */}
-            <div className="grid grid-cols-3 gap-8 pb-4 border-b border-gray-800">
+            <div className="grid grid-cols-3 gap-8 pb-4 border-b border-white">
               <div className="text-gray-400 text-sm font-medium">NAAM</div>
               <div className="text-gray-400 text-sm font-medium">CLIENT</div>
               <div className="text-gray-400 text-sm font-medium text-right">
@@ -333,7 +342,7 @@ export default function ProjectsPage() {
               <a
                 key={film._id}
                 href={`/projects/${film.slug}`}
-                className="relative grid grid-cols-3 gap-8 py-2 border-b border-gray-900 transition-colors group overflow-hidden"
+                className="relative grid grid-cols-3 py-2 border-b border-white/20 transition-colors group overflow-hidden"
                 onMouseEnter={() => setHoveredProject(film)}
                 style={{
                   position: "relative",

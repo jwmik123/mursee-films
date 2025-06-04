@@ -4,11 +4,6 @@ const nextConfig = {
   images: {
     domains: ["cdn.sanity.io"],
   },
-  experimental: {
-    video: {
-      providers: ["mux"],
-    },
-  },
 };
 
 export default withNextVideo(nextConfig);

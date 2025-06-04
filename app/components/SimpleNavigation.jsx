@@ -168,9 +168,12 @@ const SimpleNavigation = () => {
           <div className="hidden md:flex justify-end">
             <button
               onClick={handleContactClick}
-              className="px-4 py-2 bg-white text-black text-sm uppercase font-franklin hover:bg-gray-200 transition-colors"
+              className="relative px-4 py-2 text-white text-sm uppercase font-franklin overflow-hidden group border border-white"
             >
-              Start een project
+              <span className="relative z-10 group-hover:text-black transition-colors duration-300">
+                Start een project
+              </span>
+              <div className="absolute inset-0 bg-white transform origin-bottom scale-y-0 group-hover:scale-y-100 transition-transform duration-300 ease-out"></div>
             </button>
           </div>
 

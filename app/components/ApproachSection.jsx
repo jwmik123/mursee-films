@@ -120,10 +120,12 @@ const ApproachSection = () => {
       >
         <p className="text-white text-xl w-1/2">Pre production</p>
         <p className="text-white text-xl w-1/2">
-          We don't do volume. We partner with only five clients a year, focusing
-          our expertise on their success. Every detail is crafted, every
-          decision strategic, and every outcome transformative. We build brands
-          that set new benchmarks.
+          In de pre-productie denken we samen na over het verhaal dat u wilt
+          vertellen. We helpen bij het uitwerken van het concept, het schrijven
+          van het script, het plannen van de draaidag(en) en het regelen van de
+          juiste locatie(s), acteurs en apparatuur. Dit is de fase waarin uw
+          idee vorm krijgt en waarin we zorgen dat alles tot in de puntjes
+          voorbereid is.
         </p>
       </div>
       <div
@@ -132,10 +134,11 @@ const ApproachSection = () => {
       >
         <p className="text-white text-xl w-1/2">Production</p>
         <p className="text-white text-xl w-1/2">
-          We don't do volume. We partner with only five clients a year, focusing
-          our expertise on their success. Every detail is crafted, every
-          decision strategic, and every outcome transformative. We build brands
-          that set new benchmarks.
+          Tijdens de productie brengen we het plan tot leven. Met professionele
+          camera’s, belichting en een ervaren crew zorgen we voor de opnames van
+          uw video. Of het nu gaat om een commercial, bedrijfsfilm of social
+          media content – we zorgen voor de juiste sfeer, beelden en kwaliteit
+          die passen bij uw merk.
         </p>
       </div>
       <div
@@ -144,10 +147,11 @@ const ApproachSection = () => {
       >
         <p className="text-white text-xl w-1/2">Post production</p>
         <p className="text-white text-xl w-1/2">
-          We don't do volume. We partner with only five clients a year, focusing
-          our expertise on their success. Every detail is crafted, every
-          decision strategic, and every outcome transformative. We build brands
-          that set new benchmarks.
+          Na het filmen gaan we aan de slag met de montage, kleurcorrectie,
+          geluidsbewerking en eventuele animaties of ondertitels. Dit is waar
+          alles samenkomt tot een pakkend eindresultaat. U krijgt een eerste
+          versie te zien en op basis van uw feedback maken we de video helemaal
+          af naar wens.
         </p>
       </div>
     </section>

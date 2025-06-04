@@ -117,15 +117,6 @@ const Footer = () => {
                 </Link>
                 <span className="text-[10px] ml-1.5 text-gray-500">[78]</span>
               </div>
-              <div className="flex items-center">
-                <Link
-                  href="/directors"
-                  className="text-sm hover:text-gray-600 transition-colors"
-                >
-                  REGIE
-                </Link>
-                <span className="text-[10px] ml-1.5 text-gray-500">[1]</span>
-              </div>
               <Link
                 href="/contact"
                 className="text-sm hover:text-gray-600 transition-colors"
@@ -158,20 +149,12 @@ const Footer = () => {
                 INSTAGRAM
               </Link>
               <Link
-                href="https://twitter.com/"
+                href="https://www.linkedin.com/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sm hover:text-gray-600 transition-colors"
               >
-                X
-              </Link>
-              <Link
-                href="https://www.facebook.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm hover:text-gray-600 transition-colors"
-              >
-                FACEBOOK
+                LINKEDIN
               </Link>
             </nav>
           </div>
