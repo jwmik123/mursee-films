@@ -7,6 +7,11 @@ import Link from "next/link";
 
 const Header = () => {
   const navRef = useRef(null);
+  const logoRef = useRef(null);
+  const mRef = useRef(null);
+  const fRef = useRef(null);
+  const urseeRef = useRef(null);
+  const filmsRef = useRef(null);
   const [animationStarted, setAnimationStarted] = useState(false);
   const pathname = usePathname();
 
@@ -40,6 +45,79 @@ const Header = () => {
         delay: 2.5, // Delay to match the timing from HeroSection
       }
     );
+  };
+
+  // Logo hover animation
+  const handleLogoHover = () => {
+    // Animate the F moving to the right
+    gsap.to(fRef.current, {
+      x: 120,
+      duration: 0.4,
+      ease: "power2.out",
+    });
+
+    // Animate "ursee" appearing
+    gsap.fromTo(
+      urseeRef.current,
+      {
+        opacity: 0,
+        x: -20,
+        scale: 0.8,
+      },
+      {
+        opacity: 1,
+        x: 0,
+        scale: 1,
+        duration: 0.4,
+        ease: "power2.out",
+        delay: 0.1,
+      }
+    );
+
+    // Animate "Films" appearing
+    gsap.fromTo(
+      filmsRef.current,
+      {
+        opacity: 0,
+        x: -20,
+        scale: 0.8,
+      },
+      {
+        opacity: 1,
+        x: 0,
+        scale: 1,
+        duration: 0.4,
+        ease: "power2.out",
+        delay: 0.2,
+      }
+    );
+  };
+
+  const handleLogoLeave = () => {
+    // Animate the F moving back
+    gsap.to(fRef.current, {
+      x: 0,
+      duration: 0.3,
+      ease: "power2.out",
+    });
+
+    // Animate "ursee" disappearing
+    gsap.to(urseeRef.current, {
+      opacity: 0,
+      x: -20,
+      scale: 0.8,
+      duration: 0.3,
+      ease: "power2.out",
+    });
+
+    // Animate "Films" disappearing
+    gsap.to(filmsRef.current, {
+      opacity: 0,
+      x: -20,
+      scale: 0.8,
+      duration: 0.3,
+      ease: "power2.out",
+    });
   };
 
   useEffect(() => {
@@ -79,9 +157,29 @@ const Header = () => {
         {/* Left section - Logo */}
         <div className="flex">
           <Link href="/">
-            <h1 className="font-franklin text-white text-4xl cursor-pointer hover:text-gray-300 transition-colors">
-              MF
-            </h1>
+            <div
+              ref={logoRef}
+              className="font-franklin text-white text-4xl cursor-pointer hover:text-gray-300 transition-colors flex items-center overflow-hidden"
+              onMouseEnter={handleLogoHover}
+              onMouseLeave={handleLogoLeave}
+            >
+              <span ref={mRef}>M</span>
+              <span
+                ref={urseeRef}
+                className="opacity-0"
+                style={{ position: "absolute", left: "1.5rem" }}
+              >
+                ursee
+              </span>
+              <span ref={fRef}>F</span>
+              <span
+                ref={filmsRef}
+                className="opacity-0"
+                style={{ position: "absolute", left: "2.5rem" }}
+              >
+                ilms
+              </span>
+            </div>
           </Link>
         </div>
 

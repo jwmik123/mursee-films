@@ -185,6 +185,50 @@ export default function ProjectDetailPage({ params }) {
 
   return (
     <div className="min-h-screen bg-black text-white">
+      {/* Project Information Section */}
+      <div ref={titleRef} className="px-5 md:px-10 pb-16 pt-44">
+        <div className="container mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16">
+            {/* Left Column - Title and Description */}
+            <div>
+              <h1 className="text-4xl md:text-6xl font-franklin uppercase tracking-wider mb-6">
+                {film.title}
+              </h1>
+              {film.description && (
+                <p className="text-lg md:text-xl text-gray-300 leading-relaxed font-tinos">
+                  {film.description}
+                </p>
+              )}
+            </div>
+
+            {/* Right Column - Project Details */}
+            <div className="space-y-8 md:text-right">
+              <div>
+                <h3 className="text-sm uppercase tracking-wider text-gray-400 mb-2 font-franklin">
+                  Client
+                </h3>
+                <p className="text-xl font-tinos">{film.client}</p>
+              </div>
+
+              <div>
+                <h3 className="text-sm uppercase tracking-wider text-gray-400 mb-2 font-franklin">
+                  Category
+                </h3>
+                <p className="text-xl font-tinos capitalize">
+                  {film.category?.replace("-", " ")}
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-sm uppercase tracking-wider text-gray-400 mb-2 font-franklin">
+                  Year
+                </h3>
+                <p className="text-xl font-tinos">{film.year}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       {/* Video Player */}
       <div className="relative w-full overflow-hidden bg-black">
         {/* Simple Media Chrome Player */}
@@ -250,51 +294,6 @@ export default function ProjectDetailPage({ params }) {
             </svg>
           </button>
         </div> */}
-      </div>
-
-      {/* Project Information Section */}
-      <div ref={titleRef} className="px-5 md:px-10 py-16 md:py-24">
-        <div className="container mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16">
-            {/* Left Column - Title and Description */}
-            <div>
-              <h1 className="text-4xl md:text-6xl font-franklin uppercase tracking-wider mb-6">
-                {film.title}
-              </h1>
-              {film.description && (
-                <p className="text-lg md:text-xl text-gray-300 leading-relaxed font-tinos">
-                  {film.description}
-                </p>
-              )}
-            </div>
-
-            {/* Right Column - Project Details */}
-            <div className="space-y-8 md:text-right">
-              <div>
-                <h3 className="text-sm uppercase tracking-wider text-gray-400 mb-2 font-franklin">
-                  Client
-                </h3>
-                <p className="text-xl font-tinos">{film.client}</p>
-              </div>
-
-              <div>
-                <h3 className="text-sm uppercase tracking-wider text-gray-400 mb-2 font-franklin">
-                  Category
-                </h3>
-                <p className="text-xl font-tinos capitalize">
-                  {film.category?.replace("-", " ")}
-                </p>
-              </div>
-
-              <div>
-                <h3 className="text-sm uppercase tracking-wider text-gray-400 mb-2 font-franklin">
-                  Year
-                </h3>
-                <p className="text-xl font-tinos">{film.year}</p>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Stills Gallery */}

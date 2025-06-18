@@ -10,6 +10,11 @@ const SimpleNavigation = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navRef = useRef(null);
   const mobileMenuRef = useRef(null);
+  const logoRef = useRef(null);
+  const mRef = useRef(null);
+  const fRef = useRef(null);
+  const urseeRef = useRef(null);
+  const filmsRef = useRef(null);
   const [animationStarted, setAnimationStarted] = useState(false);
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
@@ -46,6 +51,76 @@ const SimpleNavigation = () => {
   // Close mobile menu when clicking on a link
   const handleMobileLinkClick = () => {
     closeMobileMenu();
+  };
+
+  // Logo hover animation
+  const handleLogoHover = () => {
+    // Temporarily set width to auto to get the natural width
+    gsap.set(urseeRef.current, { width: "auto" });
+    gsap.set(filmsRef.current, { width: "auto" });
+
+    // Get the natural width of the text elements
+    const urseeWidth = urseeRef.current.offsetWidth;
+    const filmsWidth = filmsRef.current.offsetWidth;
+
+    // Reset to 0 for animation
+    gsap.set(urseeRef.current, { width: 0 });
+    gsap.set(filmsRef.current, { width: 0 });
+
+    // Animate "ursee" appearing by expanding its width
+    gsap.fromTo(
+      urseeRef.current,
+      {
+        width: 0,
+        opacity: 0,
+        scale: 0.8,
+      },
+      {
+        width: urseeWidth,
+        opacity: 1,
+        scale: 1,
+        duration: 0.4,
+        ease: "power2.out",
+      }
+    );
+
+    // Animate "Films" appearing by expanding its width
+    gsap.fromTo(
+      filmsRef.current,
+      {
+        width: 0,
+        opacity: 0,
+        scale: 0.8,
+      },
+      {
+        width: filmsWidth,
+        opacity: 1,
+        scale: 1,
+        duration: 0.4,
+        ease: "power2.out",
+        delay: 0.1,
+      }
+    );
+  };
+
+  const handleLogoLeave = () => {
+    // Animate "ursee" disappearing by collapsing its width
+    gsap.to(urseeRef.current, {
+      width: 0,
+      opacity: 0,
+      scale: 0.8,
+      duration: 0.3,
+      ease: "power2.out",
+    });
+
+    // Animate "Films" disappearing by collapsing its width
+    gsap.to(filmsRef.current, {
+      width: 0,
+      opacity: 0,
+      scale: 0.8,
+      duration: 0.3,
+      ease: "power2.out",
+    });
   };
 
   const runNavAnimation = () => {
@@ -144,7 +219,29 @@ const SimpleNavigation = () => {
           {/* Left section */}
           <div className="w-32">
             <Link href="/">
-              <h1 className="font-franklin text-white text-4xl">MF</h1>
+              <div
+                ref={logoRef}
+                className="font-franklin text-white text-4xl cursor-pointer flex items-center"
+                onMouseEnter={handleLogoHover}
+                onMouseLeave={handleLogoLeave}
+              >
+                <span ref={mRef}>M</span>
+                <span
+                  ref={urseeRef}
+                  className="opacity-0 whitespace-nowrap"
+                  style={{ width: 0, display: "inline-block" }}
+                >
+                  URSEE&nbsp;
+                </span>
+                <span ref={fRef}>F</span>
+                <span
+                  ref={filmsRef}
+                  className="opacity-0 whitespace-nowrap"
+                  style={{ width: 0, display: "inline-block" }}
+                >
+                  ILMS
+                </span>
+              </div>
             </Link>
           </div>
 
