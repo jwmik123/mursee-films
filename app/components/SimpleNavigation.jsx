@@ -21,9 +21,9 @@ const SimpleNavigation = () => {
 
   // Navigation links
   const navLinks = [
-    { label: "HOME", href: "/" },
-    { label: "PROJECTEN", href: "/projects" },
-    { label: "OVER ONS", href: "/about" },
+    { label: "Home", href: "/" },
+    { label: "Projecten", href: "/projects" },
+    { label: "Studio", href: "/about" },
   ];
 
   // Set mounted state after component mounts
@@ -142,7 +142,7 @@ const SimpleNavigation = () => {
         opacity: 1,
         duration: 1,
         ease: "power4.out",
-        delay: 5, // Wait for OpenAnimation to complete
+        delay: 1.5, // Wait for OpenAnimation to complete
       }
     );
   };
@@ -206,7 +206,7 @@ const SimpleNavigation = () => {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 w-full z-50 ${
+        className={`fixed top-0 left-0 w-full z-50 flex justify-center ${
           mounted && !animationStarted && pathname === "/"
             ? "hidden-initially"
             : ""
@@ -214,14 +214,14 @@ const SimpleNavigation = () => {
       >
         <nav
           ref={navRef}
-          className="flex items-center justify-between px-10 opacity-0 py-6 mx-auto"
+          className="flex items-center justify-between px-10 opacity-0 py-2 mx-auto max-w-5xl w-full mt-4 rounded-md backdrop-blur-md bg-black/30 border border-white/10"
         >
           {/* Left section */}
           <div className="w-32">
             <Link href="/">
               <div
                 ref={logoRef}
-                className="font-franklin text-white text-4xl cursor-pointer flex items-center"
+                className="font-franklin text-white text-2xl cursor-pointer flex items-center"
                 onMouseEnter={handleLogoHover}
                 onMouseLeave={handleLogoLeave}
               >
@@ -252,7 +252,7 @@ const SimpleNavigation = () => {
                 <li key={index}>
                   <Link
                     href={link.href}
-                    className="text-sm uppercase text-white hover:text-gray-300 transition-colors font-franklin"
+                    className="text-sm text-white hover:text-gray-300 transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -265,7 +265,7 @@ const SimpleNavigation = () => {
           <div className="hidden md:flex justify-end">
             <button
               onClick={handleContactClick}
-              className="relative px-4 py-2 text-white text-sm uppercase font-franklin overflow-hidden group border border-white"
+              className="relative px-4 py-2 text-white text-sm uppercase font-franklin overflow-hidden group border border-white rounded-md"
             >
               <span className="relative z-10 group-hover:text-black transition-colors duration-300">
                 Start een project

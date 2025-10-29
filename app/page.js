@@ -6,7 +6,7 @@ import StickyCards from "./components/StickyCards";
 import ImageGrid from "./components/ImageGrid";
 import { fetchData } from "@/lib/sanity";
 import MobileCards from "./components/MobileCards";
-import OpenAnimation from "./components/OpenAnimation";
+import FeaturedProjectsHero from "./components/FeaturedProjectsHero";
 
 // Force dynamic rendering and disable caching
 export const dynamic = "force-dynamic";
@@ -21,8 +21,16 @@ const filmQuery = `*[_type == "film"] {
   description,
   year,
   client,
+  featured,
   "imageUrl": image.asset->url,
-  "videoUrl": videoFile.asset->url
+  "videoUrl": videoFile.asset->url,
+  "previewVideo": previewVideo.asset->{
+    _id,
+    assetId,
+    playbackId,
+    status,
+    data
+  }
 }`;
 
 export default async function Home() {
@@ -39,16 +47,17 @@ export default async function Home() {
   ];
 
   return (
-    <main>
-      {/* <HeroSection /> */}
-      <OpenAnimation />
-      <AboutSection />
+    <main className="h-screen overflow-hidden">
+      {/* Featured Projects Hero Section */}
+      <FeaturedProjectsHero projects={films} />
+
+      {/* <AboutSection /> */}
 
       {/* <section
         className={`w-full px-5 md:px-10 bg-black pt-16 pb-24 transition-opacity duration-500`}
       ></section> */}
 
-      <section className="projects w-full px-5 md:px-10 bg-black py-32">
+      {/* <section className="projects w-full px-5 md:px-10 bg-black py-32">
         <ProjectsSection projects={films} />
       </section>
       <div className="hidden md:block">
@@ -58,7 +67,7 @@ export default async function Home() {
         <MobileCards />
       </div>
       <ImageGrid images={images} />
-      <ApproachSection />
+      <ApproachSection /> */}
 
       {/* <section
         className={`w-full bg-black h-[100vh] transition-opacity duration-500`}

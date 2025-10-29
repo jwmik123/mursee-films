@@ -5,9 +5,11 @@ export const client = createClient({
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
   apiVersion: "2025-02-13", // Use today's date or your preferred version
   useCdn: process.env.NODE_ENV === "production",
-  token: process.env.SANITY_API_TOKEN,
+  token: process.env.NEXT_PUBLIC_SANITY_API_TOKEN,
   perspective: "published", // or "previewDrafts" for draft content
   stega: false,
+  requestTagPrefix: "mursee-films",
+  timeout: 30000, // Increase timeout to 30 seconds
 });
 
 // Helper function to fetch data
@@ -27,7 +29,7 @@ export async function fetchData<T>(
     console.log("Sanity config:", {
       projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
       dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
-      hasToken: !!process.env.SANITY_API_TOKEN,
+      hasToken: !!process.env.NEXT_PUBLIC_SANITY_API_TOKEN,
     });
 
     // Default cache options for server-side rendering

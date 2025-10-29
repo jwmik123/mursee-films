@@ -1,8 +1,10 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const Footer = () => {
+  const pathname = usePathname();
   const [isMobile, setIsMobile] = useState(false);
 
   // Initialize time as null to prevent hydration mismatch
@@ -51,6 +53,11 @@ const Footer = () => {
 
   // Don't render time until component is mounted
   const displayTime = mounted ? time : "--:--:--";
+
+  // Hide footer on homepage - return after all hooks are called
+  if (pathname === "/") {
+    return null;
+  }
 
   return (
     <div

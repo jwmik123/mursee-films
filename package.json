@@ -26,6 +26,7 @@
     "react-dom": "^19.0.0",
     "react-responsive": "^10.0.1",
     "resend": "^4.5.1",
+    "smooothy": "^0.0.26",
     "styled-components": "^6.1.8",
     "swiper": "^11.2.6",
     "three": "^0.174.0"

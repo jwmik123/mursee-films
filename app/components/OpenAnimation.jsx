@@ -26,9 +26,9 @@ const OpenAnimation = () => {
     });
 
     // Set initial states for big text containers (make them visible)
-    gsap.set([bigMurseeRef.current, bigFilmsRef.current], {
-      opacity: 1, // Make containers visible
-    });
+    // gsap.set([bigMurseeRef.current, bigFilmsRef.current], {
+    //   opacity: 1, // Make containers visible
+    // });
 
     // Create SplitText instances for big text
     if (bigMurseeRef.current && !bigMurseeSplitRef.current) {
@@ -92,7 +92,7 @@ const OpenAnimation = () => {
         width: "100%",
         height: "100vh",
         marginLeft: "0px",
-        borderRadius: "10px",
+        // borderRadius: "10px",
         marginRight: "0px",
         duration: 1.2,
         ease: "power2.inOut",
@@ -168,7 +168,7 @@ const OpenAnimation = () => {
           {/* Video Element */}
           <video
             ref={videoRef}
-            className="w-[0px] h-[100px] max-w-full box-border object-cover mx-5 mt-0 md:mt-5"
+            className="w-[0px] h-[100px] max-w-full box-border object-cover mx-5"
             muted
             loop
             playsInline
@@ -189,7 +189,7 @@ const OpenAnimation = () => {
       </div>
 
       {/* Big text for center animation */}
-      <div className="absolute inset-0 flex items-center md:items-end justify-between px-8 md:pb-1 pointer-events-none">
+      {/* <div className="absolute inset-0 flex items-center md:items-end justify-between px-8 md:pb-1 pointer-events-none">
         <span
           ref={bigMurseeRef}
           className="text-[14vw] md:text-[17vw] font-bold text-white opacity-0 tracking-[-0.05em] whitespace-nowrap font-franklin uppercase"
@@ -202,7 +202,7 @@ const OpenAnimation = () => {
         >
           films
         </span>
-      </div>
+      </div> */}
     </div>
   );
 };

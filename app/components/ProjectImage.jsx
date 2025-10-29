@@ -233,10 +233,8 @@ export default function ProjectImage({ project }) {
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className="aspect-video"
       style={{
         position: "relative",
-
         width: "100%",
         height: "100%",
         overflow: "hidden",
@@ -246,7 +244,6 @@ export default function ProjectImage({ project }) {
       <img
         src={project.imageUrl}
         alt={project.title}
-        className="aspect-video"
         style={{
           display: "block",
           width: "100%",
@@ -259,7 +256,6 @@ export default function ProjectImage({ project }) {
       {/* Canvas overlay for RGB effect */}
       <canvas
         ref={canvasRef}
-        className="aspect-video"
         style={{
           position: "absolute",
           top: 0,

@@ -1,22 +1,96 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import ProjectImage from "./ProjectImage";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation } from "swiper/modules";
+import Core from "smooothy";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
 import { useMediaQuery } from "react-responsive";
-
-import "swiper/css";
-// import "swiper/css/navigation";
 import { useGSAP } from "@gsap/react";
+
+// Utility function for smooth damping
+function damp(current, target, lambda, deltaTime) {
+  return current + (target - current) * (1 - Math.exp(-lambda * deltaTime));
+}
+
+// Extended Smooothy class with parallax
+class ParallaxSlider extends Core {
+  constructor(wrapper, config) {
+    super(wrapper, config);
+    this.parallaxElements = [...wrapper.querySelectorAll('[data-parallax]')];
+    this.lerpedSpeed = 0;
+  }
+
+  onUpdate({ speed, deltaTime, parallaxValues }) {
+    // Smooth out the speed for more gradual effects
+    this.lerpedSpeed = damp(this.lerpedSpeed, speed, 5, deltaTime);
+
+    // Disable pointer events on links while dragging
+    const links = this.wrapper.querySelectorAll('a');
+    const isDragging = Math.abs(speed) > 0.01;
+
+    links.forEach(link => {
+      link.style.pointerEvents = isDragging ? 'none' : 'auto';
+    });
+
+    // Apply parallax to child elements (not the slides themselves)
+    this.parallaxElements.forEach((element, i) => {
+      if (parallaxValues && parallaxValues[i] !== undefined) {
+        // Parallax effect on inner element
+        const parallaxOffset = parallaxValues[i] * 15;
+
+        // Speed-based additional offset for bouncy effect
+        const speedOffset = this.lerpedSpeed * 5;
+
+        // Combine both effects
+        const totalOffset = parallaxOffset + speedOffset;
+
+        element.style.transform = `translateX(${totalOffset}%)`;
+      }
+    });
+  }
+}
+
+// Smooothy hook
+function useSmooothy(config = {}) {
+  const sliderRef = useRef(null);
+  const [slider, setSlider] = useState(null);
+
+  const refCallback = (node) => {
+    if (node && !slider) {
+      const instance = new ParallaxSlider(node, {
+        infinite: true,
+        snap: true,
+        dragSensitivity: 0.005,
+        lerpFactor: 0.3,
+        speedDecay: 0.85,
+        snapStrength: 0.1,
+        ...config
+      });
+      gsap.ticker.add(instance.update.bind(instance));
+      setSlider(instance);
+    }
+    sliderRef.current = node;
+  };
+
+  useEffect(() => {
+    return () => {
+      if (slider) {
+        gsap.ticker.remove(slider.update.bind(slider));
+        slider.destroy();
+      }
+    };
+  }, [slider]);
+
+  return { ref: refCallback, slider };
+}
 
 const ProjectsSection = ({ projects }) => {
   const titleRef = useRef(null);
   const splitTextRef = useRef(null);
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
+  const { ref: sliderRef } = useSmooothy();
 
   useGSAP(() => {
     // Register GSAP plugins
@@ -131,82 +205,40 @@ const ProjectsSection = ({ projects }) => {
             ))}
           </div>
         ) : (
-          <div>
-            <Swiper
-              modules={[Navigation]}
-              spaceBetween={16}
-              slidesPerView={1}
-              navigation={{
-                nextEl: ".swiper-button-next",
-                prevEl: ".swiper-button-prev",
-              }}
-              breakpoints={{
-                768: {
-                  slidesPerView: 2,
-                },
-                1024: {
-                  slidesPerView: 3,
-                },
-              }}
-              className="projects-swiper"
+          <div className="relative -mx-4 md:-mx-8 lg:-mx-12">
+            <div
+              tabIndex={0}
+              className="flex w-screen overflow-x-hidden px-[calc(50%-40vw)] md:px-[calc(50%-15vw)] focus:outline-none cursor-grab active:cursor-grabbing pb-8"
+              ref={sliderRef}
             >
               {projects.map((project) => (
-                <SwiperSlide key={project._id}>
-                  <a
-                    href={`/projects/${project.slug}`}
-                    className="project-card block"
-                  >
-                    {/* {project.videoUrl ? (
-                      <video
-                        src={project.videoUrl}
-                        className="aspect-video w-full object-cover"
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                      />
-                    ) : ( */}
-                    <ProjectImage project={project} />
-                    {/* )} */}
-                  </a>
-                  <div className="px-2 py-1 flex items-center justify-between ">
-                    <h3 className="text-white text-sm md:text-md uppercase font-franklin">
-                      {project.title}
-                    </h3>
-                    <p className="text-white text-xs md:text-sm uppercase font-tinos tracking-tighter">
-                      {project.category}
-                    </p>
+                <div
+                  key={project._id}
+                  className="flex aspect-[4/3] w-[80vw] md:w-[30vw] shrink-0 items-center justify-center p-1"
+                >
+                  <div className="relative h-full w-full p-1">
+                    <div
+                      data-parallax
+                      className="h-full w-full flex flex-col"
+                    >
+                      <a
+                        href={`/projects/${project.slug}`}
+                        className="project-card block flex-1"
+                      >
+                        <ProjectImage project={project} />
+                      </a>
+                      <div className="px-2 py-2 flex items-center justify-between">
+                        <h3 className="text-white text-sm md:text-md uppercase font-franklin">
+                          {project.title}
+                        </h3>
+                        <p className="text-white text-xs md:text-sm uppercase font-tinos tracking-tighter">
+                          {project.category}
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                </SwiperSlide>
+                </div>
               ))}
-            </Swiper>
-            <div className="flex flex-row space-x-8 justify-end mt-4 cursor-pointer">
-              <div className="swiper-button-prev text-white flex items-center justify-center rotate-180">
-                <svg
-                  width="48"
-                  height="48"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  className=" fill-white"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M21.883 12l-7.527 6.235.644.765 9-7.521-9-7.479-.645.764 7.529 6.236h-21.884v1h21.883z" />
-                </svg>
-              </div>
-              <div className="swiper-button-next text-white flex items-center justify-center">
-                <svg
-                  width="48"
-                  height="48"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  className=" fill-white"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M21.883 12l-7.527 6.235.644.765 9-7.521-9-7.479-.645.764 7.529 6.236h-21.884v1h21.883z" />
-                </svg>
-              </div>
             </div>
           </div>
         )}
