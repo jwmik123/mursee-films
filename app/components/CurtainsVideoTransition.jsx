@@ -442,7 +442,7 @@ export default function CurtainsVideoTransition({ projects }) {
       )}
 
       {/* Dark overlay */}
-      <div className="absolute inset-0 bg-black/30 pointer-events-none" />
+      <div className="absolute inset-0 bg-black/10 pointer-events-none" />
 
       {/* Content */}
       <div ref={contentRef} className="relative z-10 h-full flex flex-col justify-end p-8 md:p-12">
