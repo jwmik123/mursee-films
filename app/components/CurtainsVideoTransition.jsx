@@ -177,6 +177,12 @@ export default function CurtainsVideoTransition({ projects }) {
 
           hls.on(Hls.Events.MANIFEST_PARSED, () => {
             console.log(`[CurtainsVideoTransition] Video ${index} manifest parsed`);
+            // Try to start playing as soon as the manifest is ready
+            video.play().then(() => {
+              video.isPlaying = true;
+            }).catch(() => {
+              // Autoplay may still be pending; plane.onReady will try again
+            });
           });
 
           hls.on(Hls.Events.ERROR, (_event, data) => {
@@ -248,11 +254,16 @@ export default function CurtainsVideoTransition({ projects }) {
         console.log('[CurtainsVideoTransition] Plane ready');
         console.log('[CurtainsVideoTransition] Plane has', plane.videos?.length, 'videos');
 
-        // Play first video
-        if (plane.videos && plane.videos[0]) {
-          plane.videos[0].play().then(() => {
-            console.log('[CurtainsVideoTransition] First video playing');
-          }).catch(e => console.error('[CurtainsVideoTransition] Play error:', e));
+        // Ensure all videos are playing so textures stay fresh
+        if (plane.videos && plane.videos.length) {
+          plane.videos.forEach((vid, i) => {
+            vid.play().then(() => {
+              console.log(`[CurtainsVideoTransition] Video ${i} playing`);
+              vid.isPlaying = true;
+            }).catch(e => {
+              console.warn(`[CurtainsVideoTransition] Video ${i} play attempt failed (will retry on transition):`, e);
+            });
+          });
         }
       });
     })
@@ -329,7 +340,7 @@ export default function CurtainsVideoTransition({ projects }) {
       const fake = { progress: 0 };
 
       plane.uniforms.transitionTimer.value = 0;
-      plane.renderer.gl.clear(plane.renderer.gl.COLOR_BUFFER_BIT | plane.renderer.gl.DEPTH_BUFFER_BIT);
+      // Avoid manual GL clears that may introduce a blank frame
       
       gsap.to(fake, {
         duration: 1.2,
@@ -338,41 +349,32 @@ export default function CurtainsVideoTransition({ projects }) {
 
         // --- Transition logic lives here ---
       onStart: () => {
-        // mark as not yet started
-        plane.videos[newIndex].isPlaying = false;
+        // Ensure next video is playing so its texture is ready when blending begins
+        const nextVid = plane.videos[newIndex];
+        if (!nextVid.isPlaying) {
+          nextVid.play().then(() => {
+            setTimeout(() => {
+              if (nextVid.texture && nextVid.texture.needUpdate) {
+                nextVid.texture.needUpdate();
+              }
+            }, 50);
+          }).catch(console.error);
+          nextVid.isPlaying = true;
+        }
       },
 
       onUpdate: () => {
-        plane.uniforms.transitionTimer.value = fake.progress;
-
-        // Start the next video only after the transition is underway
-        if (fake.progress > 0.2 && !plane.videos[newIndex].isPlaying) {
-  const nextVid = plane.videos[newIndex];
-
-  nextVid.play().then(() => {
-    // Give Curtains a small moment to attach the texture, then force update
-    setTimeout(() => {
-      if (nextVid.texture && nextVid.texture.needUpdate) {
-        nextVid.texture.needUpdate();
-      }
-    }, 100);
-  }).catch(console.error);
-
-  nextVid.isPlaying = true;
-}
+        const clamped = Math.min(fake.progress, 0.999);
+        plane.uniforms.transitionTimer.value = clamped;
       },
 
       onComplete: () => {
-        plane.videos.forEach((video, i) => {
-          if (i !== newIndex) {
-            video.pause();
-            // optional: reset if you want to start each from frame 0
-            // video.currentTime = 0;
-          }
-        });
+        // Do not pause other videos; keep all playing so textures never stall
 
         // Set final uniform
         plane.uniforms.from.value = newIndex;
+        plane.uniforms.to.value = newIndex;
+        plane.uniforms.transitionTimer.value = 0;
 
         setTimeout(() => {
           isNavigatingRef.current = false;
