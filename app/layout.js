@@ -26,7 +26,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${franklin.variable} ${tinos.variable}  antialiased bg-black h-screen`}
+        className={`${franklin.variable} ${tinos.variable}  antialiased bg-black min-h-[100svh]`}
       >
         <LenisProvider>
           <SimpleNavigation />

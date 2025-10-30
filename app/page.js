@@ -49,7 +49,7 @@ export default async function Home() {
   ];
 
   return (
-    <main className="h-screen overflow-hidden">
+    <main className="min-h-[100svh] overflow-hidden">
       {/* Featured Projects Hero Section */}
       {/* <FeaturedProjectsHero projects={films} /> */}
       {/* <FeaturedProjectsTransitions projects={films} /> */}

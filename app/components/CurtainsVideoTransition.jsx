@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Curtains, Plane } from "curtainsjs";
 import { gsap } from "gsap";
 import Hls from "hls.js";
@@ -219,6 +220,15 @@ export default function CurtainsVideoTransition({ projects, transitionType = 'wa
   const touchStartRef = useRef(0);
   const isNavigatingRef = useRef(false);
   const hlsInstancesRef = useRef([]);
+  const followerRef = useRef(null);
+  const followerPosRef = useRef({ x: 0, y: 0 });
+  const targetPosRef = useRef({ x: 0, y: 0 });
+  const followerRafRef = useRef(0);
+  const [showFollower, setShowFollower] = useState(false);
+  const router = useRouter();
+  const progressRef = useRef(null);
+  const progressRafRef = useRef(0);
+  const progressSetterRef = useRef(null);
 
   const featuredProjects = projects?.filter(p => p.featured).slice(0, 4) || [];
   const displayProjects = featuredProjects.length > 0 ? featuredProjects : (projects?.slice(0, 4) || []);
@@ -226,6 +236,29 @@ export default function CurtainsVideoTransition({ projects, transitionType = 'wa
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Mouse follower (desktop only)
+  useEffect(() => {
+    if (!mounted) return;
+    const isCoarse = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+    if (isCoarse) return;
+
+    setShowFollower(true);
+
+    const tick = () => {
+      const dx = targetPosRef.current.x - followerPosRef.current.x;
+      const dy = targetPosRef.current.y - followerPosRef.current.y;
+      followerPosRef.current.x += dx * 0.15;
+      followerPosRef.current.y += dy * 0.15;
+      if (followerRef.current) {
+        followerRef.current.style.transform = `translate3d(${followerPosRef.current.x}px, ${followerPosRef.current.y}px, 0) translate(-6px, -6px)`;
+      }
+      followerRafRef.current = requestAnimationFrame(tick);
+    };
+
+    followerRafRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(followerRafRef.current);
+  }, [mounted]);
 
   useEffect(() => {
     if (!mounted || !canvasRef.current || displayProjects.length === 0) return;
@@ -405,6 +438,21 @@ export default function CurtainsVideoTransition({ projects, transitionType = 'wa
               console.warn(`[CurtainsVideoTransition] Video ${i} play attempt failed (will retry on transition):`, e);
             });
           });
+
+          // Ensure the initial video's progress starts at 0
+          const first = plane.videos[0];
+          if (first) {
+            if (first.readyState >= 1) {
+              try { first.currentTime = 0; } catch (e) {}
+            } else {
+              first.addEventListener('loadedmetadata', () => {
+                try { first.currentTime = 0; } catch (e) {}
+              }, { once: true });
+            }
+            if (progressRef.current) {
+              gsap.set(progressRef.current, { scaleX: 0 });
+            }
+          }
         }
       });
     })
@@ -463,6 +511,94 @@ export default function CurtainsVideoTransition({ projects, transitionType = 'wa
     }
   };
 
+  const handleMouseMove = (e) => {
+    // Use coordinates relative to this component so the follower aligns correctly
+    const rect = e.currentTarget.getBoundingClientRect();
+    targetPosRef.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    // Ensure follower is visible even if we didn't receive a mouseenter (e.g., page loads with cursor inside)
+    if (showFollower && followerRef.current) {
+      followerRef.current.style.opacity = '1';
+    }
+  };
+
+  const handleMouseEnter = () => {
+    if (showFollower && followerRef.current) {
+      followerRef.current.style.opacity = '1';
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (followerRef.current) {
+      followerRef.current.style.opacity = '0';
+    }
+  };
+
+  const handleClick = () => {
+    if (!displayProjects || !displayProjects.length) return;
+    const project = displayProjects[currentIndex];
+    const slug = project?.slug;
+    if (typeof slug === 'string' && slug.length > 0) {
+      router.push(`/projects/${slug}`);
+    }
+  };
+
+  // Smooth progress bar driven by RAF for consistent updates
+  useEffect(() => {
+    if (!mounted || !progressRef.current) return;
+
+    // QuickSetter is very fast for per-frame updates
+    progressSetterRef.current = gsap.quickSetter(progressRef.current, 'scaleX');
+
+    const tick = () => {
+      const plane = planeInstanceRef.current;
+      const setter = progressSetterRef.current;
+      if (!setter) {
+        progressRafRef.current = requestAnimationFrame(tick);
+        return;
+      }
+
+      if (!plane || !plane.videos || !plane.videos[currentIndex]) {
+        setter(0);
+        progressRafRef.current = requestAnimationFrame(tick);
+        return;
+      }
+
+      const vid = plane.videos[currentIndex];
+      const dur = vid.duration || 0;
+      const ct = vid.currentTime || 0;
+      const frac = dur > 0 ? ct / dur : 0;
+      setter(frac);
+
+      // Auto-advance when progress reaches ~90% to avoid seeing looped frames
+      if (frac >= 0.9 && !isNavigatingRef.current) {
+        isNavigatingRef.current = true;
+        navigateProject(1);
+      }
+      progressRafRef.current = requestAnimationFrame(tick);
+    };
+
+    progressRafRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(progressRafRef.current);
+  }, [mounted, currentIndex]);
+
+  // Handle auto-advance on video end only
+  useEffect(() => {
+    const plane = planeInstanceRef.current;
+    if (!mounted || !plane || !plane.videos || !plane.videos[currentIndex]) return;
+    const vid = plane.videos[currentIndex];
+
+    const handleEnded = () => {
+      if (progressRef.current) gsap.set(progressRef.current, { scaleX: 1 });
+      if (!isNavigatingRef.current) {
+        isNavigatingRef.current = true;
+        navigateProject(1);
+      }
+    };
+
+    vid.addEventListener('ended', handleEnded);
+    return () => vid.removeEventListener('ended', handleEnded);
+  }, [mounted, currentIndex]);
+
   const navigateProject = (direction) => {
     const plane = planeInstanceRef.current;
     if (!plane || !plane.videos) {
@@ -510,6 +646,19 @@ export default function CurtainsVideoTransition({ projects, transitionType = 'wa
           }).catch(console.error);
           nextVid.isPlaying = true;
         }
+        // Reset next video to start so progress begins at 0 when it becomes current
+        if (nextVid) {
+          if (nextVid.readyState >= 1) {
+            try { nextVid.currentTime = 0; } catch (e) {}
+          } else {
+            nextVid.addEventListener('loadedmetadata', () => {
+              try { nextVid.currentTime = 0; } catch (e) {}
+            }, { once: true });
+          }
+        }
+        if (progressRef.current) {
+          gsap.set(progressRef.current, { scaleX: 0 });
+        }
       },
 
       onUpdate: () => {
@@ -551,7 +700,7 @@ export default function CurtainsVideoTransition({ projects, transitionType = 'wa
 
   if (!displayProjects || displayProjects.length === 0) {
     return (
-      <div className="h-screen w-full bg-black flex items-center justify-center">
+      <div className="h-[100svh] w-full bg-black flex items-center justify-center">
         <p className="text-white text-xl">No projects available</p>
       </div>
     );
@@ -561,9 +710,15 @@ export default function CurtainsVideoTransition({ projects, transitionType = 'wa
 
   return (
     <div
-      className="relative h-screen w-full bg-black overflow-hidden"
+      className="relative min-h-[100svh] w-full bg-black overflow-hidden cursor-pointer"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onClick={handleClick}
+      role="button"
+      aria-label="Open project"
     >
       {/* Canvas Container */}
       <div ref={canvasRef} id="canvas" className="absolute inset-0" />
@@ -580,7 +735,7 @@ export default function CurtainsVideoTransition({ projects, transitionType = 'wa
                   data-video-src={`https://stream.mux.com/${project.previewVideo.playbackId}.m3u8`}
                   playsInline
                   muted
-                  loop
+                  
                   crossOrigin="anonymous"
                   style={{ display: 'none' }}
                 />
@@ -594,7 +749,8 @@ export default function CurtainsVideoTransition({ projects, transitionType = 'wa
       <div className="absolute inset-0 bg-black/10 pointer-events-none" />
 
       {/* Content */}
-      <div ref={contentRef} className="relative z-10 h-full flex flex-col justify-end p-8 md:p-12">
+      <div ref={contentRef} className="relative z-10 min-h-[100svh] flex flex-col p-8 md:p-12">
+        <div className="flex-1" />
         <div className="mb-8 md:mb-12">
           <h1 className="text-4xl md:text-6xl lg:text-[6vw] font-bold text-white mb-4 font-franklin uppercase">
             Mursee Films
@@ -602,8 +758,13 @@ export default function CurtainsVideoTransition({ projects, transitionType = 'wa
 
           {currentProject.client && (
             <p className="text-sm md:text-base text-white/70 uppercase tracking-wider font-franklin">
-              Client: {currentProject.client}
+              Project: {currentProject.title} | {currentProject.client} | {currentProject.year} 
             </p>
+          )}
+          {(
+            <div className="mt-6 text-[10px] absolute right-20 top-20 md:text-xs text-white/60 tracking-widest uppercase font-franklin animate-pulse">
+              Scroll
+            </div>
           )}
         </div>
       </div>
@@ -636,27 +797,29 @@ export default function CurtainsVideoTransition({ projects, transitionType = 'wa
         </div>
       </div>
 
-      {/* Scroll hint */}
-      {currentIndex === 0 && (
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 animate-bounce">
-          <div className="flex flex-col items-center text-white/60 text-sm font-franklin">
-            <span className="mb-2">Scroll</span>
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 14l-7 7m0 0l-7-7m7 7V3"
-              />
-            </svg>
+      
+      {/* Mouse follower: dot + Play */}
+      {showFollower && (
+        <div
+          ref={followerRef}
+          className="absolute top-0 left-0 z-30 pointer-events-none select-none transition-opacity duration-200"
+          style={{ opacity: 0 }}
+        >
+          <div className="flex items-center gap-2">
+            <span className="inline-block w-3 h-3 rounded-full bg-white" />
+            <span className="text-white uppercase tracking-widest text-xs font-franklin">Play</span>
           </div>
         </div>
       )}
+      {/* Bottom progress bar */}
+      <div className="absolute bottom-0 left-0 w-full h-[2px] z-30 bg-white/10">
+        <div
+          ref={progressRef}
+          className="h-full bg-transparent origin-left"
+          style={{ transform: 'scaleX(0)' }}
+        />
+      </div>
     </div>
+
   );
 }
