@@ -26,8 +26,7 @@ const FeaturedProjectsHero = ({ projects }) => {
 
   // Handle scroll/wheel events - immediate response with proper locking
   const handleWheel = (e) => {
-    e.preventDefault();
-
+ 
     // Strict check: if currently navigating, ignore all scroll events
     if (isNavigatingRef.current) {
       console.log("Navigation in progress, ignoring scroll");
@@ -139,7 +138,7 @@ const FeaturedProjectsHero = ({ projects }) => {
           {mounted && project.previewVideo?.playbackId && (
             <MediaController
               ref={(el) => (videoRefs.current[index] = el)}
-              className="w-full h-full"
+              className="w-full h-full relative"
             >
               <HlsVideo
                 slot="media"
@@ -149,7 +148,7 @@ const FeaturedProjectsHero = ({ projects }) => {
                 loop
                 playsInline
                 crossOrigin=""
-                className="w-full h-full object-cover"
+                className="h-full w-[177.77777778vh] absolute min-w-full min-h-[56.25vw] left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2"
               />
             </MediaController>
           )}
@@ -167,11 +166,11 @@ const FeaturedProjectsHero = ({ projects }) => {
             {currentProject.title}
           </h1>
 
-          {currentProject.description && (
+          {/* {currentProject.description && (
             <p className="text-lg md:text-xl text-white/90 mb-4 font-tinos">
               {currentProject.description}
             </p>
-          )}
+          )} */}
 
           {currentProject.client && (
             <p className="text-sm md:text-base text-white/70 uppercase tracking-wider font-franklin">

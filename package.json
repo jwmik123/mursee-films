@@ -12,6 +12,7 @@
     "@gsap/react": "^2.1.2",
     "@mux/mux-player-react": "^3.4.0",
     "@sanity/client": "^7.0.0",
+    "curtainsjs": "^8.1.6",
     "framer-motion": "^12.3.1",
     "gsap": "^3.13.0",
     "hls-video-element": "^1.5.2",

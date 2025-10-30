@@ -7,6 +7,8 @@ import ImageGrid from "./components/ImageGrid";
 import { fetchData } from "@/lib/sanity";
 import MobileCards from "./components/MobileCards";
 import FeaturedProjectsHero from "./components/FeaturedProjectsHero";
+import FeaturedProjectsTransitions from "./components/FeaturedProjectsTransitions";
+import CurtainsVideoTransition from "./components/CurtainsVideoTransition";
 
 // Force dynamic rendering and disable caching
 export const dynamic = "force-dynamic";
@@ -49,7 +51,9 @@ export default async function Home() {
   return (
     <main className="h-screen overflow-hidden">
       {/* Featured Projects Hero Section */}
-      <FeaturedProjectsHero projects={films} />
+      {/* <FeaturedProjectsHero projects={films} /> */}
+      {/* <FeaturedProjectsTransitions projects={films} /> */}
+      <CurtainsVideoTransition projects={films} />
 
       {/* <AboutSection /> */}
 
