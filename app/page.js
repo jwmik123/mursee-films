@@ -53,7 +53,7 @@ export default async function Home() {
       {/* Featured Projects Hero Section */}
       {/* <FeaturedProjectsHero projects={films} /> */}
       {/* <FeaturedProjectsTransitions projects={films} /> */}
-      <CurtainsVideoTransition projects={films} />
+      <CurtainsVideoTransition projects={films} transitionType="perlinLine" />
 
       {/* <AboutSection /> */}
 

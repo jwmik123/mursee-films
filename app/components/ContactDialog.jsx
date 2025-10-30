@@ -120,7 +120,7 @@ const ContactDialog = ({ isOpen, onClose }) => {
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="flex items-center justify-between p-6 md:p-8 border-b border-gray-200">
-            <h2 className="text-xl md:text-2xl font-franklin font-bold text-black">
+            <h2 className="text-xl md:text-2xl font-franklin font-bold text-black uppercase">
               Start een project
             </h2>
             <button
@@ -139,7 +139,7 @@ const ContactDialog = ({ isOpen, onClose }) => {
                 <div>
                   <label
                     htmlFor="name"
-                    className="block text-sm font-franklin text-gray-700 mb-2"
+                    className="block text-sm text-gray-700 mb-2"
                   >
                     Naam *
                   </label>
@@ -150,7 +150,7 @@ const ContactDialog = ({ isOpen, onClose }) => {
                     required
                     value={formData.name}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent font-franklin"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Jouw naam"
                   />
                 </div>
@@ -159,7 +159,7 @@ const ContactDialog = ({ isOpen, onClose }) => {
                 <div>
                   <label
                     htmlFor="email"
-                    className="block text-sm font-franklin text-gray-700 mb-2"
+                    className="block text-sm text-gray-700 mb-2"
                   >
                     E-mail *
                   </label>
@@ -170,7 +170,7 @@ const ContactDialog = ({ isOpen, onClose }) => {
                     required
                     value={formData.email}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent font-franklin"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="jouw@email.com"
                   />
                 </div>
@@ -179,7 +179,7 @@ const ContactDialog = ({ isOpen, onClose }) => {
                 <div>
                   <label
                     htmlFor="projectType"
-                    className="block text-sm font-franklin text-gray-700 mb-2"
+                    className="block text-sm text-gray-700 mb-2"
                   >
                     Type project *
                   </label>
@@ -189,7 +189,7 @@ const ContactDialog = ({ isOpen, onClose }) => {
                     required
                     value={formData.projectType}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent font-franklin bg-white"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent bg-white"
                   >
                     <option value="">Selecteer een type</option>
                     {projectTypes.map((type) => (
@@ -204,7 +204,7 @@ const ContactDialog = ({ isOpen, onClose }) => {
                 <div>
                   <label
                     htmlFor="budget"
-                    className="block text-sm font-franklin text-gray-700 mb-2"
+                    className="block text-sm text-gray-700 mb-2"
                   >
                     Budget *
                   </label>
@@ -214,7 +214,7 @@ const ContactDialog = ({ isOpen, onClose }) => {
                     required
                     value={formData.budget}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent font-franklin bg-white"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent bg-white"
                   >
                     <option value="">Selecteer budget</option>
                     {budgetRanges.map((range) => (
@@ -229,7 +229,7 @@ const ContactDialog = ({ isOpen, onClose }) => {
                 <div>
                   <label
                     htmlFor="message"
-                    className="block text-sm font-franklin text-gray-700 mb-2"
+                    className="block text-sm text-gray-700 mb-2"
                   >
                     Bericht
                   </label>
@@ -239,7 +239,7 @@ const ContactDialog = ({ isOpen, onClose }) => {
                     rows="4"
                     value={formData.message}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent font-franklin resize-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent resize-none"
                     placeholder="Vertel ons kort over jouw project…"
                   />
                 </div>
@@ -248,7 +248,7 @@ const ContactDialog = ({ isOpen, onClose }) => {
               {/* Submit Status */}
               {submitStatus && (
                 <div
-                  className={`mt-6 p-4 rounded-md font-franklin text-sm ${
+                  className={`mt-6 p-4 rounded-md text-sm ${
                     submitStatus === "success"
                       ? "bg-green-100 text-green-800"
                       : "bg-red-100 text-red-800"
@@ -265,7 +265,7 @@ const ContactDialog = ({ isOpen, onClose }) => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-black text-white py-3 px-6 font-franklin text-sm uppercase hover:bg-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed rounded-md"
+                  className="w-full bg-black text-white py-3 px-6 text-sm uppercase hover:bg-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed rounded-md"
                 >
                   {isSubmitting ? "Versturen..." : "Verstuur bericht"}
                 </button>

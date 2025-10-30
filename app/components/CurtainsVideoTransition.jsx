@@ -56,6 +56,14 @@ uniform float uTimer;
 uniform float uTo;
 uniform float uFrom;
 uniform float uFadeIn;
+uniform float uTransitionMode; // 0.0: warp, 1.0: perlin
+uniform float uNoiseScale;
+uniform float uNoiseEdge;
+uniform float uBandWidth; // half-width of diagonal band for perlinLine
+uniform float uNoiseScaleLine; // perlin scale for diagonal band
+uniform float uBandNoiseAmp; // diagonal band edge noise amplitude (in UV distance units)
+uniform float uChromAberration; // RGB shift amplitude along edge (UV units)
+uniform float uEdgeDistort; // additional UV distortion amplitude along edge
 
 // our textures samplers
 // notice how it matches our data-sampler attributes
@@ -90,6 +98,25 @@ mat2 rotate(float a) {
     return mat2(c, -s, s, c);
 }
 
+// Value noise helpers (Perlin-like)
+float hash(vec2 p) {
+    return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+}
+
+float valueNoise(vec2 p) {
+    vec2 i = floor(p);
+    vec2 f = fract(p);
+
+    float a = hash(i);
+    float b = hash(i + vec2(1.0, 0.0));
+    float c = hash(i + vec2(0.0, 1.0));
+    float d = hash(i + vec2(1.0, 1.0));
+
+    vec2 u = f * f * (3.0 - 2.0 * f);
+
+    return mix(a, b, u.x) + (c - a) * u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
+}
+
 void main() {
     float progress = fract(uTransitionTimer);
     float currentTexture = mod(floor(uTransitionTimer),3.);
@@ -99,19 +126,88 @@ void main() {
 
     float mask = step(vTextureCoord.y,uFadeIn);
 
-    vec2 uvDivided = fract(newUV*vec2(40.,1.));
+    // Compute synchronized zoom: 1.0 -> 1.25 -> 1.0 with eased progress
+    float peaseZoom = smoothstep(0.0, 1.0, progress);
+    float zoomAmount = 1.0 + 0.25 * (1.0 - abs(2.0 * peaseZoom - 1.0));
+    vec2 uvBase = (newUV - vec2(0.5)) / zoomAmount + vec2(0.5);
 
-    vec2 uvDisplaced1 = newUV + rotate(PI/4.)*uvDivided*progress*0.1;
-    vec2 uvDisplaced2 = newUV + rotate(PI/4.)*uvDivided*(1. - progress)*0.1;
+    // Common UV based on zoomed sampling coords
+    vec2 uvDivided = fract(uvBase*vec2(40.,1.));
 
-    vec4 current = getTextureByIndex(uFrom,uvDisplaced1);
-    vec4 next = getTextureByIndex(uTo,uvDisplaced2);
+    // Warp-specific displaced UVs
+    vec2 uvWarp1 = uvBase + rotate(PI/4.)*uvDivided*progress*0.1;
+    vec2 uvWarp2 = uvBase + rotate(PI/4.)*uvDivided*(1. - progress)*0.1;
 
-    gl_FragColor = mix(vec4(0.,0.,0.,0),mix(current,next,progress), mask);
+    // Plain UVs for perlin path (no warp displacement), zoomed sampling
+    vec2 uvPlain = uvBase;
+
+    // Sample sets
+    vec4 currentWarp = getTextureByIndex(uFrom, uvWarp1);
+    vec4 nextWarp = getTextureByIndex(uTo, uvWarp2);
+
+    vec4 currentPlain = getTextureByIndex(uFrom, uvPlain);
+    vec4 nextPlain = getTextureByIndex(uTo, uvPlain);
+
+    // Existing warp transition (only active when selected)
+    vec4 colorWarp = mix(currentWarp, nextWarp, progress);
+
+    // Perlin/value-noise-driven organic wipe (only active when selected)
+    // Gate the effect so at rest (progress ~ 0) it shows the current frame only
+    float eps = 0.02;
+    float active = step(eps, progress);
+    float perlinT = clamp((progress - eps) / max(1.0 - 2.0 * eps, 0.0001), 0.0, 1.0);
+    float n = valueNoise(newUV * uNoiseScale + vec2(perlinT * 2.0, perlinT * 0.5));
+    float perlinBlend = active * smoothstep(perlinT - uNoiseEdge, perlinT + uNoiseEdge, n);
+    vec4 colorPerlin = mix(nextPlain, currentPlain, perlinBlend);
+
+    // Perlin diagonal edge reveal (top-left to bottom-right)
+    // Define diagonal and its perpendicular axis
+    vec2 axisDiag = normalize(vec2(1.0, 1.0));
+    vec2 axisPerp = normalize(vec2(-axisDiag.y, axisDiag.x));
+    float diagLen = 1.41421356237; // sqrt(2)
+    float s = dot(newUV, axisDiag) / diagLen; // 0..1 along TL->BR
+    // Move edge along diagonal with slight overscan; ease the motion for slow start/end
+    float overscan = 0.1;
+    float p = smoothstep(0.0, 1.0, progress);
+    float center = mix(-overscan, 1.0 + overscan, p);
+    // Sample noise along edge-perpendicular axis for visible edge detail
+    vec2 noiseUV = vec2(dot(newUV, axisPerp), dot(newUV, axisDiag));
+    float nEdge = valueNoise(noiseUV * uNoiseScaleLine + vec2(p * 2.0, p * 0.5));
+    float d = center - s; // signed distance (positive when edge has passed this pixel)
+    float t = d - (nEdge - 0.5) * uBandNoiseAmp; // noisy threshold
+    // Single-edge reveal with soft/noisy boundary
+    float edge = smoothstep(-uBandWidth, uBandWidth, t);
+    // Center weight to localize chromatic shift and distortion at the edge
+    float centerWeight = 1.0 - smoothstep(0.0, uBandWidth, abs(t));
+    // Distortion along edge perpendicular
+    float distort = (nEdge - 0.5) * uEdgeDistort * centerWeight;
+    vec2 uvNext = uvPlain + axisPerp * distort;
+    vec2 uvCur = uvPlain - axisPerp * distort * 0.5;
+    // RGB channel offsets for next frame
+    float ca = uChromAberration * centerWeight;
+    vec4 nextR = getTextureByIndex(uTo, uvNext + axisPerp * ca);
+    vec4 nextG = getTextureByIndex(uTo, uvNext);
+    vec4 nextB = getTextureByIndex(uTo, uvNext - axisPerp * ca);
+    vec4 nextShifted = vec4(nextR.r, nextG.g, nextB.b, 1.0);
+    // Sample current (slight stability, less/no shift)
+    vec4 currentStable = getTextureByIndex(uFrom, uvCur);
+    vec4 colorPerlinLine = mix(currentStable, nextShifted, edge);
+
+    // Select transition based on mode, never combine
+    vec4 color;
+    if (uTransitionMode < 0.5) {
+        color = colorWarp;
+    } else if (uTransitionMode < 1.5) {
+        color = colorPerlin;
+    } else {
+        color = colorPerlinLine;
+    }
+
+    gl_FragColor = mix(vec4(0.,0.,0.,0), color, mask);
 }
 `;
 
-export default function CurtainsVideoTransition({ projects }) {
+export default function CurtainsVideoTransition({ projects, transitionType = 'warp', transitionDuration = 1 }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [mounted, setMounted] = useState(false);
 
@@ -244,6 +340,46 @@ export default function CurtainsVideoTransition({ projects }) {
             type: "1f",
             value: 1.0,
           },
+          transitionMode: {
+            name: "uTransitionMode",
+            type: "1f",
+            value: 0.0,
+          },
+          noiseScale: {
+            name: "uNoiseScale",
+            type: "1f",
+            value: 12.0,
+          },
+          noiseEdge: {
+            name: "uNoiseEdge",
+            type: "1f",
+            value: 0.15,
+          },
+          bandWidth: {
+            name: "uBandWidth",
+            type: "1f",
+            value: 0.06,
+          },
+          noiseScaleLine: {
+            name: "uNoiseScaleLine",
+            type: "1f",
+            value: 48.0,
+          },
+          bandNoiseAmp: {
+            name: "uBandNoiseAmp",
+            type: "1f",
+            value: 0.06,
+          },
+          chromAberration: {
+            name: "uChromAberration",
+            type: "1f",
+            value: 0.003,
+          },
+          edgeDistort: {
+            name: "uEdgeDistort",
+            type: "1f",
+            value: 0.02,
+          },
         },
       };
 
@@ -253,6 +389,11 @@ export default function CurtainsVideoTransition({ projects }) {
       plane.onReady(() => {
         console.log('[CurtainsVideoTransition] Plane ready');
         console.log('[CurtainsVideoTransition] Plane has', plane.videos?.length, 'videos');
+
+        // Initialize transition mode uniform from prop
+        if (plane.uniforms && plane.uniforms.transitionMode) {
+          plane.uniforms.transitionMode.value = transitionType === 'perlin' ? 1.0 : (transitionType === 'perlinLine' ? 2.0 : 0.0);
+        }
 
         // Ensure all videos are playing so textures stay fresh
         if (plane.videos && plane.videos.length) {
@@ -287,6 +428,14 @@ export default function CurtainsVideoTransition({ projects }) {
       }
     };
   }, [mounted]); // Only depend on mounted, not displayProjects
+
+  // Update transition mode when prop changes
+  useEffect(() => {
+    const plane = planeInstanceRef.current;
+    if (plane && plane.uniforms && plane.uniforms.transitionMode) {
+      plane.uniforms.transitionMode.value = transitionType === 'perlin' ? 1.0 : (transitionType === 'perlinLine' ? 2.0 : 0.0);
+    }
+  }, [transitionType]);
 
   const handleWheel = (e) => {
     if (isNavigatingRef.current || !planeInstanceRef.current) return;
@@ -343,9 +492,9 @@ export default function CurtainsVideoTransition({ projects }) {
       // Avoid manual GL clears that may introduce a blank frame
       
       gsap.to(fake, {
-        duration: 1.2,
+        duration: transitionDuration,
         progress: 1,
-        ease: "power2.inOut",
+        ease: "sine.inOut",
 
         // --- Transition logic lives here ---
       onStart: () => {
@@ -446,9 +595,9 @@ export default function CurtainsVideoTransition({ projects }) {
 
       {/* Content */}
       <div ref={contentRef} className="relative z-10 h-full flex flex-col justify-end p-8 md:p-12">
-        <div className="max-w-2xl mb-8 md:mb-12">
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 font-franklin uppercase">
-            {currentProject.title}
+        <div className="mb-8 md:mb-12">
+          <h1 className="text-4xl md:text-6xl lg:text-[6vw] font-bold text-white mb-4 font-franklin uppercase">
+            Mursee Films
           </h1>
 
           {currentProject.client && (
