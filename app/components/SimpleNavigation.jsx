@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useLayoutEffect } from "react";
 import { usePathname } from "next/navigation";
 import gsap from "gsap";
 import ContactDialog from "./ContactDialog";
@@ -9,7 +9,8 @@ const SimpleNavigation = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navRef = useRef(null);
-  const mobileMenuRef = useRef(null);
+  const topBarRef = useRef(null);
+  const mobileContentRef = useRef(null);
   const logoRef = useRef(null);
   const mRef = useRef(null);
   const fRef = useRef(null);
@@ -41,7 +42,7 @@ const SimpleNavigation = () => {
   };
 
   const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
+    setIsMobileMenuOpen((prev) => !prev);
   };
 
   const closeMobileMenu = () => {
@@ -183,30 +184,68 @@ const SimpleNavigation = () => {
     };
   }, [pathname, mounted]);
 
-  // Animate mobile menu
-  useEffect(() => {
-    if (mobileMenuRef.current) {
-      if (isMobileMenuOpen) {
-        gsap.fromTo(
-          mobileMenuRef.current,
-          { y: "-100%", opacity: 0 },
-          { y: "0%", opacity: 1, duration: 0.3, ease: "power2.out" }
-        );
-      } else {
-        gsap.to(mobileMenuRef.current, {
-          y: "-100%",
-          opacity: 0,
-          duration: 0.3,
-          ease: "power2.in",
-        });
-      }
+  // Animate the height of the nav so the header expands/collapses
+  useLayoutEffect(() => {
+    const navEl = navRef.current;
+    const barEl = topBarRef.current;
+    const contentEl = mobileContentRef.current;
+    if (!navEl || !barEl || !contentEl) return;
+
+    // Ensure overflow hidden during animation
+    gsap.set(navEl, { overflow: "hidden" });
+
+    if (isMobileMenuOpen) {
+      // Opening: from collapsed (top bar height) to full (scrollHeight)
+      const from = barEl.offsetHeight;
+      // Make content participate in layout for accurate measurement
+      contentEl.style.display = "block";
+      // Temporarily set height to 'auto' to get total height including content
+      gsap.set(navEl, { height: "auto" });
+      const to = navEl.scrollHeight;
+      gsap.set(navEl, { height: from });
+      gsap.to(navEl, {
+        height: to,
+        duration: 0.35,
+        ease: "power2.out",
+        onComplete: () => {
+          navEl.style.height = ""; // back to auto
+          navEl.style.overflow = "";
+        },
+      });
+    } else {
+      // Closing: from current to top bar height
+      const to = barEl.offsetHeight;
+      const from = navEl.offsetHeight;
+      gsap.set(navEl, { height: from });
+      gsap.to(navEl, {
+        height: to,
+        duration: 0.28,
+        ease: "power2.in",
+        onComplete: () => {
+          navEl.style.height = ""; // let content flow normally
+          navEl.style.overflow = "";
+          contentEl.style.display = "none";
+        },
+      });
     }
   }, [isMobileMenuOpen]);
+
+  // Ensure collapsed height on first render when closed
+  useLayoutEffect(() => {
+    if (!navRef.current || !topBarRef.current) return;
+    if (!isMobileMenuOpen) {
+      navRef.current.style.height = `${topBarRef.current.offsetHeight}px`;
+      // Allow a microtask to pass, then clear to auto so layout isn't stuck
+      requestAnimationFrame(() => {
+        if (navRef.current) navRef.current.style.height = "";
+      });
+    }
+  }, []);
 
   return (
     <>
       <header
-        className={`fixed top-0 left-0 w-full z-50 flex justify-center ${
+        className={`fixed top-0 left-0 w-full z-50 flex justify-center px-4 md:px-10 ${
           mounted && !animationStarted && pathname === "/"
             ? "hidden-initially"
             : ""
@@ -214,8 +253,10 @@ const SimpleNavigation = () => {
       >
         <nav
           ref={navRef}
-          className="flex items-center justify-between px-10 opacity-0 py-2 mx-auto max-w-5xl w-full mt-4 rounded-md backdrop-blur-md bg-black/30 border border-white/10"
+          className="flex flex-col md:flex-row items-center justify-between px-10 opacity-0 py-2 mx-auto max-w-7xl w-full mt-4 rounded-md backdrop-blur-md bg-black/30 border border-white/10"
         >
+          {/* Top bar */}
+          <div className="flex items-center justify-between w-full" ref={topBarRef}>
           {/* Left section */}
           <div className="w-32">
             <Link href="/">
@@ -283,70 +324,60 @@ const SimpleNavigation = () => {
             >
               {/* Hamburger lines that animate to cross */}
               <span
-                className={`block w-6 h-0.5 bg-white transition-all duration-300 ease-in-out ${
+                className={`block w-6 h-[1px] bg-white transition-all duration-300 ease-in-out ${
                   isMobileMenuOpen
-                    ? "rotate-45 translate-y-0.5"
+                    ? "translate-y-[1px]"
                     : "-translate-y-1"
                 }`}
               ></span>
               <span
-                className={`block w-6 h-0.5 bg-white transition-all duration-300 ease-in-out ${
+                className={`block w-6 h-[1px] bg-white transition-all duration-300 ease-in-out ${
                   isMobileMenuOpen
-                    ? "-rotate-45 -translate-y-0.5"
+                    ? "-translate-y-[1px]"
                     : "translate-y-1"
                 }`}
               ></span>
             </button>
           </div>
+
+          </div>
+
+          {/* Mobile content inside same nav */}
+          <div
+            ref={mobileContentRef}
+            className="md:hidden w-full"
+            style={{ display: "none" }}
+            aria-hidden={!isMobileMenuOpen}
+          >
+            <div className="pt-4">
+              <ul className="space-y-6 text-center">
+                {navLinks.map((link, index) => (
+                  <li key={index}>
+                    <Link
+                      href={link.href}
+                      onClick={handleMobileLinkClick}
+                      className="text-2xl uppercase text-white hover:text-gray-300 transition-colors font-franklin block"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-8 text-center">
+                <button
+                  onClick={(e) => {
+                    handleContactClick(e);
+                    closeMobileMenu();
+                  }}
+                  className="px-6 py-3 bg-white text-black text-sm uppercase font-franklin hover:bg-gray-200 transition-colors rounded"
+                >
+                  Start een project
+                </button>
+              </div>
+            </div>
+          </div>
         </nav>
       </header>
-
-      {/* Mobile Menu Overlay */}
-      {isMobileMenuOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
-          onClick={closeMobileMenu}
-        ></div>
-      )}
-
-      {/* Mobile Menu */}
-      <div
-        ref={mobileMenuRef}
-        className={`fixed top-0 left-0 w-full h-1/2 bg-black z-40 md:hidden transform -translate-y-full opacity-0 m-[5px] rounded-lg border border-gray-800`}
-        style={{ height: "calc(50vh - 10px)" }}
-      >
-        <div className="flex flex-col h-full p-6 pt-20">
-          {/* Navigation Links */}
-          <div className="flex-1 flex flex-col justify-center">
-            <ul className="space-y-8 text-center">
-              {navLinks.map((link, index) => (
-                <li key={index}>
-                  <Link
-                    href={link.href}
-                    onClick={handleMobileLinkClick}
-                    className="text-2xl uppercase text-white hover:text-gray-300 transition-colors font-franklin block"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Mobile CTA Button */}
-          <div className="mt-8 text-center">
-            <button
-              onClick={(e) => {
-                handleContactClick(e);
-                closeMobileMenu();
-              }}
-              className="px-6 py-3 bg-white text-black text-sm uppercase font-franklin hover:bg-gray-200 transition-colors rounded"
-            >
-              Start een project
-            </button>
-          </div>
-        </div>
-      </div>
 
       <ContactDialog isOpen={isDialogOpen} onClose={handleCloseDialog} />
     </>

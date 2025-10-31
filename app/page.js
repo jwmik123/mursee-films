@@ -38,23 +38,20 @@ const filmQuery = `*[_type == "film"] {
 export default async function Home() {
   const films = await fetchData(filmQuery);
 
-  const images = [
-    "/images/logos/hetpark.png",
-    "/images/logos/enza.png",
-    "/images/logos/nh.webp",
-    "/images/logos/schouten.png",
-    "/images/logos/staan.png",
-    "/images/logos/tracking.png",
-    "/images/logos/vattenfal.png",
-  ];
+  // const images = [
+  //   "/images/logos/hetpark.png",
+  //   "/images/logos/enza.png",
+  //   "/images/logos/nh.webp",
+  //   "/images/logos/schouten.png",
+  //   "/images/logos/staan.png",
+  //   "/images/logos/tracking.png",
+  //   "/images/logos/vattenfal.png",
+  // ];
 
   return (
     <main className="min-h-[100svh] overflow-hidden">
-      {/* Featured Projects Hero Section */}
-      {/* <FeaturedProjectsHero projects={films} /> */}
-      {/* <FeaturedProjectsTransitions projects={films} /> */}
+     
       <CurtainsVideoTransition projects={films} transitionType="perlinLine" />
-
       {/* <AboutSection /> */}
 
       {/* <section
