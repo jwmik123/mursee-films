@@ -29,8 +29,8 @@ const ContactDialog = ({ isOpen, onClose }) => {
 
   const budgetRanges = [
     "€3.000 - €7.500",
-    "7.500 - 15.000",
-    "15.000 +",
+    "€7.500 - €15.000",
+    "€15.000 +",
     "Ik weet het nog niet"
   ];
 
