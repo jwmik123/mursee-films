@@ -10,14 +10,21 @@ import { useGSAP } from "@gsap/react";
 const ImageGrid = () => {
   const titleRef = useRef(null);
   const splitTextRef = useRef(null);
-  const gridRef = useRef(null);
+  const logoWallRef = useRef(null);
 
   const logos = [
+    "/images/logos/ahold.png",
     "/images/logos/enza.png",
+    "/images/logos/heineken.png",
     "/images/logos/hetpark.png",
     "/images/logos/nh.webp",
+    "/images/logos/provincie-nh.png",
+    "/images/logos/rechtspraak.png",
     "/images/logos/schouten.png",
+    "/images/logos/siemens.png",
     "/images/logos/staan.png",
+    "/images/logos/talpa.png",
+    "/images/logos/tennet.png",
     "/images/logos/tracking.png",
     "/images/logos/vattenfal.png",
   ];
@@ -31,11 +38,11 @@ const ImageGrid = () => {
       // Add CSS style for title-text-word class
       const style = document.createElement("style");
       style.textContent = `
-            .title-text-word {
-              display: inline-block;
-              margin-right: 0.3em;
-            }
-          `;
+        .title-text-word {
+          display: inline-block;
+          margin-right: 0.3em;
+        }
+      `;
       document.head.appendChild(style);
 
       splitTextRef.current = new SplitText(titleRef.current, {
@@ -68,31 +75,166 @@ const ImageGrid = () => {
       });
     }
 
-    // Animate grid images with staggered translateY on scroll
-    if (gridRef.current) {
-      const gridItems = gridRef.current.querySelectorAll(".grid-item");
+    // Logo wall cycle animation
+    if (logoWallRef.current) {
+      const loopDelay = 1.5;
+      const duration = 0.9;
 
-      // Set initial state for grid items
-      gsap.set(gridItems, {
-        y: 100,
-        opacity: 0,
+      const root = logoWallRef.current;
+      const list = root.querySelector("[data-logo-wall-list]");
+      const items = Array.from(
+        list.querySelectorAll("[data-logo-wall-item]")
+      );
+
+      const shuffleFront =
+        root.getAttribute("data-logo-wall-shuffle") !== "false";
+
+      // Get original targets from the hidden pool
+      const poolContainer = root.querySelector(".logo-pool");
+      const originalTargets = poolContainer
+        ? Array.from(poolContainer.querySelectorAll("[data-logo-wall-target]"))
+        : [];
+
+      // Exit if no targets found
+      if (originalTargets.length === 0) {
+        console.warn("No logo targets found in pool");
+        return;
+      }
+
+      let visibleItems = [];
+      let visibleCount = 0;
+      let pool = [];
+      let pattern = [];
+      let patternIndex = 0;
+      let tl;
+
+      function isVisible(el) {
+        return window.getComputedStyle(el).display !== "none";
+      }
+
+      function shuffleArray(arr) {
+        const a = arr.slice();
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+      }
+
+      function setup() {
+        if (tl) {
+          tl.kill();
+        }
+        visibleItems = items.filter(isVisible);
+        visibleCount = visibleItems.length;
+
+        pattern = shuffleArray(
+          Array.from({ length: visibleCount }, (_, i) => i)
+        );
+        patternIndex = 0;
+
+        // remove all injected targets
+        items.forEach((item) => {
+          item
+            .querySelectorAll("[data-logo-wall-target]")
+            .forEach((old) => old.remove());
+        });
+
+        pool = originalTargets.map((n) => n.cloneNode(true));
+
+        let front, rest;
+        if (shuffleFront) {
+          const shuffledAll = shuffleArray(pool);
+          front = shuffledAll.slice(0, visibleCount);
+          rest = shuffleArray(shuffledAll.slice(visibleCount));
+        } else {
+          front = pool.slice(0, visibleCount);
+          rest = shuffleArray(pool.slice(visibleCount));
+        }
+        pool = front.concat(rest);
+
+        for (let i = 0; i < visibleCount; i++) {
+          const parent =
+            visibleItems[i].querySelector("[data-logo-wall-target-parent]") ||
+            visibleItems[i];
+          parent.appendChild(pool.shift());
+        }
+
+        tl = gsap.timeline({ repeat: -1, repeatDelay: loopDelay });
+        tl.call(swapNext);
+        tl.play();
+      }
+
+      function swapNext() {
+        const nowCount = items.filter(isVisible).length;
+        if (nowCount !== visibleCount) {
+          setup();
+          return;
+        }
+        if (!pool.length) return;
+
+        const idx = pattern[patternIndex % visibleCount];
+        patternIndex++;
+
+        const container = visibleItems[idx];
+        const parent =
+          container.querySelector("[data-logo-wall-target-parent]") ||
+          container.querySelector("*:has(> [data-logo-wall-target])") ||
+          container;
+        const existing = parent.querySelectorAll("[data-logo-wall-target]");
+        if (existing.length > 1) return;
+
+        const current = parent.querySelector("[data-logo-wall-target]");
+        const incoming = pool.shift();
+
+        gsap.set(incoming, { yPercent: 50, autoAlpha: 0 });
+        parent.appendChild(incoming);
+
+        if (current) {
+          gsap.to(current, {
+            yPercent: -50,
+            autoAlpha: 0,
+            duration,
+            ease: "expo.inOut",
+            onComplete: () => {
+              current.remove();
+              pool.push(current);
+            },
+          });
+        }
+
+        gsap.to(incoming, {
+          yPercent: 0,
+          autoAlpha: 1,
+          duration,
+          delay: 0.1,
+          ease: "expo.inOut",
+        });
+      }
+
+      setup();
+
+      ScrollTrigger.create({
+        trigger: root,
+        start: "top bottom",
+        end: "bottom top",
+        onEnter: () => tl.play(),
+        onLeave: () => tl.pause(),
+        onEnterBack: () => tl.play(),
+        onLeaveBack: () => tl.pause(),
       });
 
-      // Create staggered animation for grid items
-      gsap.to(gridItems, {
-        y: 0,
-        opacity: 1,
-        stagger: 0.1,
-        duration: 1,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: gridRef.current,
-          start: "top 80%",
-          end: "bottom 20%",
-          scrub: 1,
-          markers: false,
-        },
-      });
+      const handleVisibilityChange = () =>
+        document.hidden ? tl.pause() : tl.play();
+      document.addEventListener("visibilitychange", handleVisibilityChange);
+
+      return () => {
+        if (tl) tl.kill();
+        document.removeEventListener(
+          "visibilitychange",
+          handleVisibilityChange
+        );
+      };
     }
 
     return () => {
@@ -112,20 +254,21 @@ const ImageGrid = () => {
         >
           Partners die ons vertrouwen
         </h2>
+
         <div
-          ref={gridRef}
-          className="grid grid-cols-2 md:grid-cols-5 gap-4 pt-12"
+          ref={logoWallRef}
+          data-logo-wall-cycle-init
+          data-logo-wall-shuffle="true"
+          className="pt-12"
         >
-          {logos.map((logo, index) => (
-            <div
-              key={index}
-              className="grid-item aspect-video bg-white/10 overflow-hidden relative text-center flex items-center justify-center"
-            >
-              <div className="w-1/2 h-auto flex items-center justify-center">
+          {/* Hidden logo pool */}
+          <div className="logo-pool hidden">
+            {logos.map((logo, index) => (
+              <div key={index} data-logo-wall-target className="absolute inset-0 flex items-center justify-center p-4">
                 <Image
                   src={logo}
                   alt={`Partner logo ${index + 1}`}
-                  className="object-contain w-full h-auto"
+                  className="object-contain max-w-full max-h-full"
                   style={{
                     filter: "grayscale(1) invert(1)",
                   }}
@@ -133,8 +276,31 @@ const ImageGrid = () => {
                   height={90}
                 />
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+
+          {/* Visible grid: 3x2 on mobile, 4x2 on desktop */}
+          <div
+            data-logo-wall-list
+            className="grid grid-cols-2 md:grid-cols-4 gap-4"
+          >
+            {/* Mobile: 6 items (3x2), Desktop: 8 items (4x2) */}
+            {Array.from({ length: 8 }).map((_, index) => (
+              <div
+                key={index}
+                data-logo-wall-item
+                className={`aspect-video bg-white/10 overflow-hidden relative ${
+                  index >= 6 ? "hidden md:flex" : "flex"
+                } items-center justify-center`}
+              >
+                <div
+                  data-logo-wall-target-parent
+                  className="absolute inset-0 flex items-center justify-center"
+                >
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
