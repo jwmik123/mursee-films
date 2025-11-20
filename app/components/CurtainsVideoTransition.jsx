@@ -495,10 +495,12 @@ export default function CurtainsVideoTransition({ projects, transitionType = 'wa
   };
 
   const handleTouchStart = (e) => {
+    e.preventDefault();
     touchStartRef.current = e.touches[0].clientY;
   };
 
   const handleTouchEnd = (e) => {
+    e.preventDefault();
     if (isNavigatingRef.current) return;
 
     const touchEnd = e.changedTouches[0].clientY;
@@ -710,7 +712,7 @@ export default function CurtainsVideoTransition({ projects, transitionType = 'wa
 
   return (
     <div
-      className="relative min-h-[100svh] w-full bg-black overflow-hidden cursor-pointer"
+      className="relative min-h-[100svh] w-full bg-black overflow-hidden cursor-pointer touch-none"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
       onMouseMove={handleMouseMove}
