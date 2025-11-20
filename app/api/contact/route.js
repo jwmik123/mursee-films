@@ -21,6 +21,7 @@ export async function POST(request) {
       from: "Mursee Films <send@contact.mursee.nl>", // Replace with your verified domain
       to: ["info@mursee.nl"], // Replace with your email
       cc: [email],
+      replyTo: ["info@mursee.nl"],
       subject: `Nieuwe projectaanvraag van ${name}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
