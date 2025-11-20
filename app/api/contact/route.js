@@ -18,8 +18,9 @@ export async function POST(request) {
 
     // Send email using Resend
     const { data, error } = await resend.emails.send({
-      from: "Mursee Films <contact@mursee.nl>", // Replace with your verified domain
-      to: ["joelmik123@gmail.com"], // Replace with your email
+      from: "Mursee Films <send@contact.mursee.nl>", // Replace with your verified domain
+      to: ["info@mursee.nl"], // Replace with your email
+      cc: [email],
       subject: `Nieuwe projectaanvraag van ${name}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -85,10 +86,11 @@ export async function POST(request) {
     }
 
     // Send auto-reply to the user
-    await resend.emails.send({
-      from: "Mursee Films <contact@murseefilms.com>", // Replace with your verified domain
-      to: [email],
-      subject: "Bedankt voor je projectaanvraag - Mursee Films",
+    try {
+      await resend.emails.send({
+        from: "Mursee Films <send@mursee.nl>",
+        to: [email],
+        subject: "Bedankt voor je projectaanvraag - Mursee Films",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
           <h2 style="color: #333; border-bottom: 2px solid #000; padding-bottom: 10px;">
@@ -111,7 +113,7 @@ export async function POST(request) {
           </div>
 
           <p style="margin: 20px 0; line-height: 1.6;">
-            We streven ernaar om binnen 24 uur te reageren op alle aanvragen. Heb je vragen in de tussentijd? Stuur gerust een e-mail naar info@murseefilms.com of bel ons.
+            We streven ernaar om binnen 24 uur te reageren op alle aanvragen. Heb je vragen in de tussentijd? Stuur gerust een e-mail naar info@mursee.nl of bel ons.
           </p>
 
           <p style="margin: 20px 0; line-height: 1.6;">
@@ -138,14 +140,18 @@ export async function POST(request) {
         Budget: ${budget}
         ${message ? `Bericht: ${message}` : ""}
 
-        We streven ernaar om binnen 24 uur te reageren op alle aanvragen. Heb je vragen in de tussentijd? Stuur gerust een e-mail naar info@murseefilms.com of bel ons.
+        We streven ernaar om binnen 24 uur te reageren op alle aanvragen. Heb je vragen in de tussentijd? Stuur gerust een e-mail naar info@mursee.nl of bel ons.
 
         Met vriendelijke groet,
         Het team van Mursee Films
 
         Dit is een automatisch gegenereerd bericht. Gelieve niet te reageren op deze e-mail.
       `,
-    });
+      });
+    } catch (autoReplyError) {
+      // Log the error but don't fail the request since main email was sent
+      console.error("Auto-reply email failed:", autoReplyError);
+    }
 
     return NextResponse.json({ success: true, data });
   } catch (error) {
