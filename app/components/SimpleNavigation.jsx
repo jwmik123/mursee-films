@@ -24,7 +24,7 @@ const SimpleNavigation = () => {
   const navLinks = [
     { label: "Home", href: "/" },
     { label: "Projecten", href: "/projects" },
-    { label: "Studio", href: "/about" },
+    { label: "Studio", href: "/studio" },
   ];
 
   // Set mounted state after component mounts

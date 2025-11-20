@@ -110,10 +110,10 @@ const Footer = () => {
                 HOME
               </Link>
               <Link
-                href="/about"
+                href="/studio"
                 className="text-sm hover:text-gray-600 transition-colors"
               >
-                OVER ONS
+                STUDIO
               </Link>
               <div className="flex items-center">
                 <Link
@@ -124,12 +124,7 @@ const Footer = () => {
                 </Link>
                 <span className="text-[10px] ml-1.5 text-gray-500">[78]</span>
               </div>
-              <Link
-                href="/contact"
-                className="text-sm hover:text-gray-600 transition-colors"
-              >
-                CONTACT
-              </Link>
+        
             </nav>
           </div>
 

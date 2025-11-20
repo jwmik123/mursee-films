@@ -38,7 +38,13 @@ const filmQuery = `*[_type == "film"] {
 export default function ProjectsPage() {
   const [films, setFilms] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeView, setActiveView] = useState("LIST"); // GRID or LIST
+  const [activeView, setActiveView] = useState(() => {
+    // Set GRID as default for mobile, LIST for desktop
+    if (typeof window !== 'undefined') {
+      return window.innerWidth < 768 ? "GRID" : "LIST";
+    }
+    return "LIST";
+  }); // GRID or LIST
   const [activeFilter, setActiveFilter] = useState("ALL");
   const [hoveredProject, setHoveredProject] = useState(null);
   const [currentBgVideo, setCurrentBgVideo] = useState(null);
