@@ -758,7 +758,7 @@ export default function CurtainsVideoTransition({ projects, transitionType = 'wa
 
           {currentProject.client && (
             <p className="text-sm md:text-base text-white/70 uppercase tracking-wider font-franklin">
-              Project: {currentProject.title} | {currentProject.client} | {currentProject.year} 
+              Project: {currentProject.title} | {currentProject.client} | {currentProject.year}
             </p>
           )}
           {(

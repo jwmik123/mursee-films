@@ -7,10 +7,20 @@ import { SplitText } from "gsap/SplitText";
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 
-const ImageGrid = ({ images }) => {
+const ImageGrid = () => {
   const titleRef = useRef(null);
   const splitTextRef = useRef(null);
   const gridRef = useRef(null);
+
+  const logos = [
+    "/images/logos/enza.png",
+    "/images/logos/hetpark.png",
+    "/images/logos/nh.webp",
+    "/images/logos/schouten.png",
+    "/images/logos/staan.png",
+    "/images/logos/tracking.png",
+    "/images/logos/vattenfal.png",
+  ];
 
   useGSAP(() => {
     // Register GSAP plugins
@@ -98,37 +108,31 @@ const ImageGrid = ({ images }) => {
       <div className="w-full">
         <h2
           ref={titleRef}
-          className="text-white text-6xl md:text-7xl font-franklin uppercase"
+          className="text-white text-6xl md:text-7xl font-franklin uppercase text-center"
         >
-          Partners
+          Partners die ons vertrouwen
         </h2>
         <div
           ref={gridRef}
           className="grid grid-cols-2 md:grid-cols-5 gap-4 pt-12"
         >
-          {Array.from({ length: 8 }).map((_, index) => (
+          {logos.map((logo, index) => (
             <div
               key={index}
               className="grid-item aspect-video bg-white/10 overflow-hidden relative text-center flex items-center justify-center"
             >
-              {images && images[index] ? (
-                <div className="w-1/2 h-auto flex items-center justify-center">
-                  <Image
-                    src={images[index]}
-                    alt={`Grid image ${index + 1}`}
-                    className="object-contain w-full h-auto"
-                    style={{
-                      filter: "grayscale(1) invert(1)",
-                    }}
-                    width={150}
-                    height={90}
-                  />
-                </div>
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-gray-400">
-                  Image {index + 1}
-                </div>
-              )}
+              <div className="w-1/2 h-auto flex items-center justify-center">
+                <Image
+                  src={logo}
+                  alt={`Partner logo ${index + 1}`}
+                  className="object-contain w-full h-auto"
+                  style={{
+                    filter: "grayscale(1) invert(1)",
+                  }}
+                  width={150}
+                  height={90}
+                />
+              </div>
             </div>
           ))}
         </div>
