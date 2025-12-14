@@ -22,7 +22,7 @@ const StickyCards = () => {
       tag: "Bedrijfsfilms",
       description:
         "Een duidelijke video over wie jullie zijn, wat jullie doen en waar jullie voor staan – handig voor klanten, nieuwe medewerkers of investeerders.",
-      src: "/images/bedrijfsfilms.webp",
+      src: "/images/bedrijfsfilms.jpeg",
       alt: "bedrijfsfilms",
     },
     {
@@ -174,21 +174,23 @@ const StickyCards = () => {
         ref={container}
         className={`sticky-cards px-5 md:px-10 py-16 bg-black relative h-screen overflow-visible flex items-center justify-center`}
       >
-        <div className="cards-container relative w-1/2 aspect-square">
+        <div className="cards-container relative w-1/2 aspect-square ">
           {cardData.map((card) => (
             <div
-              className="card absolute w-full aspect-square overflow-hidden border-2 border-white/20"
+              className="card absolute w-full aspect-square overflow-hidden border-2 border-white/20 rounded-md"
               key={card.id}
             >
-              <div className="flex flex-col md:flex-row h-full">
-                <div className="w-full h-1/2 md:h-auto p-5 bg-[#1A1A1A] md:p-10 flex flex-col justify-end space-y-2 md:space-y-6">
-                  {/* <Image
+              <div className="flex flex-col h-full">
+                <div className="w-full h-1/2">
+                  <Image
                     src={card.src}
                     alt={card.alt}
                     width={1000}
                     height={1000}
-                    className="w-full h-full object-cover rounded-lg"
-                  /> */}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="w-full flex-1 p-5 bg-[#1A1A1A] md:p-10 flex flex-col justify-end space-y-2 md:space-y-6">
                   <h3 className="text-white text-2xl md:text-7xl font-franklin font-bold uppercase leading-none">
                     {card.tag}
                   </h3>

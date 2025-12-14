@@ -183,17 +183,29 @@ const Footer = () => {
               </defs>
             </svg>
             <div className="relative h-full w-full">
-              <video
-                autoPlay
-                muted
-                loop
-                style={{
-                  clipPath: "url(#murseeLogoClip)",
-                }}
-                className="absolute inset-0 w-full h-full object-cover"
-              >
-                <source src="/header.webm" type="video/webm" />
-              </video>
+              {isMobile ? (
+                <div
+                  style={{
+                    clipPath: "url(#murseeLogoClip)",
+                    backgroundImage: 'url("/images/commercials.webp")',
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                  }}
+                  className="absolute inset-0 w-full h-full"
+                />
+              ) : (
+                <video
+                  autoPlay
+                  muted
+                  loop
+                  style={{
+                    clipPath: "url(#murseeLogoClip)",
+                  }}
+                  className="absolute inset-0 w-full h-full object-cover"
+                >
+                  <source src="/header.webm" type="video/webm" />
+                </video>
+              )}
             </div>
           </div>
         </div>
