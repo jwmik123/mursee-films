@@ -212,7 +212,7 @@ export default function ProjectDetailPage({ params }) {
 
               <div>
                 <h3 className="text-sm uppercase tracking-wider text-gray-400 mb-2 font-franklin">
-                  Category
+                  Categorie
                 </h3>
                 <p className="text-xl font-tinos capitalize">
                   {film.category?.replace("-", " ")}
@@ -221,7 +221,7 @@ export default function ProjectDetailPage({ params }) {
 
               <div>
                 <h3 className="text-sm uppercase tracking-wider text-gray-400 mb-2 font-franklin">
-                  Year
+                  Jaar
                 </h3>
                 <p className="text-xl font-tinos">{film.year}</p>
               </div>
