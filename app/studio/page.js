@@ -10,7 +10,7 @@ const Studio = () => {
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
 
   return (
-    <div className="pt-32">
+    <div className="pt-32 bg-black">
       {isMobile ? <MobileCards /> : <StickyCards />}
       <ImageGrid />
       <ApproachSection />

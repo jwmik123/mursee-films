@@ -5,6 +5,8 @@ import { usePathname } from "next/navigation";
 import gsap from "gsap";
 import ContactDialog from "./ContactDialog";
 
+import  {navigation } from "../data/data";
+
 const SimpleNavigation = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -21,11 +23,7 @@ const SimpleNavigation = () => {
   const pathname = usePathname();
 
   // Navigation links
-  const navLinks = [
-    { label: "Home", href: "/" },
-    { label: "Projecten", href: "/projects" },
-    { label: "Studio", href: "/studio" },
-  ];
+   const navLinks = navigation;
 
   // Set mounted state after component mounts
   useEffect(() => {

@@ -1,11 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import OpenAnimation from "./OpenAnimation";
 import CurtainsVideoTransition from "./CurtainsVideoTransition";
 
 export default function HomeWithLoader({ films }) {
   const [loaderComplete, setLoaderComplete] = useState(false);
+  const [showLoader, setShowLoader] = useState(false);
+
+  useEffect(() => {
+    // Check if the animation has been shown before in this session
+    const hasSeenAnimation = sessionStorage.getItem("hasSeenOpenAnimation");
+
+    if (!hasSeenAnimation) {
+      setShowLoader(true);
+      // Mark as seen in sessionStorage
+      sessionStorage.setItem("hasSeenOpenAnimation", "true");
+    } else {
+      // Skip the animation
+      setLoaderComplete(true);
+    }
+  }, []);
 
   return (
     <div className="relative">
@@ -15,7 +30,7 @@ export default function HomeWithLoader({ films }) {
       </main>
 
       {/* Loader overlay - slides up when complete */}
-      {!loaderComplete && (
+      {showLoader && !loaderComplete && (
         <OpenAnimation onComplete={() => setLoaderComplete(true)} />
       )}
     </div>

@@ -2,10 +2,7 @@
 import { Tinos } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
-import { LenisProvider } from "@/providers/LenisProvider";
-import SimpleNavigation from "./components/SimpleNavigation";
-import Footer from "./components/Footer";
-import TitleOnBlur from "./components/TitleOnBlur";
+import LayoutClient from "./components/LayoutClient";
 
 const franklin = localFont({
   src: "../public/fonts/franklin.woff2",
@@ -28,14 +25,11 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${franklin.variable} ${tinos.variable}  antialiased bg-black min-h-[100svh]`}
+        className={`${franklin.variable} ${tinos.variable}  antialiased bg-white min-h-[100svh]`}
       >
-        <TitleOnBlur />
-        <LenisProvider>
-          <SimpleNavigation />
+        <LayoutClient>
           {children}
-          <Footer />
-        </LenisProvider>
+        </LayoutClient>
       </body>
     </html>
   );
