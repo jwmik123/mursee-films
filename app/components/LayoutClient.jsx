@@ -15,11 +15,13 @@ function LayoutContent({ children }) {
       <TitleOnBlur />
       <LenisProvider>
         <PageTransition>
+       
           <SimpleNavigation />
           <div className="page-content opacity-0">
             {children}
-          </div>
+     
           <Footer />
+          </div>
         </PageTransition>
       </LenisProvider>
 

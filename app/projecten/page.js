@@ -350,6 +350,7 @@ export default function ProjectsPage() {
                 href={`/projecten/${film.slug}`}
                 className="relative grid grid-cols-3 py-2 border-b border-white/20 transition-colors group overflow-hidden"
                 onMouseEnter={() => setHoveredProject(film)}
+                data-title={film.title}
                 style={{
                   position: "relative",
                 }}
@@ -383,6 +384,7 @@ export default function ProjectsPage() {
                 key={film._id}
                 href={`/projecten/${film.slug}`}
                 className="group"
+                data-title={film.title}
               >
                 <div className="aspect-video bg-gray-800 rounded-lg mb-3 overflow-hidden">
                   {film.imageUrl && (

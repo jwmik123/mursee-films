@@ -60,16 +60,28 @@ export default function PageTransition({ children }) {
     };
 
     useEffect(() => {
-        const handleClick = (e) => {
+        const handleClick = async (e) => {
             e.preventDefault();
             const href = (e.currentTarget).getAttribute("href");
 
             if(href) {
                 const url = new URL(href, window.location.origin).pathname;
                 if (url !== pathname && !isTransitioning.current) {
-                    // Find the label from navigation data
-                    const navItem = navigation.find(item => item.href === url);
-                    const label = navItem ? navItem.label : "";
+                    let label = "";
+
+                    // Check if it's a project detail page (e.g., /projecten/some-slug)
+                    const projectMatch = url.match(/^\/projecten\/([^\/]+)$/);
+
+                    if (projectMatch) {
+                        // For project pages, use the title from the link text or data attribute
+                        const linkElement = e.currentTarget;
+                        // First try data-title attribute, then fall back to text content
+                        label = linkElement.getAttribute("data-title") || linkElement.textContent.trim();
+                    } else {
+                        // For regular navigation items
+                        const navItem = navigation.find(item => item.href === url);
+                        label = navItem ? navItem.label : "";
+                    }
 
                     // Set the label in context so it's available to layout
                     setTransitionLabel(label);

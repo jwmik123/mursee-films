@@ -321,11 +321,10 @@ export default function ProjectDetailPage({ params }) {
 
       {/* Next Project Section */}
       {nextProject && (
-        <div
-          className="w-full bg-black text-white py-24 cursor-pointer hover:bg-white hover:text-black transition-colors duration-300"
-          onClick={() => {
-            window.location.href = `/projecten/${nextProject.slug}`;
-          }}
+        <a
+          href={`/projecten/${nextProject.slug}`}
+          className="w-full bg-black text-white py-24 cursor-pointer hover:bg-white hover:text-black transition-colors duration-300 block"
+          data-title={nextProject.title}
         >
           <div className="container mx-auto px-5 md:px-10 text-right">
             <p className="text-sm uppercase tracking-wider text-gray-400 mb-2 font-franklin">
@@ -335,7 +334,7 @@ export default function ProjectDetailPage({ params }) {
               {nextProject.title}
             </h2>
           </div>
-        </div>
+        </a>
       )}
     </div>
   );

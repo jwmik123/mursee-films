@@ -190,6 +190,7 @@ const ProjectsSection = ({ projects }) => {
                 <a
                   href={`/projecten/${project.slug}`}
                   className="project-card block"
+                  data-title={project.title}
                 >
                   <ProjectImage project={project} />
                 </a>
@@ -224,6 +225,7 @@ const ProjectsSection = ({ projects }) => {
                       <a
                         href={`/projecten/${project.slug}`}
                         className="project-card block flex-1"
+                        data-title={project.title}
                       >
                         <ProjectImage project={project} />
                       </a>
