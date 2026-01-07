@@ -135,15 +135,7 @@ const Footer = () => {
             </h2>
             <nav className="flex flex-col space-y-2">
               <Link
-                href="https://vimeo.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm hover:text-gray-600 transition-colors"
-              >
-                VIMEO
-              </Link>
-              <Link
-                href="https://www.instagram.com/"
+                href="https://www.instagram.com/murseebedrijfsfilms/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sm hover:text-gray-600 transition-colors"
@@ -151,7 +143,7 @@ const Footer = () => {
                 INSTAGRAM
               </Link>
               <Link
-                href="https://www.linkedin.com/"
+                href="https://www.linkedin.com/company/mursee"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sm hover:text-gray-600 transition-colors"

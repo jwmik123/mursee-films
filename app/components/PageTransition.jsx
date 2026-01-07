@@ -40,7 +40,7 @@ export default function PageTransition({ children }) {
         .set(overlayRef.current, {
             translateY: "100%",
             scale: 0.5,
-            rotate: 30,
+      
         })
         .to(overlayRef.current, {
             translateY: 0,
@@ -110,7 +110,7 @@ const exitPage = (url) => {
     exitTl.to(overlayRef.current, {
         translateY: "-200%",
         scale: 0.5,
-        rotate: -30,
+
         duration: 0.8,
         ease: "power2.inOut",
     }, "-=0.3");

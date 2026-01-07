@@ -27,7 +27,7 @@ function LayoutContent({ children }) {
       {showLabel && transitionLabel && (
         <div className="fixed inset-0 flex items-center justify-center pointer-events-none z-50">
           <p className="text-black text-4xl font-franklin">
-            /{transitionLabel}
+            {transitionLabel}
           </p>
         </div>
       )}
