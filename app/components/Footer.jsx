@@ -2,10 +2,12 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { fetchData } from "@/lib/sanity";
 
 const Footer = () => {
   const pathname = usePathname();
   const [isMobile, setIsMobile] = useState(false);
+  const [projectCount, setProjectCount] = useState(0);
 
   // Initialize time as null to prevent hydration mismatch
   const [time, setTime] = useState(null);
@@ -45,6 +47,18 @@ const Footer = () => {
       setTime(getCurrentTime());
     }, 1000);
 
+    // Fetch project count
+    const fetchProjectCount = async () => {
+      try {
+        const count = await fetchData('count(*[_type == "film"])');
+        setProjectCount(count);
+      } catch (error) {
+        console.error("Error fetching project count:", error);
+      }
+    };
+
+    fetchProjectCount();
+
     return () => {
       clearInterval(timer);
       window.removeEventListener("resize", checkMobile);
@@ -83,6 +97,12 @@ const Footer = () => {
             >
               INFO@MURSEE.NL
             </Link>
+            <Link
+              href="tel:+31624544493"
+              className="text-sm hover:text-gray-600 transition-colors mt-2"
+            >
+              +31 6 24 54 44 93
+            </Link>
           </div>
 
           {/* VISIT Section */}
@@ -117,12 +137,14 @@ const Footer = () => {
               </Link>
               <div className="flex items-center">
                 <Link
-                  href="/work"
+                  href="/projecten"
                   className="text-sm hover:text-gray-600 transition-colors"
                 >
                   PROJECTEN
                 </Link>
-                <span className="text-[10px] ml-1.5 text-gray-500">[78]</span>
+                <span className="text-[10px] ml-1.5 text-gray-500">
+                  [{projectCount}]
+                </span>
               </div>
         
             </nav>
