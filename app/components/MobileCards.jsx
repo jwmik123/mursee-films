@@ -42,7 +42,7 @@ const MobileCards = () => {
           <span>jouw bedrijf</span>
         </div>
         <div className="overflow-hidden">
-          <span className="self-start">kan Bieden(3)</span>
+          <span className="self-start">kan Bieden</span>
         </div>
       </div>
 
