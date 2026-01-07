@@ -347,7 +347,7 @@ export default function ProjectsPage() {
             {filteredFilms.map((film) => (
               <a
                 key={film._id}
-                href={`/projects/${film.slug}`}
+                href={`/projecten/${film.slug}`}
                 className="relative grid grid-cols-3 py-2 border-b border-white/20 transition-colors group overflow-hidden"
                 onMouseEnter={() => setHoveredProject(film)}
                 style={{
@@ -381,7 +381,7 @@ export default function ProjectsPage() {
             {filteredFilms.map((film) => (
               <a
                 key={film._id}
-                href={`/projects/${film.slug}`}
+                href={`/projecten/${film.slug}`}
                 className="group"
               >
                 <div className="aspect-video bg-gray-800 rounded-lg mb-3 overflow-hidden">

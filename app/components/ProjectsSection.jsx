@@ -149,7 +149,7 @@ const ProjectsSection = ({ projects }) => {
   // Button component for "Alle projecten"
   const AlleProjectenButton = () => (
     <a
-      href="/projects"
+      href="/projecten"
       className="text-white relative group px-3 py-2 inline-block w-full md:w-auto text-center"
     >
       <span className="font-tinos text-lg relative z-10">Alle projecten</span>
@@ -188,7 +188,7 @@ const ProjectsSection = ({ projects }) => {
             {projects.map((project) => (
               <div key={project._id}>
                 <a
-                  href={`/projects/${project.slug}`}
+                  href={`/projecten/${project.slug}`}
                   className="project-card block"
                 >
                   <ProjectImage project={project} />
@@ -222,7 +222,7 @@ const ProjectsSection = ({ projects }) => {
                       className="h-full w-full flex flex-col"
                     >
                       <a
-                        href={`/projects/${project.slug}`}
+                        href={`/projecten/${project.slug}`}
                         className="project-card block flex-1"
                       >
                         <ProjectImage project={project} />

@@ -540,7 +540,7 @@ export default function CurtainsVideoTransition({ projects, transitionType = 'wa
     const project = displayProjects[currentIndex];
     const slug = project?.slug;
     if (typeof slug === 'string' && slug.length > 0) {
-      router.push(`/projects/${slug}`);
+      router.push(`/projecten/${slug}`);
     }
   };
 

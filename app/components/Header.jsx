@@ -198,7 +198,7 @@ const Header = () => {
             About
           </Link>
           <Link
-            href="/projects"
+            href="/projecten"
             className="text-white text-sm uppercase font-franklin hover:text-gray-300 transition-colors tracking-wide"
           >
             Projects

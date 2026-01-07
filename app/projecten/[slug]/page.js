@@ -324,7 +324,7 @@ export default function ProjectDetailPage({ params }) {
         <div
           className="w-full bg-black text-white py-24 cursor-pointer hover:bg-white hover:text-black transition-colors duration-300"
           onClick={() => {
-            window.location.href = `/projects/${nextProject.slug}`;
+            window.location.href = `/projecten/${nextProject.slug}`;
           }}
         >
           <div className="container mx-auto px-5 md:px-10 text-right">
