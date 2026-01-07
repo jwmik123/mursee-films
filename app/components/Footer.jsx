@@ -111,8 +111,8 @@ const Footer = () => {
               ONS KANTOOR
             </h2>
             <address className="text-sm not-italic leading-relaxed uppercase">
-              <p>John M. Keynesplein 12-46,</p>
-              <p>1066 EP Amsterdam, Nederland</p>
+              <p>Vredemaker 55,</p>
+              <p>1689 WR Zwaag, Nederland</p>
               <p className="text-gray-500">{displayTime} (GMT +1)</p>
             </address>
           </div>
