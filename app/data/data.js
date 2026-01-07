@@ -4,7 +4,7 @@ export const navigation = [
     href: "/",
   },
   {
-    label: "projecten",
+    label: "Projecten",
     href: "/projecten",
   },
   {
