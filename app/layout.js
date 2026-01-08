@@ -1,6 +1,7 @@
 // app/layout.js
 import { Tinos } from "next/font/google";
 import localFont from "next/font/local";
+import Script from "next/script";
 import "./globals.css";
 import LayoutClient from "./components/LayoutClient";
 import { fetchData } from "@/lib/sanity";
@@ -81,6 +82,20 @@ export async function generateMetadata() {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <head>
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-JYBC4799BQ"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-JYBC4799BQ');
+          `}
+        </Script>
+      </head>
       <body
         className={`${franklin.variable} ${tinos.variable}  antialiased bg-white min-h-[100svh]`}
       >
