@@ -751,9 +751,9 @@ export default function CurtainsVideoTransition({ projects, transitionType = 'wa
       <div className="absolute inset-0 bg-black/10 pointer-events-none" />
 
       {/* Content */}
-      <div ref={contentRef} className="relative z-10 min-h-[100svh] flex flex-col p-8 md:p-12">
+      <div ref={contentRef} className="relative z-10 min-h-[100svh] flex flex-col p-8 md:p-12 pb-24 md:pb-12">
         <div className="flex-1" />
-        <div className="mb-8 md:mb-12">
+        <div className="mb-4 md:mb-12">
           <h1 className="text-4xl md:text-6xl lg:text-[6vw] font-bold text-white mb-4 font-franklin uppercase">
             Mursee Films
           </h1>

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import OpenAnimation from "./OpenAnimation";
 import CurtainsVideoTransition from "./CurtainsVideoTransition";
+import FloatingProject from "./FloatingProject";
 
 export default function HomeWithLoader({ films }) {
   const [loaderComplete, setLoaderComplete] = useState(false);
@@ -33,6 +34,9 @@ export default function HomeWithLoader({ films }) {
       {showLoader && !loaderComplete && (
         <OpenAnimation onComplete={() => setLoaderComplete(true)} />
       )}
+
+      {/* Floating project preview */}
+      <FloatingProject />
     </div>
   );
 }
