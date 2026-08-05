@@ -99,6 +99,7 @@ export default function RootLayout({ children }) {
       <body
         className={`${franklin.variable} ${tinos.variable}  antialiased bg-white min-h-[100svh]`}
       >
+        <div className="grain" data-grain-animate="true"></div>
         <LayoutClient>
           {children}
         </LayoutClient>
